@@ -1,0 +1,1 @@
+print("[Character] Hello World!")
