@@ -1,1 +1,0 @@
-print("[Server] Hello World!")

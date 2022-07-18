@@ -1,5 +1,5 @@
 {
-  "name": "Template",
+  "name": "Voltz",
   "tree": {
     "$className": "DataModel",
 
@@ -16,6 +16,10 @@
 
       "Client": {
         "$path": "src/ReplicatedStorage/Client"
+      },
+
+      "Packages": {
+        "$path": "Packages"
       }
     },
 
