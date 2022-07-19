@@ -43,7 +43,12 @@ function createLuaBinder(className) {
     ].join('\n')
 }
 
-tools.forEach((className) => {
-    const source = createLuaBinder(className)
-    fs.writeFileSync(`./src/ReplicatedStorage/Client/InstanceComponents/Structures/${className}.lua`, source, 'utf-8')
-})
+function loadClasses(directory, classNames) {
+    classNames.forEach((className) => {
+        const source = createLuaBinder(className)
+        fs.writeFileSync(`${directory}/${className}.lua`, source, 'utf-8')
+    })
+}
+
+loadClasses('./src/ReplicatedStorage/Client/InstanceComponents/Tools', tools)
+loadClasses('./src/ServerScriptService/InstanceComponents/Tools', tools)
