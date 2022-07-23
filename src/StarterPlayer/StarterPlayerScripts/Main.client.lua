@@ -1,7 +1,17 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Loader = require(ReplicatedStorage.Common.Loader)
+local BinderRegistry = require(ReplicatedStorage.Client.BinderRegistry)
 
--- Load Game
-Loader.GenBinders(ReplicatedStorage.Client.InstanceComponents.Tools)
-Loader.GenBinders(ReplicatedStorage.Client.InstanceComponents.Structures)
+for _, componentModule in ipairs(ReplicatedStorage.Client.InstanceComponents.Structures:GetChildren()) do
+    BinderRegistry:Add(componentModule.Name, require(componentModule))
+end
+
+for _, componentModule in ipairs(ReplicatedStorage.Client.InstanceComponents.Tools:GetChildren()) do
+    BinderRegistry:Add(componentModule.Name, require(componentModule))
+end
+
+for _, componentModule in ipairs(ReplicatedStorage.Client.InstanceComponents.Misc:GetChildren()) do
+    BinderRegistry:Add(componentModule.Name, require(componentModule))
+end
+
+BinderRegistry:Start()

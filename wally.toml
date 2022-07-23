@@ -7,4 +7,4 @@ realm = "shared"
 [dependencies]
 Trove = "sleitnick/trove@0.4.1"
 Signal = "sleitnick/signal@1.2.0"
-Binder = "4812571/binder@0.1.0"
+Binder = "4812571/binder@0.1.1"
