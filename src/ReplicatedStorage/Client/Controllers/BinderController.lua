@@ -27,10 +27,12 @@ function BinderController:KnitInit()
 	for _, instanceComponentModule in ipairs(ReplicatedStorage.Client.InstanceComponents.Structures) do
 		self._binderProvider:Add(instanceComponentModule.Name, require(instanceComponentModule))
 	end
+
 	-- Load tool binders
 	for _, instanceComponentModule in ipairs(ReplicatedStorage.Client.InstanceComponents.Tools) do
 		self._binderProvider:Add(instanceComponentModule.Name, require(instanceComponentModule))
 	end
+
 	-- Load misc binders
 	for _, instanceComponentModule in ipairs(ReplicatedStorage.Client.InstanceComponents.Misc) do
 		self._binderProvider:Add(instanceComponentModule.Name, require(instanceComponentModule))
