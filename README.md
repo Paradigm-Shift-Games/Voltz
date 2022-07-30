@@ -1,6 +1,6 @@
 # Voltz OSS
 
-An open-sourced Voltz remake.
+Voltz, open-sourced.
 
 ---
 
