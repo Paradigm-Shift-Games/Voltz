@@ -3,12 +3,21 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage.Packages.Knit)
 local BinderProvider = require(ReplicatedStorage.Common.BinderProvider)
 
+--[=[
+	@class BinderController
+]=]
 local BinderController = Knit.CreateController {
     Name = "BinderController";
 }
 
 BinderController._binderProvider = BinderProvider.new()
 
+--[=[
+	Searches for a particular Binder by its tag name.
+
+	@param tagName string -- The tag to search for.
+	@return Binder? -- The Binder, if found.
+]=]
 function BinderController:Get(tagName)
     return self._binderProvider:Get(tagName)
 end
