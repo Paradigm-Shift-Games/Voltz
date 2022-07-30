@@ -1,40 +1,35 @@
 {
-  "name": "Voltz",
-  "tree": {
-    "$className": "DataModel",
+	"name": "Voltz",
+	"tree": {
+		"$className": "DataModel",
+		"ServerScriptService": {
+			"$className": "ServerScriptService",
+			"$path": "src/ServerScriptService"
+		},
 
-    "ServerScriptService": {
-      "$path": "src/ServerScriptService"
-    },
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Common": {
+				"$path": "src/ReplicatedStorage/Common"
+			},
+			"Client": {
+				"$path": "src/ReplicatedStorage/Client"
+			},
+			"Packages": {
+				"$path": "Packages"
+			}
+		},
 
-    "ReplicatedStorage": {
-      "$className": "ReplicatedStorage",
-
-      "Common": {
-        "$path": "src/ReplicatedStorage/Common"
-      },
-
-      "Client": {
-        "$path": "src/ReplicatedStorage/Client"
-      },
-
-      "Packages": {
-        "$path": "Packages"
-      }
-    },
-
-    "StarterPlayer": {
-      "$className": "StarterPlayer",
-
-      "StarterPlayerScripts": {
-        "$className": "StarterPlayerScripts",
-        "$path": "src/StarterPlayer/StarterPlayerScripts"
-      },
-
-      "StarterCharacterScripts": {
-        "$className": "StarterCharacterScripts",
-        "$path": "src/StarterPlayer/StarterCharacterScripts"
-      }
-    }
-  }
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"$path": "src/StarterPlayer/StarterPlayerScripts"
+			},
+			"StarterCharacterScripts": {
+				"$className": "StarterCharacterScripts",
+				"$path": "src/StarterPlayer/StarterCharacterScripts"
+			}
+		}
+	}
 }
