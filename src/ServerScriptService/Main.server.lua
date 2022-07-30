@@ -1,17 +1,7 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local BinderRegistry = require(ServerScriptService.BinderRegistry)
+local Knit = require(ReplicatedStorage.Packages.Knit)
+Knit.AddServices(ServerScriptService.Services)
 
-for _, componentModule in ipairs(ServerScriptService.InstanceComponents.Structures:GetChildren()) do
-    BinderRegistry:Add(componentModule.Name, require(componentModule))
-end
-
-for _, componentModule in ipairs(ServerScriptService.InstanceComponents.Tools:GetChildren()) do
-    BinderRegistry:Add(componentModule.Name, require(componentModule))
-end
-
-for _, componentModule in ipairs(ServerScriptService.InstanceComponents.Misc:GetChildren()) do
-    BinderRegistry:Add(componentModule.Name, require(componentModule))
-end
-
-BinderRegistry:Start()
+Knit.Start()
