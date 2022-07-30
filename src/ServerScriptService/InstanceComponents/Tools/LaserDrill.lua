@@ -2,9 +2,9 @@ local LaserDrill = {}
 LaserDrill.__index = LaserDrill
 
 function LaserDrill.new(instance)
-   local self = setmetatable({}, LaserDrill)
-   self.Instance = instance
-   return self
+	local self = setmetatable({}, LaserDrill)
+	self.Instance = instance
+	return self
 end
 
 function LaserDrill:Destroy()
