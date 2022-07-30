@@ -1,2 +1,7 @@
 Packages/
 wally.lock
+*.rbxl
+*.rbxl.lock
+*.rbxlx
+*.rbxlx.lock
+*.rbxm
