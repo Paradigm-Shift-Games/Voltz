@@ -4,6 +4,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage.Packages.Knit)
 local BinderProvider = require(ReplicatedStorage.Common.BinderProvider)
 
+--[=[
+	@class BinderService
+]=]
 local BinderService = Knit.CreateService {
     Name = "BinderService";
     Client = {};
@@ -11,6 +14,12 @@ local BinderService = Knit.CreateService {
 
 BinderService._binderProvider = BinderProvider.new()
 
+--[=[
+	Searches for a particular Binder by its tag name.
+
+	@param tagName string -- The tag to search for.
+	@return Binder? -- The Binder, if found.
+]=]
 function BinderService:Get(tagName)
     return self._binderProvider:Get(tagName)
 end
