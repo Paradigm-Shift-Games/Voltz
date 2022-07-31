@@ -50,12 +50,7 @@ local function Button(props)
 	end
 
 	props[OnEvent "PressUp"] = function(relativePosition)
-		if
-			hovering:get(false)
-			and pressing:get(false)
-			and onPressUp ~= nil
-			--and SharedState.InputType:get(false) ~= "Touch"
-		then
+		if hovering:get(false) and pressing:get(false) and onPressUp ~= nil then
 			onPressUp(relativePosition)
 		end
 
