@@ -47,9 +47,11 @@ function CameraLook.new(instance: Instance)
 	-- Speed for rotating the root
 	self.RootPitchSpeed = math.rad(80)
 	self.RootYawSpeed = math.rad(0)
+
 	-- Speed for rotating the waist
 	self.WaistPitchSpeed = math.rad(100)
 	self.WaistYawSpeed = math.rad(360)
+
 	-- Speed for rotating the neck
 	self.NeckPitchSpeed = math.rad(200)
 	self.NeckYawSpeed = math.rad(560)
