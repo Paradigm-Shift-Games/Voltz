@@ -63,7 +63,7 @@ story:setConstructor(function(background)
 		Pressing = pressing,
 
 		[Children] = {
-			TextLabel({
+			TextLabel {
 				Name = "TestLabel",
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				Size = UDim2.new(1, 0, 0.8, 0),
@@ -72,11 +72,11 @@ story:setConstructor(function(background)
 				ShadowTransparency = 0.5,
 				StrokeSize = 2.75,
 				ShadowOffset = UDim2.new(0, 0, 0, 10),
-			}),
+			},
 
-			New("UICorner")({
+			New "UICorner" {
 				CornerRadius = cornerRadius,
-			}),
+			},
 		},
 	}
 

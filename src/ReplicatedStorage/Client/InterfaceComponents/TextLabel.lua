@@ -33,7 +33,7 @@ local function TextLabel(props)
 	local textColor = props.TextColor3 or DEFAULT_TEXT_COLOR
 	local textTransparency = props.TextTransparency or DEFAULT_TEXT_TRANSPARENCY
 
-	return New("Frame")({
+	return New "Frame" {
 		Name = props.Name or text or "GenericTextLabel",
 		BackgroundTransparency = props.BackgroundTransparency or 1,
 		AnchorPoint = props.AnchorPoint or Vector2.new(0, 0),
@@ -43,7 +43,7 @@ local function TextLabel(props)
 		ZIndex = props.ZIndex,
 
 		[Children] = {
-			New("TextLabel")({
+			New "TextLabel" {
 				Name = "Text",
 				Size = UDim2.new(1, 0, 1, 0),
 				BackgroundTransparency = 1,
@@ -59,17 +59,17 @@ local function TextLabel(props)
 				ZIndex = 2,
 
 				[Children] = {
-					New("UIStroke")({
+					New "UIStroke" {
 						Color = strokeColor,
 						Thickness = strokeSize,
 						Transparency = Computed(function()
 							return if strokeSize:get() > 0 then strokeTransparency:get() else 1
 						end),
-					}),
+					},
 				},
-			}),
+			},
 
-			New("TextLabel")({
+			New "TextLabel" {
 				Name = "TextShadow",
 				Size = UDim2.new(1, 0, 1, 0),
 				Position = shadowOffset,
@@ -83,9 +83,9 @@ local function TextLabel(props)
 				TextScaled = true,
 				Font = font,
 				ZIndex = 1,
-			}),
+			},
 		},
-	})
+	}
 end
 
 return TextLabel

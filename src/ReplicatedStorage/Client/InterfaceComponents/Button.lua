@@ -28,11 +28,11 @@ local function Button(props)
 	props.Size = props.Size or UDim2.new(1, 0, 1, 0)
 
 	-- Function injections
-	props[OnEvent("Hover")] = function()
+	props[OnEvent "Hover"] = function()
 		hovering:set(true)
 	end
 
-	props[OnEvent("UnHover")] = function()
+	props[OnEvent "UnHover"] = function()
 		--[[if SharedInterfaceState.InputType:get(false) == "Touch" then
 			task.wait()
 		end]]
@@ -41,7 +41,7 @@ local function Button(props)
 		pressing:set(false)
 	end
 
-	props[OnEvent("PressDown")] = function(relativePosition)
+	props[OnEvent "PressDown"] = function(relativePosition)
 		pressing:set(true)
 
 		if onPressDown ~= nil then
@@ -49,7 +49,7 @@ local function Button(props)
 		end
 	end
 
-	props[OnEvent("PressUp")] = function(relativePosition)
+	props[OnEvent "PressUp"] = function(relativePosition)
 		if
 			hovering:get(false)
 			and pressing:get(false)
@@ -62,7 +62,7 @@ local function Button(props)
 		pressing:set(false)
 	end
 
-	--[[props[OnEvent("Activated")] = function(relativePosition)
+	--[[props[OnEvent "Activated"] = function(relativePosition)
 		if SharedState.InputType:get(false) == "Touch" and onPressUp ~= nil then
 			onPressUp(relativePosition)
 		end
