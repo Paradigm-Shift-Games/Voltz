@@ -33,14 +33,12 @@ local function Button(props)
 	end
 
 	props[OnEvent("UnHover")] = function()
-		task.spawn(function()
-			--[[if SharedInterfaceState.InputType:get(false) == "Touch" then
-				task.wait()
-			end]]
+		--[[if SharedInterfaceState.InputType:get(false) == "Touch" then
+			task.wait()
+		end]]
 
-			hovering:set(false)
-			pressing:set(false)
-		end)
+		hovering:set(false)
+		pressing:set(false)
 	end
 
 	props[OnEvent("PressDown")] = function(relativePosition)
