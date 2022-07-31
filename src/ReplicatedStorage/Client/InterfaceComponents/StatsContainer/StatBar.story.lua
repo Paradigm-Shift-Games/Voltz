@@ -26,7 +26,7 @@ story:setConstructor(function(background)
 	props.FillPercentage = Spring(fillPercentage, 30, 0.9)
 	props.Color = Computed(function()
 		local percent = props.FillPercentage:get()
-		return Color3.fromRGB(255 - 225*percent/100, 30 + 225*percent/100, 30)
+		return Color3.fromRGB(255 - 225 * percent / 100, 30 + 225 * percent / 100, 30)
 	end)
 
 	local statBar = StatBar(props)
