@@ -4,6 +4,8 @@ local Packages = ReplicatedStorage:WaitForChild("Packages")
 local CurrentCamera = workspace.CurrentCamera
 
 local Fusion = require(Packages.Fusion)
+local Timer = require(Packages.Timer)
+
 local Value = Fusion.Value
 local Computed = Fusion.Computed
 
@@ -19,10 +21,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 local serverTime = Value(workspace:GetServerTimeNow())
-task.spawn(function()
-	while task.wait(0.05) do
-		serverTime:set(workspace:GetServerTimeNow())
-	end
+Timer.Simple(0.05, function()
+	serverTime:set(workspace:GetServerTimeNow())
 end)
 
 local screenSize = Computed(function()
