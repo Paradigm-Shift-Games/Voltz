@@ -18,7 +18,7 @@ story:setBackgroundSize(UDim2.new(0.5, 0, 0.3, 0))
 story:setConstructor(function(background)
 	-- Default props that indicate what you might use
 	local props = {
-		FillPercentage = Value(0),
+		FillPercentage = Value(100),
 		Color = Value(Color3.new(1, 1, 1)),
 	}
 

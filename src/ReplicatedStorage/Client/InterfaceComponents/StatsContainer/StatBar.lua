@@ -28,7 +28,12 @@ local function StatBar(props)
 
 	local backgroundSize = Computed(function()
 		local percent = fillPercentage:get()
-		return UDim2.new(1, 0, 1 - (percent / 101), 0)
+
+		if percent == 100 then
+			return UDim2.new(1, 0, 0, 0)
+		else
+			return UDim2.new(1, 0, 1 - (percent / 101), 0)
+		end
 	end)
 
 	local frame = New "Frame" {
