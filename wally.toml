@@ -1,6 +1,6 @@
 [package]
-name = "dylan/voltz"
-version = "0.1.0"
+name = "do-not-publish/voltz"
+version = "0.1.2"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
