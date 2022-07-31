@@ -14,9 +14,9 @@ end
 local easingStyle = Enum.EasingStyle.Circular
 local easingDirection = Enum.EasingDirection.In
 local function dampenAngle(sourceAngle: number, goalAngle: number, angularSpeed: number, deltaTime: number)
-	local angleDiff = goalAngle%math.rad(360) - sourceAngle%math.rad(360)
+	local angleDiff = goalAngle % math.rad(360) - sourceAngle % math.rad(360)
 	if math.abs(angleDiff) > math.rad(180) then
-		local dividend = math.sign(angleDiff)*math.rad(180)
+		local dividend = math.sign(angleDiff) * math.rad(180)
 		angleDiff = angleDiff%dividend - dividend
 	end
 	return sourceAngle + math.sign(angleDiff) * TweenService:GetValue(math.clamp(math.min(angularSpeed, math.abs(angleDiff/deltaTime) / angularSpeed), 0, 1), easingStyle, easingDirection) * angularSpeed * deltaTime
