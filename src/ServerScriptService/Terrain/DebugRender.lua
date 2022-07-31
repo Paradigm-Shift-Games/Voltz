@@ -13,6 +13,7 @@ local debugColors = {
 
 	-- Surface
 	["Surface Fill"] = Color3.new(0.329412, 0.329412, 0.329412);
+	["Surface Grass"] = Color3.new(0.023529, 0.572549, 0.050980);
 
 	-- Resource
 	["Resource Crystal"] = Color3.new(0, 1, 0.968627);
@@ -27,8 +28,6 @@ local function getColor(cellType)
     end
 end
 
-setmetatable(debugColors, debugColors)
-
 function DebugRender.DrawGrid(terrainGrid, scale)
 	scale = scale or 1
 
@@ -37,6 +36,7 @@ function DebugRender.DrawGrid(terrainGrid, scale)
 
 	terrainGrid:IterateCells(function(position, data)
 		local part = Instance.new("Part")
+		part.Name = data
 		part.Position = position * scale
 		part.Anchored = true
 		part.Size = Vector3.new(1, 1, 1) * scale

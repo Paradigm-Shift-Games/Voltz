@@ -14,7 +14,7 @@ function StarterIsland.Build(starterIslandConfig, starterIslandGrid)
 	-- players and well-pumps, and lumping them in with the other grid will make this **very** difficult.
 
 
-
+	return {}
 	-- return an array of starter island 3D grids
 end
 

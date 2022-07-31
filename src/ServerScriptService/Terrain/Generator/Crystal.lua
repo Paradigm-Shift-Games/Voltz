@@ -3,13 +3,21 @@ local Grid2D = require(script.Parent.Parent.Grid2D)
 local Crystal = {}
 
 function Crystal.Generate(crystalConfig, islandGrid)
-	return Grid2D.new() -- a grid of crystal positions -> true - do not store the false case, to save memory
-	-- this is a very simple random, but it's great for the purposes of being able to extend crystal behaviour later (perhaps to use noise?)
+	local crystalGrid = Grid2D.new()
+
+	islandGrid:IterateCells(function(position)
+		if math.random() < crystalConfig.CrystalSpawnRate then
+			crystalGrid:Set(position.X, position.Y, true)
+		end
+	end)
+
+	return crystalGrid
 end
 
 function Crystal.Build(terrtainGrid, crystalGrid)
-	-- create the crystals in the grid. This is trivial.
-	
+	crystalGrid:IterateCells(function(position)
+		terrtainGrid:Set(position.X, 1, position.Y, "Resource Crystal")
+	end)
 end
 
 return Crystal
