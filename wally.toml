@@ -5,6 +5,9 @@ registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
 [dependencies]
+Fusion = "nottirb/fusion-beta@0.1.3-beta"
+FusionUtils = "nottirb/fusion-utils@0.1.4"
+StoryTaskBar = "nottirb/storytaskbar@0.1.4"
 Trove = "sleitnick/trove@0.4.1"
 Signal = "sleitnick/signal@1.2.0"
 Binder = "4812571/binder@0.1.1"
