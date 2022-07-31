@@ -4,9 +4,10 @@ local Crystal = {}
 
 function Crystal.Generate(crystalConfig, islandGrid)
 	local crystalGrid = Grid2D.new()
+	local random = Random.new()
 
 	islandGrid:IterateCells(function(position)
-		if math.random() < crystalConfig.CrystalSpawnRate then
+		if random:NextNumber() < crystalConfig.CrystalSpawnRate then
 			crystalGrid:Set(position.X, position.Y, true)
 		end
 	end)
