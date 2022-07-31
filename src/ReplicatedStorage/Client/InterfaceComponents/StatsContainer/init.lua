@@ -9,10 +9,8 @@ local UIComponents = script.Parent
 local StatBar = require(UIComponents.StatsContainer.StatBar)
 
 local New = WrappedFusion.New
-local OnEvent = WrappedFusion.OnEvent
 local Statify = WrappedFusion.Statify
 local Children = Fusion.Children
-local Value = Fusion.Value
 local Computed = Fusion.Computed
 local Spring = Fusion.Spring
 

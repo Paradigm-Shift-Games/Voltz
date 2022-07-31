@@ -6,12 +6,10 @@ local WrappedFusion = require(Packages.FusionUtils).Wrapped
 local Trove = require(Packages.Trove)
 
 local New = WrappedFusion.New
-local OnEvent = WrappedFusion.OnEvent
 local Statify = WrappedFusion.Statify
 local Children = Fusion.Children
 local Value = Fusion.Value
 local Computed = Fusion.Computed
-local Spring = Fusion.Spring
 local Cleanup = Fusion.Cleanup
 
 local function StatBar(props)
