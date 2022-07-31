@@ -2,7 +2,7 @@ local TerrainConfig = {
     Island = {
         MainlandSize = 45,
         StarterIslandDistance = 15,
-        
+ 
         Grass = {
             Scale = 16,
             Weight = 0.5,
@@ -25,6 +25,7 @@ local TerrainConfig = {
 
     Beacon = {
         BeaconCount = 7,
+        Offset = 25;
     },
 
     Support = {

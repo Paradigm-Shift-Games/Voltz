@@ -2,14 +2,32 @@ local Grid2D = require(script.Parent.Parent.Grid2D)
 
 local Beacon = {}
 
-function Beacon.Generate(islandConfig, beaconConfig)
-	return Grid2D.new() -- a grid of beacon positions -> true
-	-- this is some very simple math. simply add a beacon to the center, then the additional beacons are half way out from the island, in a circular pattern.
-	-- be sure to not add decimals to the generator - rounding is important
+function Beacon.Generate(beaconConfig)
+	local beaconGrid = Grid2D.new()
+
+	beaconGrid:Set(0, 0, true)
+	local beaconAngleDifference = 360 / beaconConfig.BeaconCount
+	local beaconAngle = 0
+
+	for y = 0, beaconConfig.BeaconCount do
+		beaconGrid:Set(math.round(math.cos(math.rad(beaconAngle))* beaconConfig.Offset), math.round(math.sin(math.rad(beaconAngle))* beaconConfig.Offset), true)
+
+		beaconAngle += beaconAngleDifference
+	end
+
+	return beaconGrid
 end
 
 function Beacon.Build(terrainGrid, supportConfig, beaconGrid)
-	-- actually create the beacons, They're made of 'Support Fill', except for layer 0, which is made of 'Support Beacon'
+	beaconGrid:IterateCells(function(position)
+		for y = 0, -supportConfig.SupportHeight, -1 do
+			if y == 0 then
+				terrainGrid:Set(position.X, y, position.Y, "Support Beacon")
+			else
+				terrainGrid:Set(position.X, y, position.Y, "Surface Fill")
+			end
+		end
+	end)
 end
 
 return Beacon
