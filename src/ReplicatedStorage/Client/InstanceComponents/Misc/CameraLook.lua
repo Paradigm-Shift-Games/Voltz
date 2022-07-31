@@ -28,8 +28,12 @@ function CameraLook.new(instance: Instance)
 	self.Instance = instance
 	self._trove = Trove.new()
 
-	local humanoid = instance:FindFirstChildOfClass("Humanoid")
-	assert(humanoid, "Character does not have a valid Humanoid.")
+	-- Wait for Humanoid to be added
+	local humanoid = instance:FindFirstChildWhichIsA("Humanoid")
+	while not humanoid do
+		humanoid = instance:FindFirstChildWhichIsA("Humanoid")
+		instance.ChildAdded:Wait()
+	end
 
 	-- Retrieve player root part
 	local rootPart = humanoid.RootPart
@@ -38,7 +42,7 @@ function CameraLook.new(instance: Instance)
 	self.LookAngularSpeed = math.rad(400)
 
 	-- Disable automatic rotation
-	-- humanoid.AutoRotate = false
+	humanoid.AutoRotate = false
 
 	-- Speed for rotating the root
 	self.RootPitchSpeed = math.rad(80)
@@ -51,8 +55,8 @@ function CameraLook.new(instance: Instance)
 	self.NeckYawSpeed = math.rad(560)
 
 	-- Grab base C0 for root part (TODO: Clean this up)
-	local lowerTorso: BasePart? = instance:FindFirstChild("LowerTorso")
-	local root: Motor6D? = lowerTorso and lowerTorso:FindFirstChild("Root")
+	local lowerTorso: BasePart = instance:WaitForChild("LowerTorso")
+	local root: Motor6D = lowerTorso and lowerTorso:WaitForChild("Root")
 	local rootC0 = root.C0
 
 	-- Reset joint angles
@@ -63,15 +67,38 @@ function CameraLook.new(instance: Instance)
 	self._neckPitch = 0
 	self._neckYaw = 0
 
-	local player = Players:GetPlayerFromCharacter(instance)
-	local mouse = player:GetMouse()
+	local player: Player? = Players:GetPlayerFromCharacter(instance)
+	local isLocalPlayer = player == Players.LocalPlayer
+	local mouse: Mouse? = if isLocalPlayer then player:GetMouse() else nil
 	self._trove:Connect(RunService.Stepped, function(_, deltaTime)
-		local lookCFrame = mouse.Hit
-		local lookPosition = lookCFrame.Position
+		-- Get root CFrame & vectors
 		local cframe = rootPart:GetPivot()
 
 		local upVector = cframe.UpVector
 		local rightVector = cframe.RightVector
+
+		-- Locate mouse target part
+		local lookPart: BasePart = instance:FindFirstChild("MouseTarget")
+		local lookCFrame
+		if isLocalPlayer then
+			-- Use the mouse's CFrame
+			lookCFrame = mouse.Hit
+
+			-- Set target part CFrame
+			if lookPart then
+				lookPart.CFrame = lookCFrame
+			end
+		else
+			-- Use the look part's CFrame, and fall back to root's CFrame
+			if lookPart then
+				lookCFrame = lookPart.CFrame
+			else
+				lookCFrame = cframe
+			end
+		end
+
+		-- Determine the look position
+		local lookPosition = lookCFrame.Position
 
 		-- Root joint angles
 		local lowerTorso: BasePart? = instance:FindFirstChild("LowerTorso")
@@ -80,8 +107,8 @@ function CameraLook.new(instance: Instance)
 			self._rootPitch = dampenAngle(self._rootPitch, calculateJointAngle(-upVector, lowerTorso.Position, lookPosition), self.RootPitchSpeed, deltaTime)
 			self._rootYaw = dampenAngle(self._rootYaw, calculateJointAngle(rightVector, lowerTorso.Position, lookPosition), self.RootYawSpeed, deltaTime)
 			local rootCFrame = CFrame.Angles(
-				math.clamp(self._rootPitch, math.rad(-55), math.rad(15)),
-				math.clamp(self._rootYaw, math.rad(-25), math.rad(25)),
+				math.clamp(self._rootPitch, math.rad(-55), math.rad(20)),
+				math.clamp(self._rootYaw, math.rad(-30), math.rad(30)),
 				0
 			)
 
@@ -96,7 +123,7 @@ function CameraLook.new(instance: Instance)
 			self._waistPitch = dampenAngle(self._waistPitch, calculateJointAngle(-upVector, upperTorso.Position, lookPosition), self.WaistPitchSpeed, deltaTime)
 			self._waistYaw = dampenAngle(self._waistYaw, calculateJointAngle(rightVector, upperTorso.Position, lookPosition), self.WaistYawSpeed, deltaTime)
 			waist.Transform *= CFrame.Angles(
-				math.clamp(self._waistPitch, math.rad(-55), math.rad(35)),
+				math.clamp(self._waistPitch, math.rad(-55), math.rad(30)),
 				math.clamp(self._waistYaw, math.rad(-35), math.rad(35)),
 				0
 			)
@@ -115,13 +142,15 @@ function CameraLook.new(instance: Instance)
 			)
 		end
 
-		-- Y rotation
-		local x, angle, z = cframe:ToOrientation()
-		angle = dampenAngle(angle, math.atan2(lookPosition.X - cframe.X, lookPosition.Z - cframe.Z) + math.rad(180), self.LookAngularSpeed, deltaTime)
+		if isLocalPlayer then
+			-- Y rotation
+			local x, angle, z = cframe:ToOrientation()
+			angle = dampenAngle(angle, math.atan2(lookPosition.X - cframe.X, lookPosition.Z - cframe.Z) + math.rad(180), self.LookAngularSpeed, deltaTime)
 
-		local newOrientation = CFrame.fromOrientation(x, angle, z)
-		if humanoid:GetState() == Enum.HumanoidStateType.Running then
-			rootPart:PivotTo(CFrame.fromMatrix(cframe.Position, newOrientation.XVector, newOrientation.YVector, newOrientation.ZVector))
+			local newOrientation = CFrame.fromOrientation(x, angle, z)
+			if humanoid:GetState() == Enum.HumanoidStateType.Running then
+				rootPart:PivotTo(CFrame.fromMatrix(cframe.Position, newOrientation.XVector, newOrientation.YVector, newOrientation.ZVector))
+			end
 		end
 	end)
 
