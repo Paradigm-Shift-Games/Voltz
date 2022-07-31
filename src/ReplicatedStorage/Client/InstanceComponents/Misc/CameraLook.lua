@@ -65,8 +65,9 @@ function CameraLook.new(instance: Instance)
 
 	local player = Players:GetPlayerFromCharacter(instance)
 	local mouse = player:GetMouse()
-	self._trove:Add(RunService.Stepped:Connect(function(_, deltaTime)
-		local lookPosition = mouse.Hit.Position
+	self._trove:Connect(RunService.Stepped, function(_, deltaTime)
+		local lookCFrame = mouse.Hit
+		local lookPosition = lookCFrame.Position
 		local cframe = rootPart:GetPivot()
 
 		local upVector = cframe.UpVector
@@ -122,7 +123,7 @@ function CameraLook.new(instance: Instance)
 		if humanoid:GetState() == Enum.HumanoidStateType.Running then
 			rootPart:PivotTo(CFrame.fromMatrix(cframe.Position, newOrientation.XVector, newOrientation.YVector, newOrientation.ZVector))
 		end
-	end))
+	end)
 
 	return self
 end
