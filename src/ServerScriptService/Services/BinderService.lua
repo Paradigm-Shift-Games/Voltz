@@ -26,17 +26,17 @@ end
 
 function BinderService:KnitInit()
 	-- Load structure binders
-	for _, instanceComponentModule in ipairs(ServerScriptService.InstanceComponents.Structures) do
+	for _, instanceComponentModule in ipairs(ServerScriptService.InstanceComponents.Structures:GetChildren()) do
 		self._binderProvider:Add(instanceComponentModule.Name, require(instanceComponentModule))
 	end
 
 	-- Load tool binders
-	for _, instanceComponentModule in ipairs(ServerScriptService.InstanceComponents.Tools) do
+	for _, instanceComponentModule in ipairs(ServerScriptService.InstanceComponents.Tools:GetChildren()) do
 		self._binderProvider:Add(instanceComponentModule.Name, require(instanceComponentModule))
 	end
 
 	-- Load misc binders
-	for _, instanceComponentModule in ipairs(ServerScriptService.InstanceComponents.Misc) do
+	for _, instanceComponentModule in ipairs(ServerScriptService.InstanceComponents.Misc:GetChildren()) do
 		self._binderProvider:Add(instanceComponentModule.Name, require(instanceComponentModule))
 	end
 end
