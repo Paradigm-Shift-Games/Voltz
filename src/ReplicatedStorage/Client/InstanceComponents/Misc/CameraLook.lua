@@ -86,6 +86,18 @@ function CameraLook.new(instance: Instance)
 	local isLocalPlayer = player == Players.LocalPlayer
 	local mouse: Mouse? = if isLocalPlayer then player:GetMouse() else nil
 	self._trove:Connect(RunService.Stepped, function(_, deltaTime)
+		-- Determine if the humanoid is on the ground (running)
+		local isOnGround = humanoid:GetState() == Enum.HumanoidStateType.Running
+
+		-- Whether or not we want the character to look at their cursor
+		local shouldPerformLook = if isOnGround then instance:GetAttribute("LookOnGround") else instance:GetAttribute("LookInAir")
+
+		-- Whether or not we want the character to face the cursor
+		local shouldFaceCursor = if isOnGround then instance:GetAttribute("FaceCursorOnGround") else instance:GetAttribute("FaceCursorInAir")
+
+		-- Whether or not the character should auto rotate
+		local shouldAutoRotate = if isOnGround then instance:GetAttribute("AutoRotateOnGround") else instance:GetAttribute("AutoRotateInAir")
+
 		-- Get root CFrame & vectors
 		local cframe = rootPart:GetPivot()
 
@@ -119,9 +131,6 @@ function CameraLook.new(instance: Instance)
 
 		-- Determine the look position
 		local lookPosition = lookCFrame.Position
-
-		-- Keep track of whether or not we want to perform look so we can zero out angles (instead of setting them)
-		local shouldPerformLook = instance:GetAttribute("LookInAir") or humanoid:GetState() == Enum.HumanoidStateType.Running
 
 		-- Root joint angles
 		local lowerTorso: BasePart? = instance:FindFirstChild("LowerTorso")
@@ -186,13 +195,11 @@ function CameraLook.new(instance: Instance)
 		end
 
 		if isLocalPlayer then
-			local faceCursor = instance:GetAttribute("FaceCursorInAir") or humanoid:GetState() == Enum.HumanoidStateType.Running
-
 			-- Y rotation
 			local x, angle, z = cframe:ToOrientation()
 			angle = dampenAngle(
 				angle,
-				if faceCursor then
+				if shouldFaceCursor then
 					math.atan2(lookPosition.X - cframe.X, lookPosition.Z - cframe.Z) + math.rad(180)
 				else angle,
 				self.LookAngularSpeed,
@@ -200,7 +207,7 @@ function CameraLook.new(instance: Instance)
 			)
 
 			local newOrientation = CFrame.fromOrientation(x, angle, z)
-			humanoid.AutoRotate = instance:GetAttribute("AutoRotate") and (instance:GetAttribute("AutoRotateInAir") or humanoid:GetState() == Enum.HumanoidStateType.Running)
+			humanoid.AutoRotate = shouldAutoRotate
 			rootPart:PivotTo(CFrame.fromMatrix(cframe.Position, newOrientation.XVector, newOrientation.YVector, newOrientation.ZVector))
 		end
 	end)

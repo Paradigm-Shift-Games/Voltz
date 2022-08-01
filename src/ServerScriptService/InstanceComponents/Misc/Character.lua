@@ -11,10 +11,13 @@ function Character.new(instance: Instance)
 	self.Instance = instance
 	self._trove = Trove.new()
 
-	-- Apply defaults
-	instance:SetAttribute("AutoRotate", false)
+	-- Apply defaults when on the ground
+	instance:SetAttribute("AutoRotateOnGround", false)
+	instance:SetAttribute("FaceCursorOnGround", true)
+	instance:SetAttribute("LookOnGround", true)
+
+	-- Apply defaults when in the air
 	instance:SetAttribute("AutoRotateInAir", true)
-	instance:SetAttribute("FaceCursor", true)
 	instance:SetAttribute("FaceCursorInAir", false)
 	instance:SetAttribute("LookInAir", false)
 
