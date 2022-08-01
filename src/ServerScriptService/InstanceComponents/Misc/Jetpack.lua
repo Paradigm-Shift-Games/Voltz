@@ -74,7 +74,7 @@ function Jetpack.new(instance)
 	self._trove:Connect(self.Boosting, function(boosting)
 		print("Boosting", boosting, self._state:GetState(), self._state:GetState().Fuel)
 
-		vectorForce.Force = if not boosting then Vector3.new() else instance.AssemblyMass * workspace.Gravity * Vector3.yAxis + instance:GetAttribute("ThrustForce") * Vector3.yAxis
+		vectorForce.Force = if not boosting then Vector3.zero else instance.AssemblyMass * (workspace.Gravity * Vector3.yAxis + instance:GetAttribute("ThrustAcceleration") * Vector3.yAxis)
 	end)
 
 	return self
