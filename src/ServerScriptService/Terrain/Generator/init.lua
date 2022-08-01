@@ -23,7 +23,7 @@ function Generator.Generate(terrainConfig)
 	local islandGrid = IslandGenerator.Generate(islandConfig)
 	local starterIslandGrid = IslandGenerator.Generate(islandConfig)
 	local supportGrid = SupportGenerator.Generate(supportConfig, islandGrid, starterIslandGrid)
-	local beaconGrid = BeaconGenerator.Generate(islandConfig, beaconConfig)
+	local beaconGrid = BeaconGenerator.Generate(beaconConfig)
 	local spireGrid = SpireGenerator.Generate(spireConfig, islandGrid)
 	local crystalGrid = CrystalGenerator.Generate(crystalConfig, islandGrid)
 

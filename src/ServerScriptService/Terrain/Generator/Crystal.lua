@@ -15,9 +15,9 @@ function Crystal.Generate(crystalConfig, islandGrid)
 	return crystalGrid
 end
 
-function Crystal.Build(terrtainGrid, crystalGrid)
+function Crystal.Build(terrainGrid, crystalGrid)
 	crystalGrid:IterateCells(function(position)
-		terrtainGrid:Set(position.X, 1, position.Y, "Resource Crystal")
+		terrainGrid:Set(position.X, 1, position.Y, "Resource Crystal")
 	end)
 end
 
