@@ -101,7 +101,12 @@ function CameraLook.new(instance: Instance)
 
 			-- Set target part CFrame
 			if lookPart then
-				lookPart.CFrame = lookCFrame
+				lookPart.CFrame = CFrame.fromMatrix(
+					Vector3.new(lookCFrame.X, math.max(lookCFrame.Y, workspace.FallenPartsDestroyHeight + lookPart.Size.Y / 2 + 2), lookCFrame.Z),
+					lookCFrame.XVector,
+					lookCFrame.YVector,
+					lookCFrame.ZVector
+				)
 			end
 		else
 			-- Use the look part's CFrame, and fall back to root's CFrame
