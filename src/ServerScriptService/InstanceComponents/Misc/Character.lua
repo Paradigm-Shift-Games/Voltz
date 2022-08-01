@@ -24,6 +24,24 @@ function Character.new(instance: Instance)
 	-- Add CameraLook tag to the character
 	CollectionService:AddTag(instance, "CameraLook")
 
+	-- TODO: Use actual jetpack model
+	-- Add Jetpack tag to the character's root part
+	local rootPart = instance.PrimaryPart
+	while not rootPart do
+		rootPart = instance.PrimaryPart
+		instance.ChildAdded:Wait() -- NOTE: A property signal is not used to support streaming enabled
+	end
+
+	-- Apply defaults for jetpack
+	rootPart:SetAttribute("Fuel", 1)
+	rootPart:SetAttribute("Capacity", 100)
+	rootPart:SetAttribute("ThrustAcceleration", 16)
+	rootPart:SetAttribute("FillRate", 25)
+	rootPart:SetAttribute("BurnRate", 15)
+
+	-- Add Jetpack tag to the character root (TODO: Use jetpack model)
+	CollectionService:AddTag(rootPart, "Jetpack")
+
 	return self
 end
 
