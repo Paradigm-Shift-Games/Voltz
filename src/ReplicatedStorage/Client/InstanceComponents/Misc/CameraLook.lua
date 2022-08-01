@@ -120,17 +120,22 @@ function CameraLook.new(instance: Instance)
 		-- Determine the look position
 		local lookPosition = lookCFrame.Position
 
+		-- Keep track of whether or not we want to perform look so we can zero out angles (instead of setting them)
+		local shouldPerformLook = instance:GetAttribute("LookInAir") or humanoid:GetState() == Enum.HumanoidStateType.Running
+
 		-- Root joint angles
 		local lowerTorso: BasePart? = instance:FindFirstChild("LowerTorso")
 		local root: Motor6D? = lowerTorso and lowerTorso:FindFirstChild("Root")
 		if root then
 			self._rootAngles = dampenAngles(
 				self._rootAngles,
-				Vector3.new(
-					calculateJointAngle(-upVector, lowerTorso.Position, lookPosition),
-					calculateJointAngle(rightVector, lowerTorso.Position, lookPosition),
-					0
-				),
+				if shouldPerformLook then
+					Vector3.new(
+						calculateJointAngle(-upVector, lowerTorso.Position, lookPosition),
+						calculateJointAngle(rightVector, lowerTorso.Position, lookPosition),
+						0
+					)
+				else Vector3.zero,
 				self.RootAngularSpeed,
 				deltaTime
 			)
@@ -146,11 +151,13 @@ function CameraLook.new(instance: Instance)
 		if waist then
 			self._waistAngles = dampenAngles(
 				self._waistAngles,
-				Vector3.new(
-					calculateJointAngle(-upVector, upperTorso.Position, lookPosition),
-					calculateJointAngle(rightVector, upperTorso.Position, lookPosition),
-					0
-				),
+				if shouldPerformLook then
+					Vector3.new(
+						calculateJointAngle(-upVector, upperTorso.Position, lookPosition),
+						calculateJointAngle(rightVector, upperTorso.Position, lookPosition),
+						0
+					)
+				else Vector3.zero,
 				self.WaistAngularSpeed,
 				deltaTime
 			)
@@ -164,11 +171,13 @@ function CameraLook.new(instance: Instance)
 		if neck then
 			self._neckAngles = dampenAngles(
 				self._neckAngles,
-				Vector3.new(
-					calculateJointAngle(-upVector, head.Position, lookPosition),
-					calculateJointAngle(rightVector, head.Position, lookPosition),
-					0
-				),
+				if shouldPerformLook then
+					Vector3.new(
+						calculateJointAngle(-upVector, head.Position, lookPosition),
+						calculateJointAngle(rightVector, head.Position, lookPosition),
+						0
+					)
+				else Vector3.zero,
 				self.NeckAngularSpeed,
 				deltaTime
 			)
