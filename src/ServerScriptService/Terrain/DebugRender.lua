@@ -20,12 +20,12 @@ local debugColors = {
 }
 
 local function getColor(cellType)
-    if debugColors[cellType] then
-        return debugColors[cellType]
-    else
-        warn("Invalid Cell Type: " .. tostring(cellType))
-        return Color3.new(1, 0, 1)
-    end
+	if debugColors[cellType] then
+		return debugColors[cellType]
+	else
+		warn("Invalid Cell Type: " .. tostring(cellType))
+		return Color3.new(1, 0, 1)
+	end
 end
 
 function DebugRender.DrawGrid(terrainGrid, scale)
