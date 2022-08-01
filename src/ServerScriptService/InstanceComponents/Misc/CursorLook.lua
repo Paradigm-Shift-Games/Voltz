@@ -4,11 +4,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Trove = require(ReplicatedStorage.Packages.Trove)
 
-local CameraLook = {}
-CameraLook.__index = CameraLook
+local CursorLook = {}
+CursorLook.__index = CursorLook
 
-function CameraLook.new(instance: Instance)
-	local self = setmetatable({}, CameraLook)
+function CursorLook.new(instance: Instance)
+	local self = setmetatable({}, CursorLook)
 
 	self.Instance = instance
 	self._trove = Trove.new()
@@ -50,8 +50,8 @@ function CameraLook.new(instance: Instance)
 	return self
 end
 
-function CameraLook:Destroy()
+function CursorLook:Destroy()
 	self._trove:Clean()
 end
 
-return CameraLook
+return CursorLook

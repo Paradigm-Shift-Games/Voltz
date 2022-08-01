@@ -4,8 +4,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Trove = require(ReplicatedStorage.Packages.Trove)
 
-local CameraLook = {}
-CameraLook.__index = CameraLook
+local CursorLook = {}
+CursorLook.__index = CursorLook
 
 local function calculateJointAngle(lookVector, sourcePosition, targetPosition)
 	return math.asin((sourcePosition - targetPosition):Dot(lookVector)/(sourcePosition - targetPosition).Magnitude)
@@ -38,8 +38,8 @@ local function clampedAngles(angles: Vector3, lowerBounds: Vector3, upperBounds:
 	)
 end
 
-function CameraLook.new(instance: Instance)
-	local self = setmetatable({}, CameraLook)
+function CursorLook.new(instance: Instance)
+	local self = setmetatable({}, CursorLook)
 
 	self.Instance = instance
 	self._trove = Trove.new()
@@ -208,8 +208,8 @@ function CameraLook.new(instance: Instance)
 	return self
 end
 
-function CameraLook:Destroy()
+function CursorLook:Destroy()
 	self._trove:Clean()
 end
 
-return CameraLook
+return CursorLook
