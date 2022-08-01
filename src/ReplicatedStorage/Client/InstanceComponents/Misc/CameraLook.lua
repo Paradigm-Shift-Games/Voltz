@@ -186,14 +186,22 @@ function CameraLook.new(instance: Instance)
 		end
 
 		if isLocalPlayer then
+			local faceCursor = instance:GetAttribute("AutoRotate") and (instance:GetAttribute("FaceCursorInAir") or humanoid:GetState() == Enum.HumanoidStateType.Running)
+
 			-- Y rotation
 			local x, angle, z = cframe:ToOrientation()
-			angle = dampenAngle(angle, math.atan2(lookPosition.X - cframe.X, lookPosition.Z - cframe.Z) + math.rad(180), self.LookAngularSpeed, deltaTime)
+			angle = dampenAngle(
+				angle,
+				if faceCursor then
+					math.atan2(lookPosition.X - cframe.X, lookPosition.Z - cframe.Z) + math.rad(180)
+				else angle,
+				self.LookAngularSpeed,
+				deltaTime
+			)
 
 			local newOrientation = CFrame.fromOrientation(x, angle, z)
-			if humanoid:GetState() == Enum.HumanoidStateType.Running then
-				rootPart:PivotTo(CFrame.fromMatrix(cframe.Position, newOrientation.XVector, newOrientation.YVector, newOrientation.ZVector))
-			end
+			humanoid.AutoRotate = faceCursor
+			rootPart:PivotTo(CFrame.fromMatrix(cframe.Position, newOrientation.XVector, newOrientation.YVector, newOrientation.ZVector))
 		end
 	end)
 
