@@ -30,11 +30,11 @@ local function dampenAngles(sourceAngles: Vector3, goalAngles: Vector3, angularS
 	)
 end
 
-local function clampedAngles(angles: Vector3, pitchClamp: Vector3, yawClamp: Vector3, rollClamp: Vector3)
+local function clampedAngles(angles: Vector3, lowerBounds: Vector3, upperBounds: Vector3)
 	return CFrame.Angles(
-		math.clamp(angles.X, pitchClamp.X, pitchClamp.Y),
-		math.clamp(angles.Y, yawClamp.X, yawClamp.Y),
-		math.clamp(angles.Z, rollClamp.X, rollClamp.Y)
+		math.clamp(angles.X, lowerBounds.X, upperBounds.X),
+		math.clamp(angles.Y, lowerBounds.Y, upperBounds.Y),
+		math.clamp(angles.Z, lowerBounds.Z, upperBounds.Z)
 	)
 end
 
@@ -62,21 +62,18 @@ function CameraLook.new(instance: Instance)
 
 	-- Speed & bounds for rotating the root
 	self.RootAngularSpeed = Vector3.new(80, 0) * math.rad(1)
-	self.RootPitchBounds = Vector3.new(-55, 20) * math.rad(1)
-	self.RootYawBounds = Vector3.new(-30, 30) * math.rad(1)
-	self.RootRollBounds = Vector3.new()
+	self.RootUpperBounds = Vector3.new(20, 30, 0) * math.rad(1)
+	self.RootLowerBounds = Vector3.new(-55, -30, 0) * math.rad(1)
 
 	-- Speed & bounds for rotating the waist
 	self.WaistAngularSpeed = Vector3.new(100, 360) * math.rad(1)
-	self.WaistPitchBounds = Vector3.new(-55, 30) * math.rad(1)
-	self.WaistYawBounds = Vector3.new(-35, 35) * math.rad(1)
-	self.WaistRollBounds = Vector3.new()
+	self.WaistUpperBounds = Vector3.new(30, 35, 0) * math.rad(1)
+	self.WaistLowerBounds = Vector3.new(-55, -35, 0) * math.rad(1)
 
 	-- Speed & bounds for rotating the neck
 	self.NeckAngularSpeed = Vector3.new(200, 560) * math.rad(1)
-	self.NeckPitchBounds = Vector3.new(-35, 25) * math.rad(1)
-	self.NeckYawBounds = Vector3.new(-45, 45) * math.rad(1)
-	self.NeckRollBounds = Vector3.new()
+	self.NeckUpperBounds = Vector3.new(25, 45, 0) * math.rad(1)
+	self.NeckLowerBounds = Vector3.new(-35, -45, 0) * math.rad(1)
 
 	-- Grab base C0 for root part (TODO: Clean this up)
 	local lowerTorso: BasePart = instance:WaitForChild("LowerTorso")
@@ -136,7 +133,7 @@ function CameraLook.new(instance: Instance)
 				deltaTime
 			)
 
-			local rootTransform = clampedAngles(self._rootAngles, self.RootPitchBounds, self.RootYawBounds, self.RootRollBounds)
+			local rootTransform = clampedAngles(self._rootAngles, self.RootLowerBounds, self.RootUpperBounds)
 			root.Transform *= rootTransform
 			root.C0 = rootC0 * rootTransform:Inverse()
 		end
@@ -156,7 +153,7 @@ function CameraLook.new(instance: Instance)
 				deltaTime
 			)
 
-			waist.Transform *= clampedAngles(self._waistAngles, self.WaistPitchBounds, self.WaistYawBounds, self.WaistRollBounds)
+			waist.Transform *= clampedAngles(self._waistAngles, self.WaistLowerBounds, self.WaistUpperBounds)
 		end
 
 		-- Neck joint angles
@@ -174,7 +171,7 @@ function CameraLook.new(instance: Instance)
 				deltaTime
 			)
 
-			neck.Transform *= clampedAngles(self._neckAngles, self.NeckPitchBounds, self.NeckYawBounds, self.NeckRollBounds)
+			neck.Transform *= clampedAngles(self._neckAngles, self.NeckLowerBounds, self.NeckUpperBounds)
 		end
 
 		if isLocalPlayer then
