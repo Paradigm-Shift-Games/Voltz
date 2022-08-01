@@ -5,7 +5,7 @@ local random = Random.new()
 
 function Noise2D.new(seed)
 	local self = setmetatable({}, Noise2D)
-	self._seed = seed or random:NextInteger(-10000, 10000)
+	self._seed = seed or random:NextInteger(-2^53, 2^53)
 	return self
 end
 

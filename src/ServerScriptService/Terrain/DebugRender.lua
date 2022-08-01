@@ -20,12 +20,12 @@ local debugColors = {
 }
 
 local function getColor(cellType)
-    if debugColors[cellType] then
-        return debugColors[cellType]
-    else
-        warn("Invalid Cell Type: " .. tostring(cellType))
-        return Color3.new(1, 0, 1)
-    end
+	if debugColors[cellType] then
+		return debugColors[cellType]
+	else
+		warn("Invalid Cell Type:", cellType)
+		return Color3.new(1, 0, 1)
+	end
 end
 
 function DebugRender.DrawGrid(terrainGrid, scale)
@@ -36,11 +36,15 @@ function DebugRender.DrawGrid(terrainGrid, scale)
 
 	terrainGrid:IterateCells(function(position, data)
 		local part = Instance.new("Part")
+
+		-- Base properties
 		part.Name = data
-		part.Position = position * scale
 		part.Anchored = true
-		part.Size = Vector3.new(1, 1, 1) * scale
 		part.Material = Enum.Material.SmoothPlastic
+
+		-- Physical properties
+		part.Position = position * scale
+		part.Size = Vector3.new(1, 1, 1) * scale
 		part.Color = getColor(data)
 
 		part.Parent = folder
