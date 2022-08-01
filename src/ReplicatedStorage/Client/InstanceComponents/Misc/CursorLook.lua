@@ -3,6 +3,7 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Trove = require(ReplicatedStorage.Packages.Trove)
+local CursorLookConfig = require(ReplicatedStorage.Common.Config.CursorLook)
 
 local CursorLook = {}
 CursorLook.__index = CursorLook
@@ -53,24 +54,6 @@ function CursorLook.new(instance: Instance)
 
 	-- Retrieve player root part
 	local rootPart = humanoid.RootPart
-
-	-- Speed for rotating the character itself
-	self.LookAngularSpeed = math.rad(600)
-
-	-- Speed & bounds for rotating the root
-	self.RootAngularSpeed = Vector3.new(80, 0) * math.rad(1)
-	self.RootUpperBounds = Vector3.new(20, 30, 0) * math.rad(1)
-	self.RootLowerBounds = Vector3.new(-55, -30, 0) * math.rad(1)
-
-	-- Speed & bounds for rotating the waist
-	self.WaistAngularSpeed = Vector3.new(100, 360) * math.rad(1)
-	self.WaistUpperBounds = Vector3.new(30, 35, 0) * math.rad(1)
-	self.WaistLowerBounds = Vector3.new(-55, -35, 0) * math.rad(1)
-
-	-- Speed & bounds for rotating the neck
-	self.NeckAngularSpeed = Vector3.new(200, 560) * math.rad(1)
-	self.NeckUpperBounds = Vector3.new(25, 45, 0) * math.rad(1)
-	self.NeckLowerBounds = Vector3.new(-35, -45, 0) * math.rad(1)
 
 	-- Grab base C0 for root part (TODO: Clean this up)
 	local lowerTorso: BasePart = instance:WaitForChild("LowerTorso")
@@ -136,11 +119,11 @@ function CursorLook.new(instance: Instance)
 						0
 					)
 				else Vector3.zero,
-				self.RootAngularSpeed,
+				CursorLookConfig.RootAngularSpeed,
 				deltaTime
 			)
 
-			local rootTransform = clampedAngles(self._rootAngles, self.RootLowerBounds, self.RootUpperBounds)
+			local rootTransform = clampedAngles(self._rootAngles, CursorLookConfig.RootLowerBounds, CursorLookConfig.RootUpperBounds)
 			root.Transform *= rootTransform
 			root.C0 = rootC0 * rootTransform:Inverse()
 		end
@@ -158,11 +141,11 @@ function CursorLook.new(instance: Instance)
 						0
 					)
 				else Vector3.zero,
-				self.WaistAngularSpeed,
+				CursorLookConfig.WaistAngularSpeed,
 				deltaTime
 			)
 
-			waist.Transform *= clampedAngles(self._waistAngles, self.WaistLowerBounds, self.WaistUpperBounds)
+			waist.Transform *= clampedAngles(self._waistAngles, CursorLookConfig.WaistLowerBounds, CursorLookConfig.WaistUpperBounds)
 		end
 
 		-- Neck joint angles
@@ -178,11 +161,11 @@ function CursorLook.new(instance: Instance)
 						0
 					)
 				else Vector3.zero,
-				self.NeckAngularSpeed,
+				CursorLookConfig.NeckAngularSpeed,
 				deltaTime
 			)
 
-			neck.Transform *= clampedAngles(self._neckAngles, self.NeckLowerBounds, self.NeckUpperBounds)
+			neck.Transform *= clampedAngles(self._neckAngles, CursorLookConfig.NeckLowerBounds, CursorLookConfig.NeckUpperBounds)
 		end
 
 		if isLocalPlayer then
@@ -195,7 +178,7 @@ function CursorLook.new(instance: Instance)
 				if faceCursor then
 					math.atan2(lookPosition.X - cframe.X, lookPosition.Z - cframe.Z) + math.rad(180)
 				else angle,
-				self.LookAngularSpeed,
+				CursorLookConfig.LookAngularSpeed,
 				deltaTime
 			)
 
