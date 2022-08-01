@@ -1,44 +1,39 @@
-local PlayerService = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Config = require(ReplicatedStorage.Common.Config.FallDamage)
+local FallDamageConfig = require(ReplicatedStorage.Common.Config.FallDamage)
 local Signal = require(ReplicatedStorage.Packages.Signal)
 local Trove = require(ReplicatedStorage.Packages.Trove)
 
 local FallDamage = {}
 FallDamage.__index = FallDamage
 
-function FallDamage:_detectFallHeight(character: Model, humanoid: Humanoid, signal: Signal)
     local initialHeight = nil
 
-    humanoid.FreeFalling:Connect(function(active)
+    self._trove:Connect(humanoid.FreeFalling:Connect(function(active)
         if active then
             initialHeight = character.HumanoidRootPart.Position.Y
         else
-			signal:Fire(initialHeight - character.HumanoidRootPart.Position.Y)
+			self._fallSignal:Fire(initialHeight - character.HumanoidRootPart.Position.Y)
         end
-    end)
+    end))
 end
 
 function FallDamage:_updateHealth(fallHeight, humanoid: Humanoid)
-    if fallHeight < Config.threshold then return else
-        local damage = (fallHeight - Config.threshold) * Config.scale
+    if fallHeight < FallDamageConfig.threshold then return else
+        local damage = (fallHeight - FallDamageConfig.threshold) * FallDamageConfig.scale
         humanoid.Health -= damage
         return damage
     end
 end
 
 function FallDamage.new(character: Model)
-	local self = setmetatable({}, FallDamage)
-	
-    self._character = character
-    self._humanoid = self._character:WaitForChild("Humanoid")
+    local humanoid = character:WaitForChild("Humanoid")
+
+    local self = setmetatable({}, FallDamage)
+
     self._trove = Trove.new()
     self._fallSignal = self._trove:Construct(Signal)
-    self.Health = self._humanoid.Health
-
-    self:_detectFallHeight(self._character, self._humanoid, self._fallSignal)
-
-    self._trove:Connect(self._fallSignal, function(fallHeight) self:_updateHealth(fallHeight, self._humanoid) end)
+    self:_detectFallHeight(character, humanoid)
+    self._trove:Connect(self._fallSignal, function(fallHeight) self:_updateHealth(fallHeight, humanoid) end)
 
     return self
 end
