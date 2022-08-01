@@ -11,6 +11,10 @@ function Character.new(instance: Instance)
 	self.Instance = instance
 	self._trove = Trove.new()
 
+	-- Apply defaults
+	instance:SetAttribute("AutoRotate", true)
+	instance:SetAttribute("FaceCursor", true)
+
 	-- Add CameraLook tag to the character
 	CollectionService:AddTag(instance, "CameraLook")
 

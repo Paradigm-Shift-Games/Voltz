@@ -11,7 +11,7 @@ local function calculateJointAngle(lookVector, sourcePosition, targetPosition)
 	return math.asin((sourcePosition - targetPosition):Dot(lookVector)/(sourcePosition - targetPosition).Magnitude)
 end
 
-local easingStyle = Enum.EasingStyle.Circular
+local easingStyle = Enum.EasingStyle.Quint
 local easingDirection = Enum.EasingDirection.In
 local function dampenAngle(sourceAngle: number, goalAngle: number, angularSpeed: number, deltaTime: number)
 	local angleDiff = goalAngle % math.rad(360) - sourceAngle % math.rad(360)
@@ -55,10 +55,7 @@ function CameraLook.new(instance: Instance)
 	local rootPart = humanoid.RootPart
 
 	-- Speed for rotating the character itself
-	self.LookAngularSpeed = math.rad(400)
-
-	-- Disable automatic rotation
-	humanoid.AutoRotate = false
+	self.LookAngularSpeed = math.rad(600)
 
 	-- Speed & bounds for rotating the root
 	self.RootAngularSpeed = Vector3.new(80, 0) * math.rad(1)
@@ -104,7 +101,12 @@ function CameraLook.new(instance: Instance)
 
 			-- Set target part CFrame
 			if lookPart then
-				lookPart.CFrame = lookCFrame
+				lookPart.CFrame = CFrame.fromMatrix(
+					Vector3.new(lookCFrame.X, math.max(lookCFrame.Y, workspace.FallenPartsDestroyHeight + lookPart.Size.Y / 2 + 2), lookCFrame.Z),
+					lookCFrame.XVector,
+					lookCFrame.YVector,
+					lookCFrame.ZVector
+				)
 			end
 		else
 			-- Use the look part's CFrame, and fall back to root's CFrame
@@ -118,17 +120,22 @@ function CameraLook.new(instance: Instance)
 		-- Determine the look position
 		local lookPosition = lookCFrame.Position
 
+		-- Keep track of whether or not we want to perform look so we can zero out angles (instead of setting them)
+		local shouldPerformLook = instance:GetAttribute("LookInAir") or humanoid:GetState() == Enum.HumanoidStateType.Running
+
 		-- Root joint angles
 		local lowerTorso: BasePart? = instance:FindFirstChild("LowerTorso")
 		local root: Motor6D? = lowerTorso and lowerTorso:FindFirstChild("Root")
 		if root then
 			self._rootAngles = dampenAngles(
 				self._rootAngles,
-				Vector3.new(
-					calculateJointAngle(-upVector, lowerTorso.Position, lookPosition),
-					calculateJointAngle(rightVector, lowerTorso.Position, lookPosition),
-					0
-				),
+				if shouldPerformLook then
+					Vector3.new(
+						calculateJointAngle(-upVector, lowerTorso.Position, lookPosition),
+						calculateJointAngle(rightVector, lowerTorso.Position, lookPosition),
+						0
+					)
+				else Vector3.zero,
 				self.RootAngularSpeed,
 				deltaTime
 			)
@@ -144,11 +151,13 @@ function CameraLook.new(instance: Instance)
 		if waist then
 			self._waistAngles = dampenAngles(
 				self._waistAngles,
-				Vector3.new(
-					calculateJointAngle(-upVector, upperTorso.Position, lookPosition),
-					calculateJointAngle(rightVector, upperTorso.Position, lookPosition),
-					0
-				),
+				if shouldPerformLook then
+					Vector3.new(
+						calculateJointAngle(-upVector, upperTorso.Position, lookPosition),
+						calculateJointAngle(rightVector, upperTorso.Position, lookPosition),
+						0
+					)
+				else Vector3.zero,
 				self.WaistAngularSpeed,
 				deltaTime
 			)
@@ -162,11 +171,13 @@ function CameraLook.new(instance: Instance)
 		if neck then
 			self._neckAngles = dampenAngles(
 				self._neckAngles,
-				Vector3.new(
-					calculateJointAngle(-upVector, head.Position, lookPosition),
-					calculateJointAngle(rightVector, head.Position, lookPosition),
-					0
-				),
+				if shouldPerformLook then
+					Vector3.new(
+						calculateJointAngle(-upVector, head.Position, lookPosition),
+						calculateJointAngle(rightVector, head.Position, lookPosition),
+						0
+					)
+				else Vector3.zero,
 				self.NeckAngularSpeed,
 				deltaTime
 			)
@@ -175,14 +186,22 @@ function CameraLook.new(instance: Instance)
 		end
 
 		if isLocalPlayer then
+			local faceCursor = instance:GetAttribute("FaceCursorInAir") or humanoid:GetState() == Enum.HumanoidStateType.Running
+
 			-- Y rotation
 			local x, angle, z = cframe:ToOrientation()
-			angle = dampenAngle(angle, math.atan2(lookPosition.X - cframe.X, lookPosition.Z - cframe.Z) + math.rad(180), self.LookAngularSpeed, deltaTime)
+			angle = dampenAngle(
+				angle,
+				if faceCursor then
+					math.atan2(lookPosition.X - cframe.X, lookPosition.Z - cframe.Z) + math.rad(180)
+				else angle,
+				self.LookAngularSpeed,
+				deltaTime
+			)
 
 			local newOrientation = CFrame.fromOrientation(x, angle, z)
-			if humanoid:GetState() == Enum.HumanoidStateType.Running then
-				rootPart:PivotTo(CFrame.fromMatrix(cframe.Position, newOrientation.XVector, newOrientation.YVector, newOrientation.ZVector))
-			end
+			humanoid.AutoRotate = instance:GetAttribute("AutoRotate")
+			rootPart:PivotTo(CFrame.fromMatrix(cframe.Position, newOrientation.XVector, newOrientation.YVector, newOrientation.ZVector))
 		end
 	end)
 
