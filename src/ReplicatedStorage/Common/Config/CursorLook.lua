@@ -1,4 +1,4 @@
-return {
+local CursorLookConfig = {
 	-- Speed for rotating the character itself
 	LookAngularSpeed = math.rad(600);
 
@@ -17,3 +17,5 @@ return {
 	NeckUpperBounds = Vector3.new(25, 45, 0) * math.rad(1);
 	NeckLowerBounds = Vector3.new(-35, -45, 0) * math.rad(1);
 }
+
+return CursorLookConfig
