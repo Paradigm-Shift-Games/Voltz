@@ -14,7 +14,7 @@ function Beacon.Generate(beaconConfig)
 	beaconGrid:Set(0, 0, true)
 	local beaconAngleDifference = 360 / beaconCount
 
-	for i = 0, beaconCount do
+	for i = 1, beaconCount do
 		local X = math.cos(math.rad(beaconAngleDifference * i))
 		local Y = math.sin(math.rad(beaconAngleDifference * i))
 		beaconGrid:Set(math.round(X * beaconConfig.Offset), math.round(Y * beaconConfig.Offset), true)
