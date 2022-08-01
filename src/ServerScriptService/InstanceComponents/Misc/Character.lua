@@ -23,6 +23,7 @@ function Character.new(instance: Instance)
 
 	-- Add CameraLook tag to the character
 	CollectionService:AddTag(instance, "CameraLook")
+	CollectionService:AddTag(instance, "FallDamage")
 
 	return self
 end
