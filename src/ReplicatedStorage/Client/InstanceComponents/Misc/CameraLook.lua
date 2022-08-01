@@ -11,7 +11,7 @@ local function calculateJointAngle(lookVector, sourcePosition, targetPosition)
 	return math.asin((sourcePosition - targetPosition):Dot(lookVector)/(sourcePosition - targetPosition).Magnitude)
 end
 
-local easingStyle = Enum.EasingStyle.Circular
+local easingStyle = Enum.EasingStyle.Quint
 local easingDirection = Enum.EasingDirection.In
 local function dampenAngle(sourceAngle: number, goalAngle: number, angularSpeed: number, deltaTime: number)
 	local angleDiff = goalAngle % math.rad(360) - sourceAngle % math.rad(360)
