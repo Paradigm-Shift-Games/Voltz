@@ -69,8 +69,25 @@ function Jetpack.new(instance)
 	-- Boost event
 	self.Boosting = self._state.Boosting
 
+	-- Create thrust force & attachment
+	local thrustAttachment = Instance.new("Attachment")
+	thrustAttachment.Name = "ThrustAttachment"
+
+	local vectorForce = Instance.new("VectorForce")
+	vectorForce.Name = "Thrust"
+	vectorForce.ApplyAtCenterOfMass = true
+	vectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
+	vectorForce.Attachment0 = thrustAttachment
+	vectorForce.Force = Vector3.zero
+
+	thrustAttachment.Parent = instance
+	vectorForce.Parent = instance
+
+	-- Add thrust force & attachment to Trove
+	self._trove:Add(thrustAttachment)
+	self._trove:Add(vectorForce)
+
 	-- Jetpack physics
-	local vectorForce = instance:FindFirstChild("Thrust")
 	self._trove:Connect(self.Boosting, function(boosting)
 		print("Boosting", boosting, self._state:GetState(), self._state:GetState().Fuel)
 
