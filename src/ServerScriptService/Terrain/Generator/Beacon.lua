@@ -5,22 +5,31 @@ local Beacon = {}
 function Beacon.Generate(beaconConfig)
 	local beaconGrid = Grid2D.new()
 
+	if beaconConfig.BeaconCount == 0 then
+		return beaconGrid
+	end
+
+	local beaconCount = beaconConfig.BeaconCount - 1
+
 	beaconGrid:Set(0, 0, true)
-	local beaconAngleDifference = 360 / beaconConfig.BeaconCount
+	local beaconAngleDifference = 360 / beaconCount
 	local beaconAngle = 0
 
-	for y = 0, beaconConfig.BeaconCount do
-		beaconGrid:Set(math.round(math.cos(math.rad(beaconAngle))* beaconConfig.Offset), math.round(math.sin(math.rad(beaconAngle))* beaconConfig.Offset), true)
+	for y = 0, beaconCount do
+		local angleCos = math.cos(math.rad(beaconAngle))
+		local angleSin = math.sin(math.rad(beaconAngle))
+		beaconGrid:Set(math.round(angleCos * beaconConfig.Offset), math.round(angleSin * beaconConfig.Offset), true)
 
-		beaconAngle += beaconAngleDifference
+		beaconAngle = beaconAngleDifference * y
 	end
 
 	return beaconGrid
 end
 
+
 function Beacon.Build(terrainGrid, supportConfig, beaconGrid)
 	beaconGrid:IterateCells(function(position)
-		for y = 0, -supportConfig.SupportHeight, -1 do
+		for y = -supportConfig.SupportHeight, 0 do
 			if y == 0 then
 				terrainGrid:Set(position.X, y, position.Y, "Support Beacon")
 			else

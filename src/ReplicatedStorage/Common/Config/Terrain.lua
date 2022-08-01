@@ -25,7 +25,7 @@ local TerrainConfig = {
 
     Beacon = {
         BeaconCount = 7,
-        Offset = 25;
+        Offset = (45 / 2);
     },
 
     Support = {
