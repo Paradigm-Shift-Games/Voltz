@@ -22,6 +22,14 @@ local function dampenAngle(sourceAngle: number, goalAngle: number, angularSpeed:
 	return sourceAngle + math.sign(angleDiff) * TweenService:GetValue(math.clamp(math.min(angularSpeed, math.abs(angleDiff/deltaTime) / angularSpeed), 0, 1), easingStyle, easingDirection) * angularSpeed * deltaTime
 end
 
+local function dampenAngles(sourceAngles: Vector3, goalAngles: Vector3, angularSpeed: Vector3, deltaTime: number)
+	return Vector3.new(
+		dampenAngle(sourceAngles.X, goalAngles.X, angularSpeed.X, deltaTime),
+		dampenAngle(sourceAngles.Y, goalAngles.Y, angularSpeed.Y, deltaTime),
+		dampenAngle(sourceAngles.Z, goalAngles.Z, angularSpeed.Z, deltaTime)
+	)
+end
+
 local function clampedAngles(angles: Vector3, pitchClamp: Vector3, yawClamp: Vector3, rollClamp: Vector3)
 	return CFrame.Angles(
 		math.clamp(angles.X, pitchClamp.X, pitchClamp.Y),
@@ -52,23 +60,20 @@ function CameraLook.new(instance: Instance)
 	-- Disable automatic rotation
 	humanoid.AutoRotate = false
 
-	-- Speed for rotating the root
-	self.RootPitchSpeed = math.rad(80)
-	self.RootYawSpeed = math.rad(0)
+	-- Speed & bounds for rotating the root
+	self.RootAngularSpeed = Vector3.new(80, 0) * math.rad(1)
 	self.RootPitchBounds = Vector3.new(-55, 20) * math.rad(1)
 	self.RootYawBounds = Vector3.new(-30, 30) * math.rad(1)
 	self.RootRollBounds = Vector3.new()
 
-	-- Speed for rotating the waist
-	self.WaistPitchSpeed = math.rad(100)
-	self.WaistYawSpeed = math.rad(360)
+	-- Speed & bounds for rotating the waist
+	self.WaistAngularSpeed = Vector3.new(100, 360) * math.rad(1)
 	self.WaistPitchBounds = Vector3.new(-55, 30) * math.rad(1)
 	self.WaistYawBounds = Vector3.new(-35, 35) * math.rad(1)
 	self.WaistRollBounds = Vector3.new()
 
-	-- Speed for rotating the neck
-	self.NeckPitchSpeed = math.rad(200)
-	self.NeckYawSpeed = math.rad(560)
+	-- Speed & bounds for rotating the neck
+	self.NeckAngularSpeed = Vector3.new(200, 560) * math.rad(1)
 	self.NeckPitchBounds = Vector3.new(-35, 25) * math.rad(1)
 	self.NeckYawBounds = Vector3.new(-45, 45) * math.rad(1)
 	self.NeckRollBounds = Vector3.new()
@@ -120,9 +125,15 @@ function CameraLook.new(instance: Instance)
 		local lowerTorso: BasePart? = instance:FindFirstChild("LowerTorso")
 		local root: Motor6D? = lowerTorso and lowerTorso:FindFirstChild("Root")
 		if root then
-			self._rootAngles = Vector3.new(
-				dampenAngle(self._rootAngles.X, calculateJointAngle(-upVector, lowerTorso.Position, lookPosition), self.RootPitchSpeed, deltaTime),
-				dampenAngle(self._rootAngles.Y, calculateJointAngle(rightVector, lowerTorso.Position, lookPosition), self.RootYawSpeed, deltaTime)
+			self._rootAngles = dampenAngles(
+				self._rootAngles,
+				Vector3.new(
+					calculateJointAngle(-upVector, lowerTorso.Position, lookPosition),
+					calculateJointAngle(rightVector, lowerTorso.Position, lookPosition),
+					0
+				),
+				self.RootAngularSpeed,
+				deltaTime
 			)
 
 			local rootTransform = clampedAngles(self._rootAngles, self.RootPitchBounds, self.RootYawBounds, self.RootRollBounds)
@@ -134,9 +145,15 @@ function CameraLook.new(instance: Instance)
 		local upperTorso: BasePart? = instance:FindFirstChild("UpperTorso")
 		local waist: Motor6D? = upperTorso and upperTorso:FindFirstChild("Waist")
 		if waist then
-			self._waistAngles = Vector3.new(
-				dampenAngle(self._waistAngles.X, calculateJointAngle(-upVector, upperTorso.Position, lookPosition), self.WaistPitchSpeed, deltaTime),
-				dampenAngle(self._waistAngles.Y, calculateJointAngle(rightVector, upperTorso.Position, lookPosition), self.WaistYawSpeed, deltaTime)
+			self._waistAngles = dampenAngles(
+				self._waistAngles,
+				Vector3.new(
+					calculateJointAngle(-upVector, upperTorso.Position, lookPosition),
+					calculateJointAngle(rightVector, upperTorso.Position, lookPosition),
+					0
+				),
+				self.WaistAngularSpeed,
+				deltaTime
 			)
 
 			waist.Transform *= clampedAngles(self._waistAngles, self.WaistPitchBounds, self.WaistYawBounds, self.WaistRollBounds)
@@ -146,9 +163,15 @@ function CameraLook.new(instance: Instance)
 		local head: BasePart? = instance:FindFirstChild("Head")
 		local neck: Motor6D? = head and head:FindFirstChild("Neck")
 		if neck then
-			self._neckAngles = Vector3.new(
-				dampenAngle(self._neckAngles.X, calculateJointAngle(-upVector, head.Position, lookPosition), self.NeckPitchSpeed, deltaTime),
-				dampenAngle(self._neckAngles.Y, calculateJointAngle(rightVector, head.Position, lookPosition), self.NeckYawSpeed, deltaTime)
+			self._neckAngles = dampenAngles(
+				self._neckAngles,
+				Vector3.new(
+					calculateJointAngle(-upVector, head.Position, lookPosition),
+					calculateJointAngle(rightVector, head.Position, lookPosition),
+					0
+				),
+				self.NeckAngularSpeed,
+				deltaTime
 			)
 
 			neck.Transform *= clampedAngles(self._neckAngles, self.NeckPitchBounds, self.NeckYawBounds, self.NeckRollBounds)
