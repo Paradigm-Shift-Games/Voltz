@@ -1,6 +1,6 @@
 local PlayerService = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Config = require(ReplicatedStorage.Common.Config.Fall)
+local Config = require(ReplicatedStorage.Common.Config.FallDamage)
 local Signal = require(ReplicatedStorage.Packages.Signal)
 local Trove = require(ReplicatedStorage.Packages.Trove)
 
