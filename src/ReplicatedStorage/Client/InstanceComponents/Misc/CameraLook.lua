@@ -55,10 +55,7 @@ function CameraLook.new(instance: Instance)
 	local rootPart = humanoid.RootPart
 
 	-- Speed for rotating the character itself
-	self.LookAngularSpeed = math.rad(400)
-
-	-- Disable automatic rotation
-	humanoid.AutoRotate = false
+	self.LookAngularSpeed = math.rad(600)
 
 	-- Speed & bounds for rotating the root
 	self.RootAngularSpeed = Vector3.new(80, 0) * math.rad(1)
