@@ -200,7 +200,7 @@ function CameraLook.new(instance: Instance)
 			)
 
 			local newOrientation = CFrame.fromOrientation(x, angle, z)
-			humanoid.AutoRotate = instance:GetAttribute("AutoRotate")
+			humanoid.AutoRotate = instance:GetAttribute("AutoRotate") and (instance:GetAttribute("AutoRotateInAir") or humanoid:GetState() == Enum.HumanoidStateType.Running)
 			rootPart:PivotTo(CFrame.fromMatrix(cframe.Position, newOrientation.XVector, newOrientation.YVector, newOrientation.ZVector))
 		end
 	end)
