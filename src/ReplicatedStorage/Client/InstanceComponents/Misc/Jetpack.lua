@@ -63,7 +63,7 @@ function Jetpack.new(instance)
 	self.Boosting = self._state.Boosting
 
 	-- Jetpack physics
-	local vectorForce = instance:FindFirstChild("Thrust")
+	local vectorForce = instance:WaitForChild("Thrust")
 	self._trove:Connect(self.Boosting, function(boosting)
 		print("Boosting", boosting, self._state:GetState(), self._state:GetState().Fuel)
 
