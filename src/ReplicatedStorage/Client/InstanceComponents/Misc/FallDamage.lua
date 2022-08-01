@@ -6,6 +6,7 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 local FallDamage = {}
 FallDamage.__index = FallDamage
 
+function FallDamage:_detectFallHeight(character: Model, humanoid: Humanoid)
     local initialHeight = nil
 
     self._trove:Connect(humanoid.FreeFalling:Connect(function(active)
@@ -18,11 +19,11 @@ FallDamage.__index = FallDamage
 end
 
 function FallDamage:_updateHealth(fallHeight, humanoid: Humanoid)
-    if fallHeight < FallDamageConfig.threshold then return else
-        local damage = (fallHeight - FallDamageConfig.threshold) * FallDamageConfig.scale
-        humanoid.Health -= damage
-        return damage
-    end
+    if fallHeight < FallDamageConfig.threshold then return end
+
+    local damage = (fallHeight - FallDamageConfig.threshold) * FallDamageConfig.scale
+    humanoid.Health -= damage
+    return damage
 end
 
 function FallDamage.new(character: Model)
