@@ -36,11 +36,15 @@ function DebugRender.DrawGrid(terrainGrid, scale)
 
 	terrainGrid:IterateCells(function(position, data)
 		local part = Instance.new("Part")
+
+		-- Base properties
 		part.Name = data
-		part.Position = position * scale
 		part.Anchored = true
-		part.Size = Vector3.new(1, 1, 1) * scale
 		part.Material = Enum.Material.SmoothPlastic
+
+		-- Physical properties
+		part.Position = position * scale
+		part.Size = Vector3.new(1, 1, 1) * scale
 		part.Color = getColor(data)
 
 		part.Parent = folder
