@@ -13,6 +13,8 @@ function Character.new(instance: Instance)
 
 	-- Add CameraLook tag to the character
 	CollectionService:AddTag(instance, "CameraLook")
+	instance:SetAttribute("AutoRotate", true)
+	instance:SetAttribute("FaceCursor", true)
 
 	return self
 end
