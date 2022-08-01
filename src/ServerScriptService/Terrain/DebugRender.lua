@@ -23,7 +23,7 @@ local function getColor(cellType)
 	if debugColors[cellType] then
 		return debugColors[cellType]
 	else
-		warn("Invalid Cell Type: " .. tostring(cellType))
+		warn("Invalid Cell Type:", cellType)
 		return Color3.new(1, 0, 1)
 	end
 end
