@@ -224,17 +224,6 @@ function Gun:OnActivated()
 				endPosition = raycastResultFromHead.Position
 			end
 
-			local bulletHole = Instance.new("Part")
-			bulletHole.Anchored = true
-			bulletHole.Color = Color3.new(1, 0, 0)
-			bulletHole.CanCollide = false
-			bulletHole.Size = Vector3.new(0.2, 0.2, 0.2)
-			bulletHole.CFrame = CFrame.new(endPosition)
-			bulletHole.Material = Enum.Material.Neon
-			bulletHole.Shape = Enum.PartType.Ball
-			bulletHole.Parent = bulletContainer
-			Debris:AddItem(bulletHole, 10)
-
 			if i == 1 or delayPerShot > 0 then
 				SpringHandler:Impulse(localPlayer.Character, decoration.ImpulseForce or 10)
 				Gun.PlaySound(self.Instance, self:GetConfig())
