@@ -14,10 +14,8 @@ local Statify = WrappedFusion.Statify
 local Value = Fusion.Value
 local Children = Fusion.Children
 local Computed = Fusion.Computed
-local Spring = Fusion.Spring
 local ForValues = Fusion.ForValues
 local Cleanup = Fusion.Cleanup
-local Observer = Fusion.Observer
 
 local KEY_CODES = {
 	Enum.KeyCode.One,
