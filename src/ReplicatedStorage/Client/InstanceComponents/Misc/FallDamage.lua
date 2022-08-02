@@ -12,7 +12,7 @@ function FallDamage:_trackCharacterFall(character: Model, humanoid: Humanoid)
 	self._trove:Connect(humanoid.FreeFalling, function(active)
 		if active then
 			initialHeight = character.HumanoidRootPart.Position.Y
-		else
+		elseif initialHeight then
 			fallHeight = initialHeight - character.HumanoidRootPart.Position.Y
 			if fallHeight < FallDamageConfig.Threshold then return end
 
