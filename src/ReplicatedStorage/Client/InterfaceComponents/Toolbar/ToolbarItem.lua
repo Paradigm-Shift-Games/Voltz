@@ -1,10 +1,8 @@
-local PolicyService = game:GetService("PolicyService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage:WaitForChild("Packages")
 
 local Fusion = require(Packages.Fusion)
 local WrappedFusion = require(Packages.FusionUtils).Wrapped
-local Trove = require(Packages.Trove)
 
 local UIComponents = script.Parent.Parent
 local ClientSrc = UIComponents.Parent
@@ -19,7 +17,6 @@ local Value = Fusion.Value
 local Computed = Fusion.Computed
 local Spring = Fusion.Spring
 local Out = Fusion.Out
-local OnEvent = Fusion.OnEvent
 
 local function ToolbarItem(props)
 	-- Basic states

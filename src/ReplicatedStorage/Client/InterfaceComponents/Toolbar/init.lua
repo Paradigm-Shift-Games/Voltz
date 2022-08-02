@@ -5,7 +5,6 @@ local Packages = ReplicatedStorage:WaitForChild("Packages")
 local Trove = require(Packages.Trove)
 local Fusion = require(Packages.Fusion)
 local WrappedFusion = require(Packages.FusionUtils).Wrapped
-local Oklab = require(Packages.Oklab)
 
 local UIComponents = script.Parent
 local ToolbarItem = require(UIComponents.Toolbar.ToolbarItem)

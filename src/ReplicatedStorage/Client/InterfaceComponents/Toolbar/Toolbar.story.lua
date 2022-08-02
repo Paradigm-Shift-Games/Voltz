@@ -10,7 +10,6 @@ local New = Fusion.New
 local Value = Fusion.Value
 local Spring = Fusion.Spring
 local Computed = Fusion.Computed
-local Observer = Fusion.Observer
 
 local story = StoryTaskBar()
 

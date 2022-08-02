@@ -7,8 +7,6 @@ local Fusion = require(Packages.Fusion)
 local ToolbarItem = require(script.Parent.ToolbarItem)
 
 local Value = Fusion.Value
-local Spring = Fusion.Spring
-local Computed = Fusion.Computed
 
 local story = StoryTaskBar()
 
