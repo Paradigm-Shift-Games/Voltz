@@ -47,19 +47,19 @@ function Jetpack.new(instance)
 
 	-- Subscribe to attribute changes
 	self._trove:Connect(instance:GetAttributeChangedSignal("Boosting"), function()
-		self._state._silo:Dispatch(self._state._silo.Actions.SetBoosting(instance:GetAttribute("Boosting")))
+		self._state:Dispatch("SetBoosting", instance:GetAttribute("Boosting"))
 	end)
 	self._trove:Connect(instance:GetAttributeChangedSignal("Fuel"), function()
-		self._state._silo:Dispatch(self._state._silo.Actions.SetFuel(instance:GetAttribute("Fuel")))
+		self._state:Dispatch("SetFuel", instance:GetAttribute("Fuel"))
 	end)
 	self._trove:Connect(instance:GetAttributeChangedSignal("Capacity"), function()
-		self._state._silo:Dispatch(self._state._silo.Actions.SetCapacity(instance:GetAttribute("Capacity")))
+		self._state:Dispatch("SetCapacity", instance:GetAttribute("Capacity"))
 	end)
 	self._trove:Connect(instance:GetAttributeChangedSignal("FillRate"), function()
-		self._state._silo:Dispatch(self._state._silo.Actions.SetFillRate(instance:GetAttribute("FillRate")))
+		self._state:Dispatch("SetFillRate", instance:GetAttribute("FillRate"))
 	end)
 	self._trove:Connect(instance:GetAttributeChangedSignal("BurnRate"), function()
-		self._state._silo:Dispatch(self._state._silo.Actions.SetBurnRate(instance:GetAttribute("BurnRate")))
+		self._state:Dispatch("SetBurnRate", instance:GetAttribute("BurnRate"))
 	end)
 
 	-- Boost event
@@ -117,7 +117,8 @@ function Jetpack:StartBoosting()
 	if self._state:GetState().Boosting then
 		return
 	end
-	self._state._silo:Dispatch(self._state._silo.Actions.SetBoosting(true))
+	
+	self._state:Dispatch("SetBoosting", true)
 	return self._serverObject:StartBoosting()
 end
 
@@ -133,7 +134,8 @@ function Jetpack:StopBoosting()
 	if not self._state:GetState().Boosting then
 		return
 	end
-	self._state._silo:Dispatch(self._state._silo.Actions.SetBoosting(false))
+
+	self._state:Dispatch("SetBoosting", false)
 	return self._serverObject:StopBoosting()
 end
 
