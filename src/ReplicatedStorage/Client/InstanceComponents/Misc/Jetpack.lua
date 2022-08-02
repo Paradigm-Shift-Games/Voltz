@@ -63,11 +63,11 @@ function Jetpack.new(instance)
 	self.Boosting = self._state.Boosting
 
 	-- Jetpack physics
-	local vectorForce = instance:WaitForChild("Thrust")
+	local thrust = instance:WaitForChild("Thrust")
 	self._trove:Connect(self.Boosting, function(boosting)
 		print("Boosting", boosting, self._state:GetState(), self._state:GetState().Fuel)
 
-		vectorForce.Force = if not boosting then Vector3.zero else instance.AssemblyMass * (workspace.Gravity * Vector3.yAxis + instance:GetAttribute("ThrustAcceleration") * Vector3.yAxis)
+		thrust.Force = if not boosting then Vector3.zero else instance.AssemblyMass * (workspace.Gravity * Vector3.yAxis + instance:GetAttribute("ThrustAcceleration") * Vector3.yAxis)
 	end)
 
 	-- User input
