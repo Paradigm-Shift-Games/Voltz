@@ -24,6 +24,7 @@ function Character.new(instance: Instance)
 	-- Add CameraLook tag to the character
 	CollectionService:AddTag(instance, "CursorLook")
 	CollectionService:AddTag(instance, "FallDamage")
+	CollectionService:AddTag(instance, "OceanDamage")
 
 	return self
 end
