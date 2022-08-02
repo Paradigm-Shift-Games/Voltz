@@ -1,4 +1,6 @@
-return {
-    height = -120;
-    damage = 4
+local OceanDamageConfig = {
+    Height = -120;
+    Damage = 4;
 }
+
+return OceanDamageConfig

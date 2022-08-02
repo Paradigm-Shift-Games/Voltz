@@ -8,14 +8,13 @@ OceanDamage.__index = OceanDamage
 
 function OceanDamage.new(character: Model)
 	local humanoid = character:WaitForChild("Humanoid")
-	print("Initializing OceanDamage!")
 
 	local self = setmetatable({}, OceanDamage)
 
 	self._trove = Trove.new()
 	self._trove:Connect(RunService.Heartbeat, function(delta)
-		if character.HumanoidRootPart.Position.Y > OceanDamageConfig.height then return end
-		humanoid:TakeDamage(delta * OceanDamageConfig.damage)
+		if character.HumanoidRootPart.Position.Y > OceanDamageConfig.Height then return end
+		humanoid:TakeDamage(delta * OceanDamageConfig.Damage)
 	end)
 
 	return self
