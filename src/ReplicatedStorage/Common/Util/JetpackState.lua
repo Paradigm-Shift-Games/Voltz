@@ -110,6 +110,9 @@ end
 function JetpackState:GetDuration()
 	return self._fuelIncrementor:GetDuration()
 end
+function JetpackState:CalculateFuelPercentage()
+	return self._silo:GetState().Fuel + self._fuelIncrementor:GetValue()
+end
 function JetpackState:GetState()
 	return self._silo:GetState()
 end

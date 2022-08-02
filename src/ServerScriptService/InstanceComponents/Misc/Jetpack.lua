@@ -137,6 +137,13 @@ function Jetpack:SetBurnRate(burnRate: number)
 	self._state._silo:Dispatch(self._state._silo.Actions.SetBurnRate(burnRate))
 end
 
+function Jetpack:GetFuelPercentage()
+	return self._state:CalculateFuelPercentage()
+end
+function Jetpack:GetFuel()
+	return self:GetFuelPercentage() * self._state:GetState().Capacity
+end
+
 function Jetpack:Destroy()
 	self._trove:Clean()
 end
