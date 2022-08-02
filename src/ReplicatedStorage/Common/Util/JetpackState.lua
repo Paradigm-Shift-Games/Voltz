@@ -90,7 +90,7 @@ function JetpackState.new<S>(state: S)
 		fuelIncrementor:SetDuration(duration)
 		fuelIncrementor:Increment(math.sign(targetFuel - newState.Fuel) * math.clamp(math.abs(targetFuel - newState.Fuel), 0, 1))
 
-		-- Collapse if expired
+		-- If the fuel incrementor has expired, collapse immediately
 		if fuelIncrementor:IsExpired() then
 			self:Dispatch("_collapseIncrementor", fuelIncrementor)
 			return
@@ -99,10 +99,13 @@ function JetpackState.new<S>(state: S)
 		-- Fire the Boosting event
 		self.Boosting:Fire(newState.Boosting)
 
+		-- If we already have a promise to stop the jetpack boost, cancel it
 		if boostPromise then
 			boostPromise:cancel()
 			boostPromise = nil
 		end
+
+		-- If we are boosting, delay until the fuel will be exhausted and then stop boosting
 		if newState.Boosting then
 			boostPromise = Promise.delay(duration)
 			boostPromise:andThenCall(function()
