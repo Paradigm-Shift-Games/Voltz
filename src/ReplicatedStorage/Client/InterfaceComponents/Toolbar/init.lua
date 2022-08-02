@@ -33,7 +33,7 @@ local KEY_CODES = {
 local function keyCodeToString(keyCode)
 	if keyCode == "" then
 		return ""
-	elseif keyCode.Value < 127 and keyCode.Value > 33 then
+	elseif keyCode.Value <= 126 and keyCode.Value >= 34 then
 		return string.char(keyCode.Value)
 	else
 		return keyCode.Name
