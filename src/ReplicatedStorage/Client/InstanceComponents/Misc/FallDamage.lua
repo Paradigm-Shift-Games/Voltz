@@ -9,7 +9,7 @@ function FallDamage:_trackCharacterFall(character: Model, humanoid: Humanoid)
     local initialHeight = nil
     local fallHeight = nil
 
-    self._trove:Connect(humanoid.FreeFalling:Connect(function(active)
+    self._trove:Connect(humanoid.FreeFalling, function(active)
         if active then
             initialHeight = character.HumanoidRootPart.Position.Y
         else
@@ -21,7 +21,7 @@ function FallDamage:_trackCharacterFall(character: Model, humanoid: Humanoid)
 
             return
         end
-    end))
+    end)
 end
 
 function FallDamage:_updateHealth(fallHeight, humanoid: Humanoid)
