@@ -81,7 +81,7 @@ function JetpackState.new<S>(state: S)
 		-- If the fuel incrementor is active, collapse it
 		local fuelIncrementor = self._fuelIncrementor
 		if fuelIncrementor:IsIncrementing() then
-			self._silo:Dispatch(self._silo.Actions.CollapseIncrementor(fuelIncrementor))
+			self:Dispatch("CollapseIncrementor", fuelIncrementor)
 			return
 		end
 
@@ -92,7 +92,7 @@ function JetpackState.new<S>(state: S)
 
 		-- Collapse if expired
 		if fuelIncrementor:IsExpired() then
-			self._silo:Dispatch(self._silo.Actions.CollapseIncrementor(fuelIncrementor))
+			self:Dispatch("CollapseIncrementor", fuelIncrementor)
 			return
 		end
 
@@ -106,7 +106,7 @@ function JetpackState.new<S>(state: S)
 		if newState.Boosting then
 			boostPromise = Promise.delay(duration)
 			boostPromise:andThenCall(function()
-				self._silo:Dispatch(self._silo.Actions.SetBoosting(false))
+				self:Dispatch("SetBoosting", false)
 				boostPromise = nil
 			end)
 		end
