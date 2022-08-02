@@ -54,9 +54,14 @@ function Jetpack.new(instance)
 
 	-- Notify client about state events
 	self._trove:Add(self._state._silo:Subscribe(function(newState, oldState)
+		local function isNan(value)
+			return value ~= value
+		end
+
 		-- Set attributes for any values which have changed
 		for index, value in pairs(newState) do
-			if value == value and value ~= oldState[index] then
+			local oldValue = oldState[index]
+			if value ~= oldValue or isNan(value) ~= isNan(oldValue) then
 				instance:SetAttribute(index, value)
 			end
 		end
