@@ -127,6 +127,9 @@ function Jetpack:StopBoosting(player: Player?)
 	self._state:Dispatch("SetBoosting", false)
 end
 
+function Jetpack:SetFuel(fuel: number)
+	self._state:Dispatch("Fuel", fuel)
+end
 function Jetpack:SetCapacity(capacity: number)
 	self._state:Dispatch("SetCapacity", capacity)
 end
