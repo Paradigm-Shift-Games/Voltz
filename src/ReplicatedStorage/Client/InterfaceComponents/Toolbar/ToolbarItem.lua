@@ -40,12 +40,7 @@ local function ToolbarItem(props)
 	-- Size States
 	local paddingSize = Computed(function()
 		local currentAbsoluteButtonSize = absoluteButtonSize:get()
-
-		if currentAbsoluteButtonSize == nil then
-			return 0
-		else
-			return currentAbsoluteButtonSize.Y / 10
-		end
+		return if currentAbsoluteButtonSize == nil then 0 else currentAbsoluteButtonSize.Y / 10
 	end)
 
 	local buttonSize = Spring(Computed(function()
