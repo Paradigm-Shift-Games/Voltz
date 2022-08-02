@@ -1,8 +1,10 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage:WaitForChild("Packages")
+local Common = ReplicatedStorage:WaitForChild("Common")
 
 local Fusion = require(Packages.Fusion)
 local WrappedFusion = require(Packages.FusionUtils).Wrapped
+local ToolbarConfig = require(Common.Config.Toolbar)
 
 local UIComponents = script.Parent.Parent
 local ClientSrc = UIComponents.Parent
@@ -58,7 +60,7 @@ local function ToolbarItem(props)
 			local width = paddingSize:get() * 4 + currentInputNameTextBounds.X + currentToolNameTextBounds.X
 			return UDim2.new(0, width, 1, 0)
 		end
-	end), 20, 0.9)
+	end), ToolbarConfig.SpringSpeed, ToolbarConfig.SpringDamper)
 
 	local buttonContainerSize = Spring(Computed(function()
 		local isVisible = visible:get()
@@ -69,7 +71,7 @@ local function ToolbarItem(props)
 		else
 			return UDim2.new(0, absoluteButtonSize:get().X, 1, 0) + UDim2.fromOffset(paddingSize:get() * 2, 0)
 		end
-	end), 20, 0.9)
+	end), ToolbarConfig.SpringSpeed, ToolbarConfig.SpringDamper)
 
 	local textContainerSize = Computed(function()
 		local currentInputNameTextBounds = inputNameTextBounds:get()
@@ -111,19 +113,19 @@ local function ToolbarItem(props)
 		else
 			return 0.525
 		end
-	end), 20, 0.9)
+	end), ToolbarConfig.SpringSpeed, ToolbarConfig.SpringDamper)
 
 	local strokeTransparency = Spring(Computed(function()
 		return if selected:get() then 0 else 1
-	end), 20, 0.9)
+	end), ToolbarConfig.SpringSpeed, ToolbarConfig.SpringDamper)
 
 	local strokeThickness = Spring(Computed(function()
 		return if selected:get() then SharedInterfaceState.StrokeSize:get() else 0
-	end), 20, 0.9)
+	end), ToolbarConfig.SpringSpeed, ToolbarConfig.SpringDamper)
 
 	local textTransparency = Spring(Computed(function()
 		return if visible:get() then 0 else 1
-	end), 20, 0.9)
+	end), ToolbarConfig.SpringSpeed, ToolbarConfig.SpringDamper)
 
 
 	-- Create Button
