@@ -73,6 +73,7 @@ function JetpackState.new<S>(state: S)
 				self.Fuel = newFuel
 			end
 		end);
+		_subscriptions = {};
 
 		Boosting = Signal.new();
 	}, JetpackState)
@@ -103,6 +104,11 @@ function JetpackState.new<S>(state: S)
 		if fuelIncrementor:IsExpired() then
 			self:Dispatch("_collapseIncrementor", fuelIncrementor)
 			return
+		end
+
+		-- Call silo subscriptions
+		for subscription, _ in pairs(self._subscriptions) do
+			subscription(newState, oldState)
 		end
 
 		-- Fire the Boosting event
@@ -142,6 +148,19 @@ end
 ]=]
 function JetpackState:Dispatch<S>(actionName: string, input: any)
 	self._silo:Dispatch(self._silo.Actions[actionName](input))
+end
+
+--[=[
+	Subscribes to changes on the internal silo, and returns a function used to disconnect the subscription.
+
+	@param callback (newState: State, oldState: State) -> ()
+	@return () -> () -- Cleanup function. Call this to remove the subscription.
+]=]
+function JetpackState:Subscribe<S>(callback: (newState: State, oldState: State) -> ()): () -> ()
+	self._subscriptions[callback] = true
+	return function()
+		self._subscriptions[callback] = nil
+	end
 end
 
 --[=[

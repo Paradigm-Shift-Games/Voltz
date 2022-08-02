@@ -60,7 +60,7 @@ function Jetpack.new(instance)
 	end)
 
 	-- Notify client about state events
-	self._trove:Add(self._state._silo:Subscribe(function(newState, oldState)
+	self._trove:Add(self._state:Subscribe(function(newState, oldState)
 		local function isNan(value)
 			return value ~= value
 		end
