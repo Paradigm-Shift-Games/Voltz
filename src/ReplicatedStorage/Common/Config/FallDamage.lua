@@ -1,4 +1,6 @@
-return {
-    threshold = 60;
-    scale = 1;
+local FallDamageConfig = {
+    Threshold = 60;
+    Scale = 1;
 }
+
+return FallDamageConfig

@@ -14,18 +14,14 @@ function FallDamage:_trackCharacterFall(character: Model, humanoid: Humanoid)
             initialHeight = character.HumanoidRootPart.Position.Y
         else
 			fallHeight = initialHeight - character.HumanoidRootPart.Position.Y
-            if fallHeight < FallDamageConfig.threshold then return end
+            if fallHeight < FallDamageConfig.Threshold then return end
 
-            local damage = (fallHeight - FallDamageConfig.threshold) * FallDamageConfig.scale
+            local damage = (fallHeight - FallDamageConfig.Threshold) * FallDamageConfig.Scale
             humanoid:TakeDamage(damage)
 
             return
         end
     end)
-end
-
-function FallDamage:_updateHealth(fallHeight, humanoid: Humanoid)
-
 end
 
 function FallDamage.new(character: Model)
