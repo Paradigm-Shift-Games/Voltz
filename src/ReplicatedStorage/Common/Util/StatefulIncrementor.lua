@@ -35,6 +35,7 @@ function StatefulIncrementor:IsExpired(): boolean
 	if not self:IsIncrementing() then
 		return false
 	end
+
 	return self:GetProgress() >= 1
 end
 
@@ -47,6 +48,7 @@ function StatefulIncrementor:GetRawProgress(duration: number?): number
 	if not self:IsIncrementing() then
 		return 0
 	end
+
 	local timeElapsed = self.getTime() - self.Time
 	return math.clamp(timeElapsed / assert(duration or self.Duration, "Cannot collapse. No duration is defined."), 0, 1)
 end
