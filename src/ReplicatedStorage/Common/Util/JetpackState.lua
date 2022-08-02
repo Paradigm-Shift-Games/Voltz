@@ -44,7 +44,7 @@ function JetpackState.new<S>(state: S)
 				incrementor:Collapse(self)
 			end;
 
-			SetFuel = function(self, fuel: amount)
+			SetFuel = function(self, fuel: number)
 				self.Fuel = fuel
 			end;
 			SetBoosting = function(self, boosting: boolean)
