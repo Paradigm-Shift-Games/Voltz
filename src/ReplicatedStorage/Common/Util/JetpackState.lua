@@ -14,6 +14,13 @@ local StatefulIncrementor = require(ReplicatedStorage.Common.Util.StatefulIncrem
 	.BurnRate number -- The rate at which fuel will be burned
 	.FillRate number  -- The rate at which fuel will be refilled
 ]=]
+export type State = {
+	Boosting: boolean;
+	Fuel: number;
+	Capacity: number;
+	BurnRate: number;
+	FillRate: number;
+}
 
 --[=[
 	@class JetpackState
@@ -26,7 +33,7 @@ local JetpackState = {
 		Capacity = 100;
 		BurnRate = 0.1;
 		FillRate = 1;
-	};
+	} :: State;
 }
 JetpackState.Default.__index = JetpackState.Default
 JetpackState.__index = JetpackState
