@@ -115,7 +115,7 @@ function Jetpack:StartBoosting(player: Player?)
 	if self._state:GetState().Boosting then
 		return
 	end
-	self._state._silo:Dispatch(self._state._silo.Actions.SetBoosting(true))
+	self._state:Dispatch("SetBoosting", true)
 end
 function Jetpack:StopBoosting(player: Player?)
 	if not self:IsOwner(player) then
@@ -124,17 +124,17 @@ function Jetpack:StopBoosting(player: Player?)
 	if not self._state:GetState().Boosting then
 		return
 	end
-	self._state._silo:Dispatch(self._state._silo.Actions.SetBoosting(false))
+	self._state:Dispatch("SetBoosting", false)
 end
 
 function Jetpack:SetCapacity(capacity: number)
-	self._state._silo:Dispatch(self._state._silo.Actions.SetCapacity(capacity))
+	self._state:Dispatch("SetCapacity", capacity)
 end
 function Jetpack:SetFillRate(fillRate: number)
-	self._state._silo:Dispatch(self._state._silo.Actions.SetFillRate(fillRate))
+	self._state:Dispatch("SetFillRate", fillRate)
 end
 function Jetpack:SetBurnRate(burnRate: number)
-	self._state._silo:Dispatch(self._state._silo.Actions.SetBurnRate(burnRate))
+	self._state:Dispatch("SetBurnRate", burnRate)
 end
 
 function Jetpack:GetFuelPercentage()
