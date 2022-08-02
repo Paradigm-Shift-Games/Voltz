@@ -164,7 +164,7 @@ end
 	@server
 ]=]
 function Jetpack:SetFuel(fuel: number)
-	self._state:Dispatch("Fuel", fuel)
+	self._state:Dispatch("SetFuel", fuel)
 end
 
 --[=[
