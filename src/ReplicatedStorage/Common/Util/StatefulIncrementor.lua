@@ -25,7 +25,7 @@ end
 	@return boolean -- Whether or not incrementation is in progress.
 ]=]
 function StatefulIncrementor:IsIncrementing(): boolean
-	return not not self.Time
+	return not not self.StartTime
 end
 
 --[=[
@@ -49,7 +49,7 @@ function StatefulIncrementor:GetRawProgress(duration: number?): number
 		return 0
 	end
 
-	local timeElapsed = self.getTime() - self.Time
+	local timeElapsed = self.getTime() - self.StartTime
 	return math.clamp(timeElapsed / assert(duration or self.Duration, "Cannot collapse. No duration is defined."), 0, 1)
 end
 
@@ -104,7 +104,7 @@ end
 	@return number -- The remaining duration.
 ]=]
 function StatefulIncrementor:GetDuration()
-	local timeElapsed = self.getTime() - self.Time
+	local timeElapsed = self.getTime() - self.StartTime
 	return math.max(0, timeElapsed - self.Duration)
 end
 
@@ -117,7 +117,7 @@ end
 function StatefulIncrementor:Increment(amount: number)
 	-- Update the amount and time of incrementation
 	self.Amount += amount
-	self.Time = self.getTime()
+	self.StartTime = self.getTime()
 end
 
 --[=[
@@ -141,7 +141,7 @@ function StatefulIncrementor:Collapse<S>(state: Silo.State<S>, duration: number?
 
 	-- Un-set incrementor amount/time
 	self.Amount = 0
-	self.Time = nil
+	self.StartTime = nil
 
 	-- Return the remainder
 	return remainder
