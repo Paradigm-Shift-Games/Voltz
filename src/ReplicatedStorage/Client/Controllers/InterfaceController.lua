@@ -131,7 +131,8 @@ end
 	to `Mount()`, the `parent` object will not be destroyed.
 
 	Returns a boolean indicating whether or not the interface was successfully
-	unmounted.
+	unmounted. If an error occurs, then the error message will be returned after
+	the boolean.
 ]=]
 function InterfaceController:Unmount(unmountKey: UnmountKey): (boolean, ...any)
 	-- Get the interface to unmount
