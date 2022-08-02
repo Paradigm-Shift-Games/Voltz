@@ -1,17 +1,18 @@
 return {
 	AutoFire = true,
-	FireRate = 10,
-	Bloom = 1.3,
-	Range = 192,
+	FireRate = 25,
+	Bloom = 3.5,
+	Range = 96,
 	BulletsPerShot = 1,
-	Damage = 15,
+	Damage = 9,
 	ScopeFOV = 60,
 	BulletDecoration = {
 		Color = Color3.fromRGB(245, 205, 48),
-		Thickness = 0.15
+		Thickness = 0.15,
+		ImpulseForce = 5
 	},
 	FireSound = {
-		SoundId = "rbxassetid://131070686",
-		Volume = 0.5
+		SoundId = "rbxassetid://168143115",
+		Volume = 0.3
 	}
 }

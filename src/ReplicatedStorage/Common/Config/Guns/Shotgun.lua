@@ -8,7 +8,7 @@ return {
 	ScopeFOV = 60,
 	BulletDecoration = {
 		Color = Color3.fromRGB(245, 205, 48),
-		Thickness = 0.25,
+		Thickness = 0.15,
 		ImpulseForce = 30
 	},
 	FireSound = {

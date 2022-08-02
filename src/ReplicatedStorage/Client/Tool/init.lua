@@ -12,7 +12,7 @@ Tool.EquipIcon = "rbxassetid://6104405324"
 local localPlayer = Players.LocalPlayer
 local mouse = localPlayer:GetMouse()
 
-local function BindToolEvents(self)
+function Tool:_bindToolEvents()
 	self.Instance.Activated:Connect(function(...)
 		self:OnActivated(...)
 	end)
@@ -53,12 +53,12 @@ end
 function Tool.new(instance: Tool)
 	local self = setmetatable({}, Tool)
 	self.Instance = instance
-	BindToolEvents(self)
+	self:_bindToolEvents()
 	return self
 end
 
 function Tool:Destroy()
-
+	self.Instance:Destroy()
 end
 
 return Tool

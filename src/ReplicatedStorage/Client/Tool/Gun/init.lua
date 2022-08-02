@@ -1,7 +1,5 @@
 -- Abstract gun class
--- Virtual methods must be implemented via sub-classes
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -14,6 +12,26 @@ local Gun = {}
 Gun.__index = Gun
 setmetatable(Gun, Tool)
 
+type gunConfig = {
+    AutoFire: boolean,
+	FireRate: number,
+	Bloom: number,
+	Range: number,
+	BulletsPerShot: number,
+	DelayPerShot: number,
+	Damage: number,
+	ScopeFOV: number,
+	BulletDecoration: {
+		Color: Color3,
+		Thickness: number,
+		BulletSpeed: number
+	},
+	FireSound: {
+		SoundId: string,
+		Volume: number
+	}?
+}
+
 -- private:
 
 local localPlayer = Players.LocalPlayer
@@ -23,7 +41,7 @@ local bulletContainer = Instance.new("Folder")
 bulletContainer.Name = "Bullets"
 bulletContainer.Parent = workspace
 
-local function tweenOnce(...)
+local function tweenOnce(...): Tween
 	local tween = TweenService:Create(...)
 	tween:Play()
 	local connection
@@ -83,7 +101,7 @@ function Gun.DrawShot(startPoint: Vector3, endPoint: Vector3, config: table)
 	end)
 end
 
-function Gun.PlaySound(tool: Tool, config)
+function Gun.PlaySound(tool: Tool, config: gunConfig)
 	if not config.FireSound then
 		return
 	end
@@ -123,21 +141,21 @@ end
 
 -- public:
 
-function Gun:GetRaycastBlacklist()
+function Gun:GetRaycastBlacklist(): Array<Instance>
 	-- PLEASE ADD BLUEPRINTS HERE PLEASE
 	return {self.Instance, localPlayer.Character, bulletContainer}
 end
 
-function Gun:GetConfig()
+function Gun:GetConfig(): gunConfig
 	return self.Config or Gun.Config
 end
 
-function Gun:GetConfigValue(valueName: string)
+function Gun:GetConfigValue(valueName: string): any?
 	local config = self:GetConfig()
 	return config[valueName]
 end
 
-function Gun:GetMousePosition(raycastParams: RaycastParams)
+function Gun:GetMousePosition(raycastParams: RaycastParams): Vector3
 	local cameraPosition = workspace.CurrentCamera.CFrame.Position
 	local direction = (mouse.Hit.Position - cameraPosition).Unit*2048
 	local raycastResult = workspace:Raycast(cameraPosition, direction, raycastParams)
@@ -182,7 +200,7 @@ function Gun:OnActivated()
 			local startPosition = bulletSpawn.WorldPosition
 			local hit = self:GetMousePosition(raycastParams)
 			
-			local r0, r1 = self.Random:NextNumber()^2, self.Random:NextNumber()^2
+			local r0, r1 = self.Random:NextNumber(), self.Random:NextNumber()^1.2
 
 			local direction = (
 				CFrame.new(startPosition, hit) 
@@ -284,10 +302,6 @@ function Gun.new(instance: Tool)
 	self.LastShotFiredTime = 0
 
 	return self
-end
-
-function Gun:Destroy()
-
 end
 
 return Gun

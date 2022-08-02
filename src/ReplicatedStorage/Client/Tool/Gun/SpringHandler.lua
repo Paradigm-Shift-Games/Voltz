@@ -6,7 +6,16 @@ local Spring = require(ReplicatedStorage.Packages.Spring)
 local SpringHandler = {}
 SpringHandler.References = {}
 
-function SpringHandler:Get(character: Model)
+type characterReference = {
+    Spring: any?,
+    LastImpulse: number,
+    UpdaterConnected: boolean,
+    Motors: {
+        [string]: any?
+    }
+}
+
+function SpringHandler:Get(character: Model): characterReference
     if self.References[character] then
         return self.References[character]
     end
@@ -18,21 +27,6 @@ function SpringHandler:Get(character: Model)
         return
     end
 
-    local defaultC0_ShoulderValue = rightShoulder:FindFirstChild("DefaultC0")
-    local defaultC0_ElbowValue = rightElbow:FindFirstChild("DefaultC0")
-
-    if (not defaultC0_ShoulderValue) then
-        defaultC0_ShoulderValue = Instance.new("CFrameValue")
-        defaultC0_ShoulderValue.Value = rightShoulder.C0
-        defaultC0_ShoulderValue.Name = "DefaultC0"
-        defaultC0_ShoulderValue.Parent = rightShoulder
-
-        defaultC0_ElbowValue = Instance.new("CFrameValue")
-        defaultC0_ElbowValue.Value = rightElbow.C0
-        defaultC0_ElbowValue.Name = "DefaultC0"
-        defaultC0_ElbowValue.Parent = rightElbow
-    end
-
     local spring = Spring.new(0)
     spring.Speed = 15
     local referenceObject = {
@@ -41,7 +35,10 @@ function SpringHandler:Get(character: Model)
         UpdaterConnected = false,
         Motors = {
             RightShoulder = rightShoulder,
-            RightElbow = rightElbow
+            RightElbow = rightElbow,
+
+            RightShoulderDefaultC0 = rightShoulder.C0,
+            RightElbowDefaultC0 = rightElbow.C0
         }
     }
     self.References[character] = referenceObject
@@ -79,10 +76,10 @@ function SpringHandler:Impulse(character: Model, impulseForce: number)
             end
 
             local position = math.min(1, springObject.Spring.Position)
-            local defaultC0_Shoulder = motors.RightShoulder.DefaultC0.Value
-            local defaultC0_Elbow = motors.RightElbow.DefaultC0.Value
+            local defaultC0_Shoulder = motors.RightShoulderDefaultC0
+            local defaultC0_Elbow = motors.RightElbowDefaultC0
 
-            motors.RightShoulder.C0 = (defaultC0_Shoulder * CFrame.new(0, -position/6, position/10)) * CFrame.Angles(-position/5, 0, 0) * CFrame.Angles(0, math.sin(os.clock()*10)*position*0.03, 0)
+            motors.RightShoulder.C0 = (defaultC0_Shoulder * CFrame.new(0, -position/6, position/10)) * CFrame.Angles(-position/5, 0, 0) * CFrame.Angles(0, math.sin(os.clock()*20)*position*0.01, 0)
             motors.RightElbow.C0 = (defaultC0_Elbow * CFrame.new(0, position/6, 0)) * CFrame.Angles(position/2, 0, 0)
         end)
     end
