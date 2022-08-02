@@ -123,6 +123,16 @@ function JetpackState.new<S>(state: S)
 end
 
 --[=[
+	Dispatches an action onto the internal silo.
+
+	@param actionName string -- The name of the action to perfom
+	@param input any -- The input to provide to the action
+]=]
+function JetpackState:Dispatch<S>(actionName: string, input: any)
+	self._silo:Dispatch(self._silo.Actions[actionName](input))
+end
+
+--[=[
 	@return number -- The duration remaining on the fuel incrementor.
 ]=]
 function JetpackState:GetDuration()
