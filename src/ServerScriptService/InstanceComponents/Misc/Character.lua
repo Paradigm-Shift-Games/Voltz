@@ -21,8 +21,9 @@ function Character.new(instance: Instance)
 	instance:SetAttribute("FaceCursorInAir", false)
 	instance:SetAttribute("LookInAir", false)
 
-	-- Add CursorLook tag to the character
+	-- Add CameraLook tag to the character
 	CollectionService:AddTag(instance, "CursorLook")
+	CollectionService:AddTag(instance, "FallDamage")
 
 	return self
 end
