@@ -120,7 +120,7 @@ end
 
 --[=[
 	Takes the state and duration of the incrementation and collapses the state.
-	@error "Modifier" -- Do not call this method directly when outside of a modifier.
+	@error Modifier -- Do not call this method directly when outside of a modifier.
 
 	@param state Silo.State -- The current Silo state.
 	@param duration number? -- The duration to collapse for (default is the duration of the incrementor).
@@ -146,15 +146,6 @@ function StatefulIncrementor:Collapse<S>(state: Silo.State<S>, duration: number?
 end
 
 --[=[
-	@within StatefulIncrementor
-	@field Modifiers {
-		Increment: Silo.Modifier<S>,
-		Collapse: Silo.Modifier<S>,
-		SetDuration: Silo.Modifier<S>
-	} -- The list of Silo modifier functions. Call from other Silo modifiers, or insert them into the modifiers list.
-]=]
-
---[=[
 	Constructs a modifier which passive increments a value through state.
 
 	@param increment Silo.Modifier<S> -- A Modifier function which increments a target by the given argument.
@@ -173,6 +164,11 @@ function StatefulIncrementor.new<S>(increment: Silo.Modifier<S>, duration: numbe
 	}, StatefulIncrementor)
 
 	-- Wrap modifier methods
+	--[=[
+		@prop Modifiers { Increment: Silo.Modifier<S>, Collapse: Silo.Modifier<S>, SetDuration: Silo.Modifier<S> }
+		The list of Silo modifier functions. Call from other Silo modifiers, or insert them into the modifiers list.
+		@within StatefulIncrementor
+	]=]
 	incrementor.Modifiers = {
 		Increment = function<S>(state: Silo.State<S>, amount: number)
 			return incrementor:Increment(state, amount)

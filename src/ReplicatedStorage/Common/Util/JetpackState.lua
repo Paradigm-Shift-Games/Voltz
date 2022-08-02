@@ -6,21 +6,36 @@ local Promise = require(ReplicatedStorage.Packages.Promise)
 local StatefulIncrementor = require(ReplicatedStorage.Common.Util.StatefulIncrementor)
 
 --[=[
+	@within JetpackState
+	@interface State
+	.Boosting boolean -- Whether or not the jetpack is boosting
+	.Fuel number -- A value from `0` - `1` representing the current fuel percentage
+	.Capacity number -- A value representing the jetpack's fuel capacity
+	.BurnRate number -- The rate at which fuel will be burned
+	.FillRate number  -- The rate at which fuel will be refilled
+]=]
+
+--[=[
 	@class JetpackState
 ]=]
 local JetpackState = {
 	Default = {
-		Boosting = false; -- Whether or not the jetpack is boosting
+		Boosting = false;
 
-		Fuel = 1; -- A value from 0 - 1 representing the current fuel percentage
-		Capacity = 100; -- A value representing the jetpack's fuel capacity
-		BurnRate = 0.1; -- The rate at which fuel will be burned
-		FillRate = 1; -- The rate at which fuel will be refilled
+		Fuel = 1;
+		Capacity = 100;
+		BurnRate = 0.1;
+		FillRate = 1;
 	};
 }
 JetpackState.Default.__index = JetpackState.Default
 JetpackState.__index = JetpackState
 
+--[=[
+	Constructs a new JetpackState
+	@param state State
+	@return JetpackState
+]=]
 function JetpackState.new<S>(state: S)
 	local jetpackState = setmetatable({
 		_trove = Trove.new();
@@ -107,16 +122,31 @@ function JetpackState.new<S>(state: S)
 	return jetpackState
 end
 
+--[=[
+	@return number -- The duration remaining on the fuel incrementor.
+]=]
 function JetpackState:GetDuration()
 	return self._fuelIncrementor:GetDuration()
 end
+
+--[=[
+	Calculates the jetpack's fuel percentage.
+	@return number -- The current fuel percentage `0` - `1`.
+]=]
 function JetpackState:CalculateFuelPercentage()
 	return self._silo:GetState().Fuel + self._fuelIncrementor:GetValue()
 end
+
+--[=[
+	@return State
+]=]
 function JetpackState:GetState()
 	return self._silo:GetState()
 end
 
+--[=[
+	Destroys the object.
+]=]
 function JetpackState:Destroy()
 	self._trove:Clean()
 end
