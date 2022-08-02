@@ -165,24 +165,6 @@ function StatefulIncrementor.new<S>(increment: Silo.Modifier<S>, duration: numbe
 		_increment = increment;
 	}, StatefulIncrementor)
 
-	-- Wrap modifier methods
-	--[=[
-		@prop Modifiers { Increment: Silo.Modifier<S>, Collapse: Silo.Modifier<S>, SetDuration: Silo.Modifier<S> }
-		The list of Silo modifier functions. Call from other Silo modifiers, or insert them into the modifiers list.
-		@within StatefulIncrementor
-	]=]
-	incrementor.Modifiers = {
-		Increment = function<S>(state: Silo.State<S>, amount: number)
-			return incrementor:Increment(state, amount)
-		end;
-		Collapse = function<S>(state: Silo.State<S>)
-			return incrementor:Collapse(state)
-		end;
-		SetDuration = function<S>(state: Silo.State<S>, newDuration: number)
-			return incrementor:SetDuration(state, newDuration)
-		end;
-	}
-
 	return incrementor
 end
 
