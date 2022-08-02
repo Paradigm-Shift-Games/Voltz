@@ -145,6 +145,16 @@ function Gun:GetMousePosition(raycastParams: RaycastParams)
 end
 
 function Gun:OnActivated()
+	if self.Active then
+		return
+	end
+
+	local fireRate = self:GetConfigValue("FireRate")
+	local deltaShootTime = (os.clock() - self.LastShotFiredTime)
+	if deltaShootTime < 1/fireRate then
+		return
+	end
+
 	local initTime = os.clock()
 	self.Active = true
 	self.ActivationTime = initTime
@@ -208,9 +218,10 @@ function Gun:OnActivated()
 			bulletHole.Parent = bulletContainer
 			Debris:AddItem(bulletHole, 10)
 
-			if (i == 1 or delayPerShot > 0) then
+			if i == 1 or delayPerShot > 0 then
 				SpringHandler:Impulse(localPlayer.Character, decoration.ImpulseForce or 10)
 				Gun.PlaySound(self.Instance, self:GetConfig())
+				self.LastShotFiredTime = os.clock()
 			end
 
 			Gun.DrawShot(startPosition, endPosition, self.Config)
@@ -220,12 +231,57 @@ function Gun:OnActivated()
 		end
 	end
 	fireShot()
+
+	local shotsFired = 1
+	local renderId = "FireGun-" .. initTime
+	RunService:BindToRenderStep(renderId, Enum.RenderPriority.Input.Value+1, function(deltaTime)
+		if not self.Active or self.ActivationTime ~= initTime then
+			RunService:UnbindFromRenderStep(renderId)
+			return
+		end
+
+		local timeFiring = os.clock() - self.ActivationTime
+		local requiredShotCount = math.floor(timeFiring/(1/fireRate))
+		local offset = deltaTime
+
+		if shotsFired > requiredShotCount then
+			offset = 0
+		end
+
+		local t = os.clock()
+		local deltaShootTime = (os.clock() - self.LastShotFiredTime + offset)
+		if deltaShootTime < 1/fireRate then
+			return
+		end
+
+		local shotAmount = 1
+
+		print("deltaShotCount", shotsFired - requiredShotCount)
+
+		if requiredShotCount > shotsFired then
+			shotAmount = 1 + (requiredShotCount - shotsFired)
+		end
+
+		for i = 1, shotAmount do
+			shotsFired += 1
+			fireShot()
+		end
+	end)
+end
+
+function Tool:OnDeactivated()
+	self.Active = false
+end
+
+function Tool:OnUnequipped()
+	self.Active = false
 end
 
 function Gun.new(instance: Tool)
 	local self = Tool.new(instance)
 	setmetatable(self, Gun)
 	self.Random = Random.new((os.clock()%1) * 1e9)
+	self.LastShotFiredTime = 0
 
 	return self
 end

@@ -3,9 +3,9 @@ return {
 	FireRate = 10,
 	Bloom = 0.9,
 	Range = 192,
-	BulletsPerShot = 3,
+	BulletsPerShot = 1,
 	DelayPerShot = 0.07,
-	Damage = 20,
+	Damage = 10,
 	ScopeFOV = 60,
 	BulletDecoration = {
 		Color = Color3.fromRGB(245, 205, 48),
