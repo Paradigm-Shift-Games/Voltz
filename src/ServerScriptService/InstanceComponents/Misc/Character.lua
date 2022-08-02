@@ -34,13 +34,13 @@ function Character.new(instance: Instance)
 
 	-- Apply defaults for jetpack
 	rootPart:SetAttribute("Fuel", 1)
-	rootPart:SetAttribute("Capacity", 100)
+	rootPart:SetAttribute("Capacity", 50)
 	rootPart:SetAttribute("FillRate", 25)
-	rootPart:SetAttribute("BurnRate", 15)
+	rootPart:SetAttribute("BurnRate", 20)
 
 	-- Apply defaults for jetpack thrust
 	rootPart:SetAttribute("ThrustAcceleration", 20)
-	rootPart:SetAttribute("MaxThrustSpeed", 38)
+	rootPart:SetAttribute("MaxThrustSpeed", 18)
 
 	-- Add Jetpack tag to the character root (TODO: Use jetpack model)
 	CollectionService:AddTag(rootPart, "Jetpack")
