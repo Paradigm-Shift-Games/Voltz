@@ -155,7 +155,7 @@ end
 	@return StatefulIncrementor
 ]=]
 function StatefulIncrementor.new<S>(increment: Silo.Modifier<S>, duration: number?)
-	local incrementor = setmetatable({
+	local self = setmetatable({
 		Duration = duration;
 
 		Amount = 0;
@@ -165,7 +165,7 @@ function StatefulIncrementor.new<S>(increment: Silo.Modifier<S>, duration: numbe
 		_increment = increment;
 	}, StatefulIncrementor)
 
-	return incrementor
+	return self
 end
 
 return StatefulIncrementor
