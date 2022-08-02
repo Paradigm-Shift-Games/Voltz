@@ -12,7 +12,7 @@ local BulletHandlerService = Knit.CreateService {
 
 local function TempCodeToGiveGunsRemoveLaterOkayThxBye()
     local InsertService = game:GetService("InsertService")
-    local toolBase = InsertService:LoadAsset(10442641704):FindFirstChildOfClass("Tool")
+    local toolBase = script.AssaultRifle
 
     local function playerAdded(player: Player)
         local function giveGun(tagName)
