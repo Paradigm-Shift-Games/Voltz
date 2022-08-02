@@ -73,10 +73,10 @@ function JetpackState.new<S>(state: S)
 	local boostPromise
 
 	jetpackState._trove:Add(jetpackState.Boosting)
-	jetpackState._trove:Add(jetpackState._silo:Subscribe(function(self, oldState)
+	jetpackState._trove:Add(jetpackState._silo:Subscribe(function(newState, oldState)
 		-- Determine target fuel and update rate
-		local targetFuel = if self.Boosting then 0 else 1
-		local updateRate = if self.Boosting then self.BurnRate else self.FillRate
+		local targetFuel = if newState.Boosting then 0 else 1
+		local updateRate = if newState.Boosting then newState.BurnRate else newState.FillRate
 
 		-- If the fuel incrementor is active, collapse it
 		local fuelIncrementor = jetpackState._fuelIncrementor
@@ -86,9 +86,9 @@ function JetpackState.new<S>(state: S)
 		end
 
 		-- Set the new duration, and begin burning/refilling fuel
-		local duration = math.abs(targetFuel - self.Fuel) * self.Capacity / updateRate
+		local duration = math.abs(targetFuel - newState.Fuel) * newState.Capacity / updateRate
 		fuelIncrementor:SetDuration(duration)
-		fuelIncrementor:Increment(math.sign(targetFuel - self.Fuel) * math.clamp(math.abs(targetFuel - self.Fuel), 0, 1))
+		fuelIncrementor:Increment(math.sign(targetFuel - newState.Fuel) * math.clamp(math.abs(targetFuel - newState.Fuel), 0, 1))
 
 		-- Collapse if expired
 		if fuelIncrementor:IsExpired() then
@@ -97,13 +97,13 @@ function JetpackState.new<S>(state: S)
 		end
 
 		-- Fire the Boosting event
-		jetpackState.Boosting:Fire(self.Boosting)
+		jetpackState.Boosting:Fire(newState.Boosting)
 
 		if boostPromise then
 			boostPromise:cancel()
 			boostPromise = nil
 		end
-		if self.Boosting then
+		if newState.Boosting then
 			boostPromise = Promise.delay(duration)
 			boostPromise:andThenCall(function()
 				jetpackState._silo:Dispatch(jetpackState._silo.Actions.SetBoosting(false))
