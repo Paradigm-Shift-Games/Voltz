@@ -40,7 +40,7 @@ function JetpackState.new<S>(state: S)
 	local self = setmetatable({
 		_trove = Trove.new();
 		_silo = Silo.new(setmetatable(table.clone(state), JetpackState.Default) :: any, {
-			CollapseIncrementor = function(self, incrementor)
+			_collapseIncrementor = function(self, incrementor)
 				incrementor:Collapse(self)
 			end;
 
@@ -81,7 +81,7 @@ function JetpackState.new<S>(state: S)
 		-- If the fuel incrementor is active, collapse it
 		local fuelIncrementor = self._fuelIncrementor
 		if fuelIncrementor:IsIncrementing() then
-			self:Dispatch("CollapseIncrementor", fuelIncrementor)
+			self:Dispatch("_collapseIncrementor", fuelIncrementor)
 			return
 		end
 
@@ -92,7 +92,7 @@ function JetpackState.new<S>(state: S)
 
 		-- Collapse if expired
 		if fuelIncrementor:IsExpired() then
-			self:Dispatch("CollapseIncrementor", fuelIncrementor)
+			self:Dispatch("_collapseIncrementor", fuelIncrementor)
 			return
 		end
 
