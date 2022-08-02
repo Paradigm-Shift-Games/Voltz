@@ -41,11 +41,11 @@ end
 -- Default config, can be overwritten per gun
 Gun.Config = {
 	AutoFire = false,
-	FireRate = 1/1.5,
+	FireRate = 1.5,
 	Bloom = 0.9,
 	Range = 192,
 	BulletsPerShot = 3,
-	DelayPerShot = 0.07,
+	DelayPerShot = 0,
 	Damage = 20,
 	ScopeFOV = 60,
 	BulletDecoration = {
@@ -75,12 +75,50 @@ function Gun.DrawShot(startPoint: Vector3, endPoint: Vector3, config: table)
 	mesh.Parent = beam
 	beam.Parent = bulletContainer
 
-	local travelSpeed = (distance/300) / (config.BulletSpeed or 1)
+	local travelSpeed = (distance/300) / (config.BulletDecoration.BulletSpeed or 1)
 	Debris:AddItem(beam, travelSpeed)
 
 	task.delay(1/30, function()
 		tweenOnce(mesh, TweenInfo.new(travelSpeed - 1/30, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = Vector3.new(1, 1, 0), Offset = Vector3.new(0, 0, -distance/2)})
 	end)
+end
+
+function Gun.PlaySound(tool: Tool, config)
+	if not config.FireSound then
+		return
+	end
+
+	local handle: Part? = tool:FindFirstChild("Handle")
+	if not handle then
+		return
+	end
+
+	local sound = Instance.new("Sound")
+	sound.Name = "Fire"
+
+	--[[ 
+		This loop currently skips over tables
+		It would be neat if in the future FireSound would have support for SoundEffects
+		And that it would be set up like so:
+		FireSound = {
+			SoundId = "...",
+			Volume = 0.5,
+			PitchShiftSoundEffect = {
+				Octave = 1.2,
+				Priority = 0
+			}
+		}
+	]]
+	for property, value in config.FireSound do
+		if type(value) == "table" then
+			continue
+		end
+		sound[property] = value
+	end
+
+	sound.Parent = handle
+	sound:Play()
+	Debris:AddItem(sound, (sound.TimeLength ~= 0 and sound.TimeLength) or 10)
 end
 
 -- public:
@@ -90,8 +128,13 @@ function Gun:GetRaycastBlacklist()
 	return {self.Instance, localPlayer.Character, bulletContainer}
 end
 
+function Gun:GetConfig()
+	return self.Config or Gun.Config
+end
+
 function Gun:GetConfigValue(valueName: string)
-	return (self.Config and self.Config[valueName]) or Gun.Config[valueName]
+	local config = self:GetConfig()
+	return config[valueName]
 end
 
 function Gun:GetMousePosition(raycastParams: RaycastParams)
@@ -107,9 +150,10 @@ function Gun:OnActivated()
 	self.ActivationTime = initTime
 
 	local bulletsPerShot = self:GetConfigValue("BulletsPerShot")
-	local delayPerShot = self:GetConfigValue("DelayPerShot")
+	local delayPerShot = self:GetConfigValue("DelayPerShot") or 0
 	local bloom = self:GetConfigValue("Bloom")
 	local range = self:GetConfigValue("Range")
+	local decoration = self:GetConfigValue("BulletDecoration")
 
 	local bulletSpawn = self.Instance:FindFirstChild("BulletSpawn", true)
 	assert(bulletSpawn, "BulletSpawn instance not found for: " .. self.Instance:GetFullName())
@@ -164,10 +208,13 @@ function Gun:OnActivated()
 			bulletHole.Parent = bulletContainer
 			Debris:AddItem(bulletHole, 10)
 
-			SpringHandler:Impulse(localPlayer.Character, 10)
+			if (i == 1 or delayPerShot > 0) then
+				SpringHandler:Impulse(localPlayer.Character, decoration.ImpulseForce or 10)
+				Gun.PlaySound(self.Instance, self:GetConfig())
+			end
 
 			Gun.DrawShot(startPosition, endPosition, self.Config)
-			if delayPerShot and delayPerShot ~= 0 then
+			if delayPerShot ~= 0 then
 				task.wait(delayPerShot)
 			end
 		end

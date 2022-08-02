@@ -72,7 +72,7 @@ function SpringHandler:Impulse(character: Model, impulseForce: number)
         springObject.UpdaterConnected = true
         local renderId = "SpringUpdate-" .. springObject.LastImpulse
         RunService:BindToRenderStep(renderId, Enum.RenderPriority.Character.Value-1, function()
-            if not self.References[character] or os.clock() > springObject.LastImpulse+5 then
+            if not self.References[character] or os.clock() > springObject.LastImpulse+7 then
                 springObject.UpdaterConnected = false
                 RunService:UnbindFromRenderStep(renderId)
                 return
@@ -82,8 +82,8 @@ function SpringHandler:Impulse(character: Model, impulseForce: number)
             local defaultC0_Shoulder = motors.RightShoulder.DefaultC0.Value
             local defaultC0_Elbow = motors.RightElbow.DefaultC0.Value
 
-            motors.RightShoulder.C0 = (defaultC0_Shoulder * CFrame.new(0, position/10, position/10)) * CFrame.Angles(position/5, 0, 0) * CFrame.Angles(0, math.sin(os.clock()*10)*position*0.03, 0)
-            motors.RightElbow.C0 = (defaultC0_Elbow * CFrame.new(0, position/10, 0)) * CFrame.Angles(position/10, 0, 0)
+            motors.RightShoulder.C0 = (defaultC0_Shoulder * CFrame.new(0, -position/6, position/10)) * CFrame.Angles(-position/5, 0, 0) * CFrame.Angles(0, math.sin(os.clock()*10)*position*0.03, 0)
+            motors.RightElbow.C0 = (defaultC0_Elbow * CFrame.new(0, position/6, 0)) * CFrame.Angles(position/2, 0, 0)
         end)
     end
 end

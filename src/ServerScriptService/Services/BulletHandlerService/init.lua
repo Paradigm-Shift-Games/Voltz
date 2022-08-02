@@ -17,12 +17,15 @@ local function TempCodeToGiveGunsRemoveLaterOkayThxBye()
     local function playerAdded(player: Player)
         local function giveGun(tagName)
             local tool = toolBase:Clone()
+            CollectionService:RemoveTag(tool, "AssaultRifle")
             CollectionService:AddTag(tool, tagName)
+            tool.Name = tagName
             tool.Parent = player.Backpack
         end
 
         local function characterAdded(character: Model)
             giveGun("AssaultRifle")
+            giveGun("Shotgun")
         end
 
         player.CharacterAdded:Connect(characterAdded)

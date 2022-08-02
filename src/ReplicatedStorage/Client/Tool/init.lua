@@ -1,10 +1,16 @@
 -- Abstract tool class
 -- Virtual methods must be implemented via sub-classes
 
+local Players = game:GetService("Players")
+
 local Tool = {}
 Tool.__index = Tool
+Tool.EquipIcon = "rbxassetid://6104405324"
 
 -- private:
+
+local localPlayer = Players.LocalPlayer
+local mouse = localPlayer:GetMouse()
 
 local function BindToolEvents(self)
 	self.Instance.Activated:Connect(function(...)
@@ -16,10 +22,12 @@ local function BindToolEvents(self)
 	end)
 
 	self.Instance.Equipped:Connect(function(...)
+		mouse.Icon = Tool.EquipIcon
 		self:OnEquipped(...)
 	end)
 
 	self.Instance.Unequipped:Connect(function(...)
+		mouse.Icon = ""
 		self:OnUnequipped(...)
 	end)
 end
