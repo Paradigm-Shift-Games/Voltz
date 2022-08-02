@@ -1,29 +1,31 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local FallDamageConfig = require(ReplicatedStorage.Common.Config.FallDamage)
-local Signal = require(ReplicatedStorage.Packages.Signal)
 local Trove = require(ReplicatedStorage.Packages.Trove)
 
 local FallDamage = {}
 FallDamage.__index = FallDamage
 
-function FallDamage:_detectFallHeight(character: Model, humanoid: Humanoid)
+function FallDamage:_trackCharacterFall(character: Model, humanoid: Humanoid)
     local initialHeight = nil
+    local fallHeight = nil
 
     self._trove:Connect(humanoid.FreeFalling:Connect(function(active)
         if active then
             initialHeight = character.HumanoidRootPart.Position.Y
         else
-			self._fallSignal:Fire(initialHeight - character.HumanoidRootPart.Position.Y)
+			fallHeight = initialHeight - character.HumanoidRootPart.Position.Y
+            if fallHeight < FallDamageConfig.threshold then return end
+
+            local damage = (fallHeight - FallDamageConfig.threshold) * FallDamageConfig.scale
+            humanoid:TakeDamage(damage)
+
+            return
         end
     end))
 end
 
 function FallDamage:_updateHealth(fallHeight, humanoid: Humanoid)
-    if fallHeight < FallDamageConfig.threshold then return end
 
-    local damage = (fallHeight - FallDamageConfig.threshold) * FallDamageConfig.scale
-    humanoid.Health -= damage
-    return damage
 end
 
 function FallDamage.new(character: Model)
@@ -32,9 +34,7 @@ function FallDamage.new(character: Model)
     local self = setmetatable({}, FallDamage)
 
     self._trove = Trove.new()
-    self._fallSignal = self._trove:Construct(Signal)
-    self:_detectFallHeight(character, humanoid)
-    self._trove:Connect(self._fallSignal, function(fallHeight) self:_updateHealth(fallHeight, humanoid) end)
+	self:_trackCharacterFall(character, humanoid)
 
     return self
 end
