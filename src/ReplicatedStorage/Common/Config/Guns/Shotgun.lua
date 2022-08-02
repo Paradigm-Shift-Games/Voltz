@@ -1,4 +1,4 @@
-return {
+local ShotgunConfig = {
 	AutoFire = true,
 	FireRate = 1,
 	Bloom = 7,
@@ -16,3 +16,5 @@ return {
 		Volume = 0.5
 	}
 }
+
+return ShotgunConfig

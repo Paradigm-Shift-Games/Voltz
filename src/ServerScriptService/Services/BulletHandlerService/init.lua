@@ -43,11 +43,11 @@ local function TempCodeToGiveGunsRemoveLaterOkayThxBye()
 end
 
 function BulletHandlerService:KnitInit()
-    TempCodeToGiveGunsRemoveLaterOkayThxBye()
+    
 end
 
 function BulletHandlerService:KnitStart()
-
+    TempCodeToGiveGunsRemoveLaterOkayThxBye()
 end
 
 return BulletHandlerService

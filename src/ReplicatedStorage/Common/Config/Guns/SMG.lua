@@ -1,4 +1,4 @@
-return {
+local SMGConfig = {
 	AutoFire = true,
 	FireRate = 25,
 	Bloom = 3.5,
@@ -16,3 +16,5 @@ return {
 		Volume = 0.3
 	}
 }
+
+return SMGConfig

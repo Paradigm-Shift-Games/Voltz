@@ -34,21 +34,11 @@ end
 
 -- public:
 
-function Tool:OnActivated()
-	-- virtual method
-end
-
-function Tool:OnDeactivated()
-	-- virtual method
-end
-
-function Tool:OnEquipped()
-	-- virtual method
-end
-
-function Tool:OnUnequipped()
-	-- virtual method
-end
+-- Virtuals
+function Tool:OnActivated() end
+function Tool:OnDeactivated() end
+function Tool:OnEquipped() end
+function Tool:OnUnequipped() end
 
 function Tool.new(instance: Tool)
 	local self = setmetatable({}, Tool)

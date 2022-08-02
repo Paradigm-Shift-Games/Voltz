@@ -8,9 +8,8 @@ local Debris = game:GetService("Debris")
 local Tool = require(script.Parent)
 local SpringHandler = require(script.SpringHandler)
 
-local Gun = {}
+local Gun = setmetatable({}, Tool)
 Gun.__index = Gun
-setmetatable(Gun, Tool)
 
 type gunConfig = {
     AutoFire: boolean,
@@ -296,8 +295,7 @@ function Tool:OnUnequipped()
 end
 
 function Gun.new(instance: Tool)
-	local self = Tool.new(instance)
-	setmetatable(self, Gun)
+	local self = setmetatable(Tool.new(instance), Gun)
 	self.Random = Random.new((os.clock()%1) * 1e9)
 	self.LastShotFiredTime = 0
 

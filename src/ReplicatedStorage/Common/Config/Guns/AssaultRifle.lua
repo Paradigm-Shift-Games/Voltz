@@ -1,4 +1,4 @@
-return {
+local AssaultRifleConfig = {
 	AutoFire = true,
 	FireRate = 10,
 	Bloom = 1.3,
@@ -15,3 +15,5 @@ return {
 		Volume = 0.5
 	}
 }
+
+return AssaultRifleConfig

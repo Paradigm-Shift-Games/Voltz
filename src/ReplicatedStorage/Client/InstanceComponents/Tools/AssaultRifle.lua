@@ -2,14 +2,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Gun = require(ReplicatedStorage.Client.Tool.Gun)
 
-local AssaultRifle = {}
+local AssaultRifle = setmetatable({}, Gun)
 AssaultRifle.__index = AssaultRifle
-setmetatable(AssaultRifle, Gun)
 AssaultRifle.Config = require(ReplicatedStorage.Common.Config.Guns.AssaultRifle)
 
 function AssaultRifle.new(instance: Tool)
-	local self = Gun.new(instance)
-	setmetatable(self, AssaultRifle)
+	local self = setmetatable(Gun.new(instance), AssaultRifle)
 	return self
 end
 
