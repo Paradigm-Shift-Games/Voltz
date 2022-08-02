@@ -1,9 +1,14 @@
-local SMG = {}
-SMG.__index = SMG
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-function SMG.new(instance)
-	local self = setmetatable({}, SMG)
-	self.Instance = instance
+local Gun = require(ReplicatedStorage.Client.Tool.Gun)
+local SMGConfig = require(ReplicatedStorage.Common.Config.Guns.SMG)
+
+local SMG = setmetatable({}, Gun)
+SMG.__index = SMG
+SMG.Config = SMGConfig
+
+function SMG.new(instance: Tool)
+	local self = setmetatable(Gun.new(instance), SMG)
 	return self
 end
 
