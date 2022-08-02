@@ -70,9 +70,11 @@ function JetpackState.new<S>(state: S)
 		Boosting = Signal.new();
 	}, JetpackState)
 
-	local boostPromise
-
+	-- Add the Boosting signal to the trove
 	self._trove:Add(self.Boosting)
+
+	-- Handle when any state update occurs so we can enforce fuel usage
+	local boostPromise
 	self._trove:Add(self._silo:Subscribe(function(newState, oldState)
 		-- Determine target fuel and update rate
 		local targetFuel = if newState.Boosting then 0 else 1
