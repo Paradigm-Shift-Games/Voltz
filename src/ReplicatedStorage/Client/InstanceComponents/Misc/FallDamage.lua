@@ -18,8 +18,6 @@ function FallDamage:_trackCharacterFall(character: Model, humanoid: Humanoid)
 
             local damage = (fallHeight - FallDamageConfig.Threshold) * FallDamageConfig.Scale
             humanoid:TakeDamage(damage)
-
-            return
         end
     end)
 end
@@ -30,7 +28,7 @@ function FallDamage.new(character: Model)
     local self = setmetatable({}, FallDamage)
 
     self._trove = Trove.new()
-	self:_trackCharacterFall(character, humanoid)
+    self:_trackCharacterFall(character, humanoid)
 
     return self
 end
