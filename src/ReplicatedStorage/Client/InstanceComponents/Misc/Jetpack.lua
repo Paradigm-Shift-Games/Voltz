@@ -5,6 +5,9 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 local Comm = require(ReplicatedStorage.Packages.Comm)
 local JetpackState = require(ReplicatedStorage.Common.Util.JetpackState)
 
+--[=[
+	@class Jetpack
+]=]
 local Jetpack = {}
 Jetpack.__index = Jetpack
 
@@ -92,10 +95,21 @@ function Jetpack.new(instance)
 	return self
 end
 
+--[=[
+	Returns whether or not the client owns the jetpack.
+
+	@client
+	@return boolean
+]=]
 function Jetpack:IsOwner()
 	return not Players.LocalPlayer or Players.LocalPlayer == self._owner
 end
 
+--[=[
+	Causes the jetpack to begin boosting.
+
+	@client
+]=]
 function Jetpack:StartBoosting()
 	if not self:IsOwner() then
 		return
@@ -106,6 +120,12 @@ function Jetpack:StartBoosting()
 	self._state._silo:Dispatch(self._state._silo.Actions.SetBoosting(true))
 	return self._serverObject:StartBoosting()
 end
+
+--[=[
+	Causes the jetpack to cease boosting.
+
+	@client
+]=]
 function Jetpack:StopBoosting()
 	if not self:IsOwner() then
 		return
@@ -120,6 +140,7 @@ end
 function Jetpack:GetFuelPercentage()
 	return self._state:CalculateFuelPercentage()
 end
+
 function Jetpack:GetFuel()
 	return self:GetFuelPercentage() * self._state:GetState().Capacity
 end

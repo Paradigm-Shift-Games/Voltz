@@ -4,9 +4,16 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 local Comm = require(ReplicatedStorage.Packages.Comm)
 local JetpackState = require(ReplicatedStorage.Common.Util.JetpackState)
 
+--[=[
+	@class Jetpack
+]=]
 local Jetpack = {}
 Jetpack.__index = Jetpack
 
+--[=[
+	Constructs a new Jetpack component.
+	@param instance Instance
+]=]
 function Jetpack.new(instance)
 	local serverComm = Comm.ServerComm.new(instance, "Jetpack")
 	local self = setmetatable({}, Jetpack)
@@ -109,10 +116,23 @@ function Jetpack.new(instance)
 	return self
 end
 
+--[=[
+	Returns whether or not the specific player is the owner of this jetpack.
+
+	@server
+	@param player Player? -- The player to check. If nil, always returns true.
+	@return boolean
+]=]
 function Jetpack:IsOwner(player: Player?)
 	return not player or player == self._owner
 end
 
+--[=[
+	Causes the jetpack to begin boosting.
+
+	@server
+	@param player Player? -- The player making the request, or nil if server-authored.
+]=]
 function Jetpack:StartBoosting(player: Player?)
 	if not self:IsOwner(player) then
 		return
@@ -122,6 +142,12 @@ function Jetpack:StartBoosting(player: Player?)
 	end
 	self._state:Dispatch("SetBoosting", true)
 end
+--[=[
+	Causes the jetpack to cease boosting.
+
+	@server
+	@param player Player? -- The player making the request, or nil if server-authored.
+]=]
 function Jetpack:StopBoosting(player: Player?)
 	if not self:IsOwner(player) then
 		return
@@ -132,26 +158,61 @@ function Jetpack:StopBoosting(player: Player?)
 	self._state:Dispatch("SetBoosting", false)
 end
 
+--[=[
+	Updates the jetpack's current fuel
+	@param fuel number -- A number from `0` - `1`.
+	@server
+]=]
 function Jetpack:SetFuel(fuel: number)
 	self._state:Dispatch("Fuel", fuel)
 end
+
+--[=[
+	Updates the jetpack's capacity
+	@param capacity number
+	@server
+]=]
 function Jetpack:SetCapacity(capacity: number)
 	self._state:Dispatch("SetCapacity", capacity)
 end
+
+--[=[
+	Updates the rate at which the jetpack refills fuel when not boosting.
+	@param fillRate number
+	@server
+]=]
 function Jetpack:SetFillRate(fillRate: number)
 	self._state:Dispatch("SetFillRate", fillRate)
 end
+
+--[=[
+	Updates the rate at which the jetpack consumes fuel when boosting.
+	@param burnRate number
+	@server
+]=]
 function Jetpack:SetBurnRate(burnRate: number)
 	self._state:Dispatch("SetBurnRate", burnRate)
 end
 
+--[=[
+	Calculates the jetpack's current fuel percentage.
+	@return number -- The fuel percentage from `0` - `1`.
+]=]
 function Jetpack:GetFuelPercentage()
 	return self._state:CalculateFuelPercentage()
 end
+
+--[=[
+	Calculates the jetpack's current fuel.
+	@return number -- The amount of fuel from `0` to its total capacity.
+]=]
 function Jetpack:GetFuel()
 	return self:GetFuelPercentage() * self._state:GetState().Capacity
 end
 
+--[=[
+	Destroys the component.
+]=]
 function Jetpack:Destroy()
 	self._trove:Clean()
 end
