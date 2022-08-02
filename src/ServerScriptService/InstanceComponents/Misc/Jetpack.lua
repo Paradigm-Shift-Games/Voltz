@@ -73,12 +73,14 @@ function Jetpack.new(instance)
 	local thrustAttachment = Instance.new("Attachment")
 	thrustAttachment.Name = "ThrustAttachment"
 
-	local thrust = Instance.new("VectorForce")
+	local thrust = Instance.new("LinearVelocity")
 	thrust.Name = "Thrust"
-	thrust.ApplyAtCenterOfMass = true
 	thrust.RelativeTo = Enum.ActuatorRelativeTo.World
 	thrust.Attachment0 = thrustAttachment
-	thrust.Force = Vector3.zero
+	thrust.VelocityConstraintMode = Enum.VelocityConstraintMode.Line
+	thrust.LineDirection = Vector3.yAxis
+	thrust.MaxForce = 0
+	thrust.LineVelocity = instance:GetAttribute("MaxThrustSpeed")
 
 	thrustAttachment.Parent = instance
 	thrust.Parent = instance
@@ -91,7 +93,12 @@ function Jetpack.new(instance)
 	self._trove:Connect(self.Boosting, function(boosting)
 		print("Boosting", boosting, self._state:GetState(), self._state:GetState().Fuel)
 
-		thrust.Force = if not boosting then Vector3.zero else instance.AssemblyMass * (workspace.Gravity * Vector3.yAxis + instance:GetAttribute("ThrustAcceleration") * Vector3.yAxis)
+		thrust.MaxForce = if not boosting then 0 else instance.AssemblyMass * (workspace.Gravity + instance:GetAttribute("ThrustAcceleration"))
+	end)
+
+	-- Sync MaxThrustSpeed attribute to thrust velocity
+	self._trove:Connect(instance:GetAttributeChangedSignal("MaxThrustSpeed"), function()
+		thrust.LineVelocity = instance:GetAttribute("MaxThrustSpeed")
 	end)
 
 	return self
