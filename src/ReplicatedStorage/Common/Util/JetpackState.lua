@@ -37,7 +37,7 @@ JetpackState.__index = JetpackState
 	@return JetpackState
 ]=]
 function JetpackState.new<S>(state: S)
-	local jetpackState = setmetatable({
+	local self = setmetatable({
 		_trove = Trove.new();
 		_silo = Silo.new(setmetatable(table.clone(state), JetpackState.Default) :: any, {
 			CollapseIncrementor = function(self, incrementor)
@@ -72,16 +72,16 @@ function JetpackState.new<S>(state: S)
 
 	local boostPromise
 
-	jetpackState._trove:Add(jetpackState.Boosting)
-	jetpackState._trove:Add(jetpackState._silo:Subscribe(function(newState, oldState)
+	self._trove:Add(self.Boosting)
+	self._trove:Add(self._silo:Subscribe(function(newState, oldState)
 		-- Determine target fuel and update rate
 		local targetFuel = if newState.Boosting then 0 else 1
 		local updateRate = if newState.Boosting then newState.BurnRate else newState.FillRate
 
 		-- If the fuel incrementor is active, collapse it
-		local fuelIncrementor = jetpackState._fuelIncrementor
+		local fuelIncrementor = self._fuelIncrementor
 		if fuelIncrementor:IsIncrementing() then
-			jetpackState._silo:Dispatch(jetpackState._silo.Actions.CollapseIncrementor(fuelIncrementor))
+			self._silo:Dispatch(self._silo.Actions.CollapseIncrementor(fuelIncrementor))
 			return
 		end
 
@@ -92,12 +92,12 @@ function JetpackState.new<S>(state: S)
 
 		-- Collapse if expired
 		if fuelIncrementor:IsExpired() then
-			jetpackState._silo:Dispatch(jetpackState._silo.Actions.CollapseIncrementor(fuelIncrementor))
+			self._silo:Dispatch(self._silo.Actions.CollapseIncrementor(fuelIncrementor))
 			return
 		end
 
 		-- Fire the Boosting event
-		jetpackState.Boosting:Fire(newState.Boosting)
+		self.Boosting:Fire(newState.Boosting)
 
 		if boostPromise then
 			boostPromise:cancel()
@@ -106,20 +106,20 @@ function JetpackState.new<S>(state: S)
 		if newState.Boosting then
 			boostPromise = Promise.delay(duration)
 			boostPromise:andThenCall(function()
-				jetpackState._silo:Dispatch(jetpackState._silo.Actions.SetBoosting(false))
+				self._silo:Dispatch(self._silo.Actions.SetBoosting(false))
 				boostPromise = nil
 			end)
 		end
 	end))
 
-	jetpackState._trove:Add(function()
+	self._trove:Add(function()
 		if boostPromise then
 			boostPromise:cancel()
 			boostPromise = nil
 		end
 	end)
 
-	return jetpackState
+	return self
 end
 
 --[=[
