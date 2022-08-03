@@ -3,6 +3,7 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Trove = require(ReplicatedStorage.Packages.Trove)
+local Comm = require(ReplicatedStorage.Packages.Comm)
 local CursorLookConfig = require(ReplicatedStorage.Common.Config.CursorLook)
 
 local CursorLook = {}
@@ -40,10 +41,12 @@ local function clampedAngles(angles: Vector3, lowerBounds: Vector3, upperBounds:
 end
 
 function CursorLook.new(instance: Instance)
+	local clientComm = Comm.ClientComm.new(instance, false, "Cursor")
 	local self = setmetatable({}, CursorLook)
 
 	self.Instance = instance
 	self._trove = Trove.new()
+	self._trove:Add(clientComm)
 
 	-- Wait for Humanoid to be added
 	local humanoid = instance:FindFirstChildWhichIsA("Humanoid")
@@ -62,6 +65,16 @@ function CursorLook.new(instance: Instance)
 	self._waistAngles = Vector3.new()
 	self._neckAngles = Vector3.new()
 
+	-- Get shared cursor property
+	local cursorProp = clientComm:GetProperty("Cursor")
+
+	-- Keep track of the mouse cursor
+	local mouseCursor
+	cursorProp:Observe(function(value)
+		mouseCursor = value
+	end)
+
+	-- Update joint angles
 	local player: Player? = Players:GetPlayerFromCharacter(instance)
 	local isLocalPlayer = player == Players.LocalPlayer
 	local mouse: Mouse? = if isLocalPlayer then player:GetMouse() else nil
@@ -91,7 +104,7 @@ function CursorLook.new(instance: Instance)
 		local rightVector = cframe.RightVector
 
 		-- Locate mouse target part
-		local lookPart: BasePart = instance:FindFirstChild("MouseTarget")
+		local lookPart: BasePart = mouseCursor
 		local lookCFrame
 		if isLocalPlayer then
 			-- Use the mouse's CFrame

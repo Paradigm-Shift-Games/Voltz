@@ -1,54 +1,91 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Trove = require(ReplicatedStorage.Packages.Trove)
+local Comm = require(ReplicatedStorage.Packages.Comm)
+
+-- Create shared CursorObjects folder
+local mouseFolder = Instance.new("Folder")
+mouseFolder.Name = "CursorObjects"
+mouseFolder.Archivable = false
+mouseFolder.Parent = workspace
 
 local CursorLook = {}
 CursorLook.__index = CursorLook
 
 function CursorLook.new(instance: Instance)
+	local serverComm = Comm.ServerComm.new(instance, "Cursor")
 	local self = setmetatable({}, CursorLook)
 
 	self.Instance = instance
 	self._trove = Trove.new()
+	self._trove:Add(serverComm)
 
-	local player = Players:GetPlayerFromCharacter(instance)
+	-- Create shared Cursor property
+	self._cursorProp = serverComm:CreateProperty("Cursor", nil)
 
-	-- Create a part for the player's mouse target
-	local mouseTarget = Instance.new("Part")
-	mouseTarget.Name = "MouseTarget"
-	mouseTarget.Transparency = 1
-	mouseTarget.Size = Vector3.new(1, 1, 1)
-	mouseTarget.CanCollide = false
-	mouseTarget.CanQuery = false
-	mouseTarget.CanTouch = false
-
-	mouseTarget.Material = Enum.Material.Neon
-	mouseTarget.Color = Color3.new(1, 0, 1)
-	mouseTarget.Shape = Enum.PartType.Ball
-
-	-- Place an attachment into the part
-	local attachment0 = Instance.new("Attachment")
-	attachment0.Parent = mouseTarget
-
-	-- Create a vector force to counteract gravity
-	local vectorForce = Instance.new("VectorForce")
-	vectorForce.Force = Vector3.new(0, mouseTarget.AssemblyMass * workspace.Gravity, 0)
-	vectorForce.Attachment0 = attachment0
-	vectorForce.ApplyAtCenterOfMass = true
-	vectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
-	vectorForce.Parent = mouseTarget
-
-	-- Parent mouse target part to character, and give network ownership
-	mouseTarget.Parent = instance
-	mouseTarget:SetNetworkOwner(player)
-
-	-- Add mouse target part to trove
-	self._trove:Add(mouseTarget)
+	-- Create the mouse cursor
+	self:CreateCursor()
 
 	return self
 end
 
+function CursorLook:CreateCursor()
+	local player = Players:GetPlayerFromCharacter(self.Instance)
+
+	-- Create a part for the player's mouse target
+	local mouseCursor = Instance.new("Part")
+	mouseCursor.Name = "Cursor"
+	mouseCursor.Transparency = 1
+	mouseCursor.Size = Vector3.new(1, 1, 1)
+	mouseCursor.CanCollide = false
+	mouseCursor.CanQuery = false
+	mouseCursor.CanTouch = false
+	mouseCursor.Locked = true
+
+	mouseCursor.Material = Enum.Material.Neon
+	mouseCursor.Color = Color3.new(1, 0, 1)
+	mouseCursor.Shape = Enum.PartType.Cylinder
+
+	-- Place an attachment into the part
+	local attachment0 = Instance.new("Attachment")
+	attachment0.Parent = mouseCursor
+
+	-- Create a vector force to counteract gravity
+	local vectorForce = Instance.new("VectorForce")
+	vectorForce.Attachment0 = attachment0
+	vectorForce.Force = Vector3.new(0, mouseCursor.AssemblyMass * workspace.Gravity, 0)
+	vectorForce.ApplyAtCenterOfMass = true
+	vectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
+	vectorForce.Parent = mouseCursor
+
+	-- Parent mouse target part, and give network ownership
+	mouseCursor.Parent = mouseFolder
+	mouseCursor:SetNetworkOwner(player)
+
+	-- When the ancestry of the mouse target is changed, create a new mouse target
+	self._cursorRemovedConnection = mouseCursor.AncestryChanged:Connect(function()
+		if not mouseCursor:IsDescendantOf(mouseFolder) then
+			mouseCursor:Destroy()
+		end
+	end)
+
+	-- Update the mouse cursor
+	self._mouseCursor = mouseCursor
+	self._cursorProp:Set(mouseCursor)
+end
+
 function CursorLook:Destroy()
+	-- Clean up mouse cursor part
+	if self._mouseCursor then
+		self._mouseCursor:Destroy()
+	end
+
+	-- Clean up cursor removed connection
+	if self._cursorRemovedConnection then
+		self._cursorRemovedConnection:Disconnect()
+	end
+
+	-- Clean trove
 	self._trove:Clean()
 end
 
