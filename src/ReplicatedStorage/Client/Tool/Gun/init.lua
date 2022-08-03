@@ -210,6 +210,14 @@ function Gun:OnActivated()
 	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 	raycastParams.FilterDescendantsInstances = blacklist
 
+	local function rayCheck(originalPosition: Vector3, startPosition: Vector3, endPosition: Vector3): Vector3?
+		local rayCheckDirection = (endPosition - startPosition).Unit * range
+		local raycastResult = workspace:Raycast(startPosition, rayCheckDirection, raycastParams)
+		if raycastResult and (raycastResult.Position - originalPosition).Magnitude > 4 then
+			return raycastResult.Position
+		end
+	end
+
 	local function fireShot()
 		for i = 1, bulletsPerShot do
 			if not self.Instance.Parent then
@@ -236,12 +244,11 @@ function Gun:OnActivated()
 				endPosition = startPosition+direction
 			end
 
-			-- Draw a secondary ray from the RightUpperArm to prevent guns from firing through walls when the barrel is on the other side.
-			local shoulderPosition = localPlayer.Character.RightUpperArm.Position
-			local shoulderDirection = (endPosition - shoulderPosition).Unit * range
-			local raycastResultFromShoulder = workspace:Raycast(shoulderPosition, shoulderDirection, raycastParams)
-			if raycastResultFromShoulder then
-				endPosition = raycastResultFromShoulder.Position
+			-- Draw a secondary ray from the Head and RightUpperArm to prevent guns from firing through walls when the barrel is on the other side.
+			local headCheckPosition = rayCheck(endPosition, localPlayer.Character.Head.Position, endPosition)
+			local shoulderCheckPosition = rayCheck(endPosition, localPlayer.Character.RightUpperArm.Position, endPosition)
+			if headCheckPosition and shoulderCheckPosition then
+				endPosition = shoulderCheckPosition
 			end
 
 			if i == 1 or delayPerShot > 0 then
