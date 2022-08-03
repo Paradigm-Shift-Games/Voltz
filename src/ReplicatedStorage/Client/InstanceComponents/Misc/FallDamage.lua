@@ -10,7 +10,10 @@ function FallDamage:_trackCharacterFall(character: Model, humanoid: Humanoid)
 
 	self._trove:Connect(humanoid.StateChanged, function(old, new)
 		if not (old == Enum.HumanoidStateType.Freefall and new == Enum.HumanoidStateType.Landed) then return end
-		endVelocity = character.HumanoidRootPart.AssemblyLinearVelocity.Magnitude
+
+		local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+		endVelocity = humanoidRootPart.AssemblyLinearVelocity.Magnitude
 		humanoid:TakeDamage((endVelocity - FallDamageConfig.Threshold) * FallDamageConfig.Scale)
 	end)
 end
