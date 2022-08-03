@@ -7,6 +7,7 @@ local Packages = ReplicatedStorage:WaitForChild("Packages")
 local Player = Players.LocalPlayer
 
 local Knit = require(Packages.Knit)
+local Symbol = require(Packages.Symbol)
 
 --[=[
 	@type UnmountKey any
@@ -111,7 +112,7 @@ function InterfaceController:Mount(interface: GuiBase | GuiBase2d, parent: Insta
 	end
 
 	-- Store the unmount key and function
-	local unmountKey = newproxy()
+	local unmountKey = Symbol("UnmountKey")
 
 	self._unmountKeyToParentGui[unmountKey] = interface
 	self._interfaceToUnmountKey[interface] = unmountKey
