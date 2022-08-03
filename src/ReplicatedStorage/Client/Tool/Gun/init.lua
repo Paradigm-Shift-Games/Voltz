@@ -100,16 +100,16 @@ function Gun.DrawShot(startAttachment: Attachment, endPoint: Vector3, config: ta
 		tweenOnce(mesh, TweenInfo.new(travelSpeed - 1/30, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = Vector3.new(1, 1, 0), Offset = Vector3.new(0, 0, -distance/2)})
 	end)
 
-	-- BeamUpdater updates the beam's cframe for 4 frames so it doesn't look weird when the character moves a lot
+	-- BeamUpdater updates the beam's cframe for 0.1 seconds so it doesn't look weird when the character moves a lot
 	local renderId = "BeamUpdater-"..os.clock()
-	local endTime = os.clock() + 4*(1/60)
+	local endTime = os.clock() + 0.1
 	local function update()
-		if not beam.Parent or not startAttachment.Parent or os.clock()>endTime then
+		if not beam.Parent or not startAttachment.Parent or os.clock() > endTime then
 			RunService:UnbindFromRenderStep(renderId)
 			return
 		end
 		startPoint = startAttachment.WorldPosition
-		beam.CFrame = CFrame.new(startPoint, endPoint) * CFrame.new(0, 0, -distance / 2 - 0.1)
+		beam.CFrame = CFrame.lookAt(startPoint, endPoint) * CFrame.new(0, 0, -distance / 2 - 0.1)
 	end
 	RunService:BindToRenderStep(renderId, 0, update)
 	task.spawn(update, 0)
@@ -220,6 +220,7 @@ function Gun:OnActivated()
 	local bulletSpawn = self.Instance:FindFirstChild("BulletSpawn", true)
 	assert(bulletSpawn, "BulletSpawn instance not found for: " .. self.Instance:GetFullName())
 
+	local raycastCheckDistance = 1
 	local blacklist = self:GetRaycastBlacklist()
 	local raycastParams = RaycastParams.new()
 	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
@@ -228,7 +229,7 @@ function Gun:OnActivated()
 	local function rayCheck(originalPosition: Vector3, startPosition: Vector3, endPosition: Vector3): Vector3?
 		local rayCheckDirection = (endPosition - startPosition).Unit * range
 		local raycastResult = workspace:Raycast(startPosition, rayCheckDirection, raycastParams)
-		if raycastResult and (raycastResult.Position - originalPosition).Magnitude > 4 then
+		if raycastResult and (raycastResult.Position - originalPosition).Magnitude > raycastCheckDistance then
 			return raycastResult.Position
 		end
 	end
@@ -245,7 +246,7 @@ function Gun:OnActivated()
 			local r0, r1 = self.Random:NextNumber(), self.Random:NextNumber()^1.2
 
 			local direction = (
-				CFrame.new(startPosition, hit) 
+				CFrame.lookAt(startPosition, hit) 
 				* CFrame.Angles(0, 0, math.pi * 2 * r0) 
 				* CFrame.Angles(math.rad(bloom/2) * r1, 0, 0)
 			).LookVector * range
@@ -283,7 +284,7 @@ function Gun:OnActivated()
 
 	local shotsFired = 1
 	local renderId = "FireGun-" .. initTime
-	RunService:BindToRenderStep(renderId, Enum.RenderPriority.Input.Value+1, function(deltaTime)
+	RunService:BindToRenderStep(renderId, Enum.RenderPriority.Input.Value + 1, function(deltaTime)
 		if not self.Active or self.ActivationTime ~= initTime then
 			RunService:UnbindFromRenderStep(renderId)
 			return
