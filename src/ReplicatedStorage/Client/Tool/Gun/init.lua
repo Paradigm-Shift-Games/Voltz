@@ -138,6 +138,28 @@ function Gun.PlaySound(tool: Tool, config: gunConfig)
 	Debris:AddItem(sound, (sound.TimeLength ~= 0 and sound.TimeLength) or 10)
 end
 
+function Gun.EmitFlare(tool: Tool)
+	local bulletSpawn: Attachment? = tool:FindFirstChild("BulletSpawn", true)
+	if not bulletSpawn then
+		return
+	end
+
+	local flare = bulletSpawn:FindFirstChild("Flare")
+	local light = bulletSpawn:FindFirstChild("Light")
+
+	if flare then
+		flare:Emit(16)
+	end
+
+	if light then
+		local clone = light:Clone()
+		clone.Name = "tmp"
+		clone.Enabled = true
+		clone.Parent = bulletSpawn
+		Debris:AddItem(clone, 0.05)
+	end
+end
+
 -- public:
 
 function Gun:GetRaycastBlacklist(): Array<Instance>
@@ -145,12 +167,8 @@ function Gun:GetRaycastBlacklist(): Array<Instance>
 	return {self.Instance, localPlayer.Character, bulletContainer}
 end
 
-function Gun:GetConfig(): gunConfig
-	return self.Config or Gun.Config
-end
-
 function Gun:GetConfigValue(valueName: string): any?
-	local config = self:GetConfig()
+	local config = self.Config
 	return config[valueName]
 end
 
@@ -226,11 +244,12 @@ function Gun:OnActivated()
 
 			if i == 1 or delayPerShot > 0 then
 				SpringHandler:Impulse(localPlayer.Character, decoration.ImpulseForce or 10)
-				Gun.PlaySound(self.Instance, self:GetConfig())
+				self.PlaySound(self.Instance, self.Config)
+				self.EmitFlare(self.Instance)
 				self.LastShotFiredTime = os.clock()
 			end
 
-			Gun.DrawShot(startPosition, endPosition, self.Config)
+			self.DrawShot(startPosition, endPosition, self.Config)
 			if delayPerShot ~= 0 then
 				task.wait(delayPerShot)
 			end
