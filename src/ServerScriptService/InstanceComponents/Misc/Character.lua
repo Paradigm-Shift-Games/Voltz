@@ -25,6 +25,7 @@ function Character.new(instance: Instance)
 	CollectionService:AddTag(instance, "CursorLook")
 	CollectionService:AddTag(instance, "FallDamage")
 	CollectionService:AddTag(instance, "Sprint")
+	CollectionService:AddTag(instance, "OceanDamage")
 
 	return self
 end
