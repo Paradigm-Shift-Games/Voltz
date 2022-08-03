@@ -135,6 +135,7 @@ function CursorLook.new(instance: Instance)
 		local lowerTorso: BasePart? = instance:FindFirstChild("LowerTorso")
 		local root: Motor6D? = lowerTorso and lowerTorso:FindFirstChild("Root")
 		if root then
+			local hipPosition = (lowerTorso.CFrame * CFrame.new(CursorLookConfig.HipOffset)).Position
 			self._rootAngles = dampenAngles(
 				self._rootAngles,
 				if shouldPerformLook then
@@ -157,12 +158,13 @@ function CursorLook.new(instance: Instance)
 		local upperTorso: BasePart? = instance:FindFirstChild("UpperTorso")
 		local waist: Motor6D? = upperTorso and upperTorso:FindFirstChild("Waist")
 		if waist then
+			local chestPosition = (upperTorso.CFrame * CFrame.new(CursorLookConfig.ChestOffset)).Position
 			self._waistAngles = dampenAngles(
 				self._waistAngles,
 				if shouldPerformLook then
 					Vector3.new(
-						calculateJointAngle(-upVector, upperTorso.Position, lookPosition),
-						calculateJointAngle(rightVector, upperTorso.Position, lookPosition),
+						calculateJointAngle(-upVector, chestPosition, lookPosition),
+						calculateJointAngle(rightVector, chestPosition, lookPosition),
 						0
 					)
 				else Vector3.zero,
@@ -177,12 +179,13 @@ function CursorLook.new(instance: Instance)
 		local head: BasePart? = instance:FindFirstChild("Head")
 		local neck: Motor6D? = head and head:FindFirstChild("Neck")
 		if neck then
+			local eyePosition = (head.CFrame * CFrame.new(CursorLookConfig.EyeOffset)).Position
 			self._neckAngles = dampenAngles(
 				self._neckAngles,
 				if shouldPerformLook then
 					Vector3.new(
-						calculateJointAngle(-upVector, head.Position, lookPosition),
-						calculateJointAngle(rightVector, head.Position, lookPosition),
+						calculateJointAngle(-upVector, eyePosition, lookPosition),
+						calculateJointAngle(rightVector, eyePosition, lookPosition),
 						0
 					)
 				else Vector3.zero,
