@@ -91,7 +91,7 @@ function Jetpack.new(instance)
 			end
 		end)
 		return Enum.ContextActionResult.Pass
-	end, false, Enum.KeyCode.Space)
+	end, false, Enum.PlayerActions.CharacterJump)
 	return self
 end
 
