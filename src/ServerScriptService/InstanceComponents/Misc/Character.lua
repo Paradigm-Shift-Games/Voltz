@@ -41,8 +41,8 @@ function Character.new(instance: Instance)
 	rootPart:SetAttribute("BurnRate", 20)
 
 	-- Apply defaults for jetpack thrust
-	rootPart:SetAttribute("ThrustAcceleration", 20)
-	rootPart:SetAttribute("MaxThrustSpeed", 18)
+	rootPart:SetAttribute("ThrustAcceleration", 70)
+	rootPart:SetAttribute("MaxThrustSpeed", 22)
 
 	-- Add Jetpack tag to the character root (TODO: Use jetpack model)
 	CollectionService:AddTag(rootPart, "Jetpack")
