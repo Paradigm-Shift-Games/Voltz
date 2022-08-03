@@ -160,7 +160,6 @@ function StatefulIncrementor.new<S>(increment: Silo.Modifier<S>, duration: numbe
 	self.Duration = duration
 
 	self.Amount = 0
-	self.Time = nil
 	self.TweenStyle = Enum.EasingStyle.Linear
 	self.TweenDirection = Enum.EasingDirection.Out
 	self._increment = increment
