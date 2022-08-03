@@ -17,7 +17,7 @@ StatefulIncrementor.__index = StatefulIncrementor
 
 	@return number
 ]=]
-function StatefulIncrementor.getTime()
+function StatefulIncrementor:_getTime()
 	return workspace:GetServerTimeNow()
 end
 
@@ -49,7 +49,7 @@ function StatefulIncrementor:GetRawProgress(duration: number?): number
 		return 0
 	end
 
-	local timeElapsed = self.getTime() - self.StartTime
+	local timeElapsed = self:_getTime() - self.StartTime
 	return math.clamp(timeElapsed / assert(duration or self.Duration, "Cannot collapse. No duration is defined."), 0, 1)
 end
 
@@ -104,7 +104,7 @@ end
 	@return number -- The remaining duration.
 ]=]
 function StatefulIncrementor:GetDuration()
-	local timeElapsed = self.getTime() - self.StartTime
+	local timeElapsed = self:_getTime() - self.StartTime
 	return math.max(0, timeElapsed - self.Duration)
 end
 
@@ -117,7 +117,7 @@ end
 function StatefulIncrementor:Increment(amount: number)
 	-- Update the amount and time of incrementation
 	self.Amount += amount
-	self.StartTime = self.getTime()
+	self.StartTime = self:_getTime()
 end
 
 --[=[
@@ -152,9 +152,10 @@ end
 
 	@param increment Silo.Modifier<S> -- A Modifier function which increments a target by the given argument.
 	@param duration number? -- The default duration an incrementor may take place over.
+	@param getTime (() -> number)? -- The function used to determine the current time.
 	@return StatefulIncrementor
 ]=]
-function StatefulIncrementor.new<S>(increment: Silo.Modifier<S>, duration: number?)
+function StatefulIncrementor.new<S>(increment: Silo.Modifier<S>, duration: number?, getTime: (() -> number)?)
 	local self = setmetatable({}, StatefulIncrementor)
 
 	self.Duration = duration
@@ -163,6 +164,8 @@ function StatefulIncrementor.new<S>(increment: Silo.Modifier<S>, duration: numbe
 	self.TweenStyle = Enum.EasingStyle.Linear
 	self.TweenDirection = Enum.EasingDirection.Out
 	self._increment = increment
+
+	self._getTime = getTime
 
 	return self
 end
