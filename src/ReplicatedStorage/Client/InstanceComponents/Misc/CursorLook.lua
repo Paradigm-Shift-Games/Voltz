@@ -61,9 +61,9 @@ function CursorLook.new(instance: Instance)
 	local rootC0 = root.C0
 
 	-- Reset joint angles
-	self._rootAngles = Vector3.new()
-	self._waistAngles = Vector3.new()
-	self._neckAngles = Vector3.new()
+	self._rootAngles = Vector3.zero
+	self._waistAngles = Vector3.zero
+	self._neckAngles = Vector3.zero
 
 	-- Get shared cursor property
 	local cursorProp = clientComm:GetProperty("Cursor")
