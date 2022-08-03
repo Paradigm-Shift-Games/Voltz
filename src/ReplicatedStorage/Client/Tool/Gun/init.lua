@@ -146,8 +146,8 @@ function Gun.EmitFlare(tool: Tool)
 		return
 	end
 
-	local flare = bulletSpawn:FindFirstChild("Flare")
-	local light = bulletSpawn:FindFirstChild("Light")
+	local flare: ParticleEmitter? = bulletSpawn:FindFirstChild("Flare")
+	local light: PointLight? = bulletSpawn:FindFirstChild("Light")
 
 	if flare then
 		flare:Emit(16)
