@@ -128,14 +128,13 @@ end
 --[=[
 	Unmounts an interface that was previously mounted using `Mount()`. The
 	unmount process will be performed immediately, and will result in the
-	destruction of the interface. If you explicitly supplied a `parent` argument
-	to `Mount()`, the `parent` object will not be destroyed.
+	destruction of the interface. If you supplied a `parent` argument to 
+	`Mount()`, the `parent` object will **not** be destroyed.
 
 	Returns a boolean indicating whether or not the interface was successfully
-	unmounted. If an error occurs, then the error message will be returned after
-	the boolean.
+	unmounted.
 ]=]
-function InterfaceController:Unmount(unmountKey: UnmountKey): (boolean, ...any)
+function InterfaceController:Unmount(unmountKey: UnmountKey): boolean
 	-- Get the interface to unmount
 	local mountedParentGui = self._unmountKeyToParentGui[unmountKey]
 	local mountedInterface = self._unmountKeyToInterface[unmountKey]
@@ -158,7 +157,8 @@ function InterfaceController:Unmount(unmountKey: UnmountKey): (boolean, ...any)
 	if unmountFunction == nil then return false end
 
 	-- Unmount the interface
-	return pcall(unmountFunction)
+	unmountFunction()
+	return true
 end
 
 return InterfaceController
