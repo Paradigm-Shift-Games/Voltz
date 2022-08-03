@@ -65,6 +65,27 @@ function CursorLook.new(instance: Instance)
 	self._waistAngles = Vector3.zero
 	self._neckAngles = Vector3.zero
 
+	-- Create hip attachment
+	local hipAttachment = Instance.new("Attachment")
+
+	-- Create chest attachment
+	local chestAttachment = Instance.new("Attachment")
+	chestAttachment.Name = "ChestAttachment"
+
+	-- Create eye attachment
+	local eyeAttachment = Instance.new("Attachment")
+	eyeAttachment.Name = "EyeAttachment"
+
+	-- Apply attachment positions
+	hipAttachment.Position = CursorLookConfig.HipOffset
+	chestAttachment.Position = CursorLookConfig.ChestOffset
+	eyeAttachment.Position = CursorLookConfig.EyeOffset
+
+	-- Add attachments to trove
+	self._trove:Add(hipAttachment)
+	self._trove:Add(chestAttachment)
+	self._trove:Add(eyeAttachment)
+
 	-- Get shared cursor property
 	local cursorProp = clientComm:GetProperty("Cursor")
 
@@ -135,7 +156,8 @@ function CursorLook.new(instance: Instance)
 		local lowerTorso: BasePart? = instance:FindFirstChild("LowerTorso")
 		local root: Motor6D? = lowerTorso and lowerTorso:FindFirstChild("Root")
 		if root then
-			local hipPosition = (lowerTorso.CFrame * CFrame.new(CursorLookConfig.HipOffset)).Position
+			hipAttachment.Parent = lowerTorso
+			local hipPosition = hipAttachment.WorldPosition
 			self._rootAngles = dampenAngles(
 				self._rootAngles,
 				if shouldPerformLook then
@@ -158,7 +180,8 @@ function CursorLook.new(instance: Instance)
 		local upperTorso: BasePart? = instance:FindFirstChild("UpperTorso")
 		local waist: Motor6D? = upperTorso and upperTorso:FindFirstChild("Waist")
 		if waist then
-			local chestPosition = (upperTorso.CFrame * CFrame.new(CursorLookConfig.ChestOffset)).Position
+			chestAttachment.Parent = upperTorso
+			local chestPosition = chestAttachment.WorldPosition
 			self._waistAngles = dampenAngles(
 				self._waistAngles,
 				if shouldPerformLook then
@@ -179,7 +202,8 @@ function CursorLook.new(instance: Instance)
 		local head: BasePart? = instance:FindFirstChild("Head")
 		local neck: Motor6D? = head and head:FindFirstChild("Neck")
 		if neck then
-			local eyePosition = (head.CFrame * CFrame.new(CursorLookConfig.EyeOffset)).Position
+			eyeAttachment.Parent = head
+			local eyePosition = eyeAttachment.WorldPosition
 			self._neckAngles = dampenAngles(
 				self._neckAngles,
 				if shouldPerformLook then
