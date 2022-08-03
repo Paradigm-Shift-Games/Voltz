@@ -72,9 +72,10 @@ Gun.Config = {
 	}
 }
 
-function Gun.DrawShot(startPoint: Vector3, endPoint: Vector3, config: table)
+function Gun.DrawShot(startAttachment: Attachment, endPoint: Vector3, config: table)
 	config = config or Gun.Config
 
+	local startPoint = startAttachment.WorldPosition
 	local thickness = config.BulletDecoration.Thickness
 	local distance = math.min(config.Range, (startPoint - endPoint).Magnitude)
 
@@ -88,11 +89,9 @@ function Gun.DrawShot(startPoint: Vector3, endPoint: Vector3, config: table)
 	beam.CanQuery = false
 	beam.CanTouch = false
 	beam.Size = Vector3.new(thickness, thickness, distance)
-	beam.CFrame = CFrame.new(startPoint, endPoint) * CFrame.new(0, 0, -distance / 2)
 
 	local mesh = Instance.new("BlockMesh")
 	mesh.Parent = beam
-	beam.Parent = bulletContainer
 
 	local travelSpeed = (distance/300) / (config.BulletDecoration.BulletSpeed or 1)
 	Debris:AddItem(beam, travelSpeed)
@@ -100,6 +99,22 @@ function Gun.DrawShot(startPoint: Vector3, endPoint: Vector3, config: table)
 	task.delay(1/30, function()
 		tweenOnce(mesh, TweenInfo.new(travelSpeed - 1/30, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = Vector3.new(1, 1, 0), Offset = Vector3.new(0, 0, -distance/2)})
 	end)
+
+	-- BeamUpdater updates the beam's cframe for 4 frames so it doesn't look weird when the character moves a lot
+	local renderId = "BeamUpdater-"..os.clock()
+	local endTime = os.clock() + 4*(1/60)
+	local function update()
+		if not beam.Parent or not startAttachment.Parent or os.clock()>endTime then
+			RunService:UnbindFromRenderStep(renderId)
+			return
+		end
+		startPoint = startAttachment.WorldPosition
+		beam.CFrame = CFrame.new(startPoint, endPoint) * CFrame.new(0, 0, -distance / 2 - 0.1)
+	end
+	RunService:BindToRenderStep(renderId, 0, update)
+	task.spawn(update, 0)
+
+	beam.Parent = bulletContainer
 end
 
 function Gun.PlaySound(tool: Tool, config: gunConfig)
@@ -258,7 +273,7 @@ function Gun:OnActivated()
 				self.LastShotFiredTime = os.clock()
 			end
 
-			self.DrawShot(startPosition, endPosition, self.Config)
+			self.DrawShot(bulletSpawn, endPosition, self.Config)
 			if delayPerShot ~= 0 then
 				task.wait(delayPerShot)
 			end
