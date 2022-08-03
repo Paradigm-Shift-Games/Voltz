@@ -1,6 +1,6 @@
 local FallDamageConfig = {
-    Threshold = 60;
-    Scale = 1;
+    Threshold = 150;
+    Scale = 1.7;
 }
 
 return FallDamageConfig

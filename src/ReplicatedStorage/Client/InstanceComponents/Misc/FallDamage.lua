@@ -6,19 +6,12 @@ local FallDamage = {}
 FallDamage.__index = FallDamage
 
 function FallDamage:_trackCharacterFall(character: Model, humanoid: Humanoid)
-	local initialHeight = nil
-	local fallHeight = nil
+	local endVelocity = nil
 
-	self._trove:Connect(humanoid.FreeFalling, function(active)
-		if active then
-			initialHeight = character.HumanoidRootPart.Position.Y
-		elseif initialHeight then
-			fallHeight = initialHeight - character.HumanoidRootPart.Position.Y
-			if fallHeight < FallDamageConfig.Threshold then return end
-
-			local damage = (fallHeight - FallDamageConfig.Threshold) * FallDamageConfig.Scale
-			humanoid:TakeDamage(damage)
-		end
+	self._trove:Connect(humanoid.StateChanged, function(old, new)
+		if not (old == Enum.HumanoidStateType.Freefall and new == Enum.HumanoidStateType.Landed) then return end
+		endVelocity = character.HumanoidRootPart.AssemblyLinearVelocity.Magnitude
+		humanoid:TakeDamage((endVelocity - FallDamageConfig.Threshold) * FallDamageConfig.Scale)
 	end)
 end
 
