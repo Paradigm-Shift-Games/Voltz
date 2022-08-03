@@ -52,9 +52,6 @@ function CursorLook.new(instance: Instance)
 		instance.ChildAdded:Wait()
 	end
 
-	-- Retrieve player root part
-	local rootPart = humanoid.RootPart
-
 	-- Grab base C0 for root part (TODO: Clean this up)
 	local lowerTorso: BasePart = instance:WaitForChild("LowerTorso")
 	local root: Motor6D = lowerTorso and lowerTorso:WaitForChild("Root")
@@ -80,6 +77,12 @@ function CursorLook.new(instance: Instance)
 
 		-- Whether or not the character should auto rotate
 		local shouldAutoRotate = if isOnGround then instance:GetAttribute("AutoRotateOnGround") else instance:GetAttribute("AutoRotateInAir")
+
+		-- Retrieve player root part
+		local rootPart = humanoid.RootPart
+		if not rootPart then
+			return
+		end
 
 		-- Get root CFrame & vectors
 		local cframe = rootPart:GetPivot()
