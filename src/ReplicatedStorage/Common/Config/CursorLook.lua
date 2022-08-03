@@ -17,6 +17,11 @@ local CursorLookConfig = {
 	NeckUpperBounds = Vector3.new(25, 45, 0) * math.rad(1);
 	NeckLowerBounds = Vector3.new(-35, -45, 0) * math.rad(1);
 
+	-- Speed & bounds for rotating the right shoulder
+	RightShoulderAngularSpeed = Vector3.new(560, 560, 560) * math.rad(1);
+	RightShoulderUpperBounds = Vector3.new(170, 360, 90) * math.rad(1);
+	RightShoulderLowerBounds = Vector3.new(-180, -360, -80) * math.rad(1);
+
 	-- Offset for the position of the player's eyes
 	EyeOffset = Vector3.new(0, 0.2, -0.553);
 
@@ -25,6 +30,9 @@ local CursorLookConfig = {
 
 	-- Offset for the position of the player's hips
 	HipOffset = Vector3.new(0, 0.27, -0.292);
+
+	-- Offset for the position of the player's tool
+	ToolOffset = Vector3.zero;
 }
 
 return CursorLookConfig

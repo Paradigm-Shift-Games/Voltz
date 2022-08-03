@@ -64,6 +64,7 @@ function CursorLook.new(instance: Instance)
 	self._rootAngles = Vector3.zero
 	self._waistAngles = Vector3.zero
 	self._neckAngles = Vector3.zero
+	self._rightShoulderAngles = Vector3.zero
 
 	-- Create hip attachment
 	local hipAttachment = Instance.new("Attachment")
@@ -76,15 +77,21 @@ function CursorLook.new(instance: Instance)
 	local eyeAttachment = Instance.new("Attachment")
 	eyeAttachment.Name = "EyeAttachment"
 
+	-- Create tool attachment
+	local toolAttachment = Instance.new("Attachment")
+	toolAttachment.Name = "ToolAttachment"
+
 	-- Apply attachment positions
 	hipAttachment.Position = CursorLookConfig.HipOffset
 	chestAttachment.Position = CursorLookConfig.ChestOffset
 	eyeAttachment.Position = CursorLookConfig.EyeOffset
+	toolAttachment.Position = CursorLookConfig.ToolOffset
 
 	-- Add attachments to trove
 	self._trove:Add(hipAttachment)
 	self._trove:Add(chestAttachment)
 	self._trove:Add(eyeAttachment)
+	self._trove:Add(toolAttachment)
 
 	-- Get shared cursor property
 	local cursorProp = clientComm:GetProperty("Cursor")
@@ -112,6 +119,13 @@ function CursorLook.new(instance: Instance)
 		-- Whether or not the character should auto rotate
 		local shouldAutoRotate = if isOnGround then instance:GetAttribute("AutoRotateOnGround") else instance:GetAttribute("AutoRotateInAir")
 
+		-- Find the player's tool and determine if it is held
+		local tool = instance:FindFirstChildWhichIsA("Tool")
+		local toolHandle = tool and tool:FindFirstChild("Handle")
+
+		-- Whether or not the player's arm should aim at their mouse
+		local shouldRotateArm = toolHandle and if isOnGround then instance:GetAttribute("AimToolOnGround") else instance:GetAttribute("AimToolInAir")
+
 		-- Retrieve player root part
 		local rootPart = humanoid.RootPart
 		if not rootPart then
@@ -123,6 +137,7 @@ function CursorLook.new(instance: Instance)
 
 		local upVector = cframe.UpVector
 		local rightVector = cframe.RightVector
+		local lookVector = cframe.LookVector
 
 		-- Locate mouse target part
 		local lookPart: BasePart = mouseCursor
@@ -218,6 +233,29 @@ function CursorLook.new(instance: Instance)
 			)
 
 			neck.Transform *= clampedAngles(self._neckAngles, CursorLookConfig.NeckLowerBounds, CursorLookConfig.NeckUpperBounds)
+		end
+
+		-- Right shoulder joint angles
+		local rightUpperArm: BasePart? = instance:FindFirstChild("RightUpperArm")
+		local rightShoulder: Motor6D? = rightUpperArm and rightUpperArm:FindFirstChild("RightShoulder")
+		if rightShoulder then
+			toolAttachment.Parent = rightUpperArm
+			local endPointAttachment = (tool and tool:FindFirstChild("BulletSpawn", true)) or toolAttachment
+			local toolPosition = endPointAttachment.WorldPosition
+			self._rightShoulderAngles = dampenAngles(
+				self._rightShoulderAngles,
+				if shouldRotateArm then
+					Vector3.new( -- Note: The angles are a bit weird for this joint, the Y and Z values are flipped
+						calculateJointAngle(-if upperTorso then upperTorso.CFrame.UpVector else upVector, toolPosition, lookPosition), -- Pitch
+						-calculateJointAngle(-if upperTorso then upperTorso.CFrame.RightVector else rightVector, toolPosition, lookPosition), -- Roll
+						-calculateJointAngle(if upperTorso then upperTorso.CFrame.RightVector else rightVector, toolPosition, lookPosition) -- Yaw
+					)
+				else Vector3.zero,
+				CursorLookConfig.RightShoulderAngularSpeed,
+				deltaTime
+			)
+
+			rightShoulder.Transform *= clampedAngles(self._rightShoulderAngles, CursorLookConfig.RightShoulderLowerBounds, CursorLookConfig.RightShoulderUpperBounds)
 		end
 
 		if isLocalPlayer then

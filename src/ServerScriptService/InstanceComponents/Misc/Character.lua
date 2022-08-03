@@ -15,11 +15,13 @@ function Character.new(instance: Instance)
 	instance:SetAttribute("AutoRotateOnGround", false)
 	instance:SetAttribute("FaceCursorOnGround", true)
 	instance:SetAttribute("LookOnGround", true)
+	instance:SetAttribute("AimToolOnGround", true)
 
 	-- Apply defaults when in the air
 	instance:SetAttribute("AutoRotateInAir", true)
 	instance:SetAttribute("FaceCursorInAir", false)
 	instance:SetAttribute("LookInAir", false)
+	instance:SetAttribute("AimToolInAir", true)
 
 	-- Add CameraLook tag to the character
 	CollectionService:AddTag(instance, "CursorLook")
