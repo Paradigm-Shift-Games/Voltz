@@ -21,7 +21,7 @@ function Jetpack.new(instance)
 
 	-- Set owning player
 	self._owner = Players:GetPlayerFromCharacter(instance.Parent)
-	instance.AncestryChanged:Connect(function()
+	self._trove:Connect(instance.AncestryChanged, function()
 		self._owner = Players:GetPlayerFromCharacter(instance.Parent)
 	end)
 	if not self:IsOwner() then
