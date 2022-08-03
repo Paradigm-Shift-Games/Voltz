@@ -1,6 +1,8 @@
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 local Trove = require(ReplicatedStorage.Packages.Trove)
+local BinderService = require(ServerScriptService.Services.BinderService)
 
 local Character = {}
 Character.__index = Character
@@ -22,9 +24,17 @@ function Character.new(instance: Instance)
 	instance:SetAttribute("LookInAir", false)
 
 	-- Add CameraLook tag to the character
+	CollectionService:AddTag(instance, "OwnedObject")
 	CollectionService:AddTag(instance, "CursorLook")
 	CollectionService:AddTag(instance, "FallDamage")
 	CollectionService:AddTag(instance, "OceanDamage")
+
+	-- Get the OwnedObject component
+	local OwnedObject = BinderService:Get("OwnedObject")
+	local ownedObject = OwnedObject:Get(instance)
+
+	-- Apply automatic ownership
+	ownedObject:SetAutomaticOwnership(true)
 
 	return self
 end
