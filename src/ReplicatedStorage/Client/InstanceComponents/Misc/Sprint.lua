@@ -47,7 +47,7 @@ function Sprint:Destroy()
 end
 
 function Sprint:IsOwner()
-	return Players.LocalPlayer or Players.LocalPlayer == self._owner
+	return Players.LocalPlayer == self._owner
 end
 
 function Sprint:StartSprinting()
