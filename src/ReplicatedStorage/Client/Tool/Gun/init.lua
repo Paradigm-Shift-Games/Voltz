@@ -236,12 +236,12 @@ function Gun:OnActivated()
 				endPosition = startPosition+direction
 			end
 
-			-- Draw a secondary ray from the head to prevent guns from firing through walls when the barrel is on the other side.
-			local headPosition = localPlayer.Character.Head.Position
-			local headDirection = (endPosition - headPosition).Unit * range
-			local raycastResultFromHead = workspace:Raycast(headPosition, headDirection, raycastParams)
-			if raycastResultFromHead then
-				endPosition = raycastResultFromHead.Position
+			-- Draw a secondary ray from the RightUpperArm to prevent guns from firing through walls when the barrel is on the other side.
+			local shoulderPosition = localPlayer.Character.RightUpperArm.Position
+			local shoulderDirection = (endPosition - shoulderPosition).Unit * range
+			local raycastResultFromShoulder = workspace:Raycast(shoulderPosition, shoulderDirection, raycastParams)
+			if raycastResultFromShoulder then
+				endPosition = raycastResultFromShoulder.Position
 			end
 
 			if i == 1 or delayPerShot > 0 then
