@@ -85,6 +85,8 @@ function Gun.DrawShot(startPoint: Vector3, endPoint: Vector3, config: table)
 	beam.Anchored = true
 	beam.Locked = true
 	beam.CanCollide = false
+	beam.CanQuery = false
+	beam.CanTouch = false
 	beam.Size = Vector3.new(thickness, thickness, distance)
 	beam.CFrame = CFrame.new(startPoint, endPoint) * CFrame.new(0, 0, -distance / 2)
 
