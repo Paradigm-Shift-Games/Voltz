@@ -155,15 +155,15 @@ end
 	@return StatefulIncrementor
 ]=]
 function StatefulIncrementor.new<S>(increment: Silo.Modifier<S>, duration: number?)
-	local self = setmetatable({
-		Duration = duration;
+	local self = setmetatable({}, StatefulIncrementor)
 
-		Amount = 0;
-		Time = nil;
-		TweenStyle = Enum.EasingStyle.Linear;
-		TweenDirection = Enum.EasingDirection.Out;
-		_increment = increment;
-	}, StatefulIncrementor)
+	self.Duration = duration
+
+	self.Amount = 0
+	self.Time = nil
+	self.TweenStyle = Enum.EasingStyle.Linear
+	self.TweenDirection = Enum.EasingDirection.Out
+	self._increment = increment
 
 	return self
 end
