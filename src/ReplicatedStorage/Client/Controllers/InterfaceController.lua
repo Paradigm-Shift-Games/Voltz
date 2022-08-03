@@ -80,7 +80,7 @@ function InterfaceController:Mount(interface: GuiBase | GuiBase2d, parent: Insta
 	-- Check if interface is already mounted, if it is then return the unmount key
 	local storedUnmountKey = self._interfaceToUnmountKey[interface]
 	if storedUnmountKey then
-		return storedUnmountKey
+		return storedUnmountKey :: UnmountKey
 	end
 
 	-- Get/create parent gui if it doesn't exist
