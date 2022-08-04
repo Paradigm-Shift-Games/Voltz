@@ -1,36 +1,23 @@
+--!strict
+
 -- Abstract gun class
 
 local CollectionService = game:GetService("CollectionService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
 
+local Knit = require(ReplicatedStorage.Packages.Knit)
+local BulletHandlerService = Knit.GetService("BulletHandlerService")
+
 local Tool = require(script.Parent)
 local SpringHandler = require(script.SpringHandler)
+local GunDataTypes = require(ReplicatedStorage.Common.Types.GunDataTypes)
 
 local Gun = setmetatable({}, Tool)
 Gun.__index = Gun
-
-type gunConfig = {
-    AutoFire: boolean,
-	FireRate: number,
-	Bloom: number,
-	Range: number,
-	BulletsPerShot: number,
-	DelayPerShot: number,
-	Damage: number,
-	ScopeFOV: number,
-	BulletDecoration: {
-		Color: Color3,
-		Thickness: number,
-		BulletSpeed: number
-	},
-	FireSound: {
-		SoundId: string,
-		Volume: number
-	}?
-}
 
 -- private:
 
@@ -53,6 +40,9 @@ local function tweenOnce(...): Tween
 	return tween
 end
 
+function Gun:_fireBulletData(bulletDataList)
+	BulletHandlerService:FireBullet(bulletDataList)
+end
 
 -- static:
 
@@ -89,6 +79,7 @@ function Gun.DrawShot(startAttachment: Attachment, endPoint: Vector3, config: ta
 	beam.CanCollide = false
 	beam.CanQuery = false
 	beam.CanTouch = false
+	beam.CastShadow = false
 	beam.Size = Vector3.new(thickness, thickness, distance)
 
 	local mesh = Instance.new("BlockMesh")
@@ -118,7 +109,7 @@ function Gun.DrawShot(startAttachment: Attachment, endPoint: Vector3, config: ta
 	beam.Parent = bulletContainer
 end
 
-function Gun.PlaySound(tool: Tool, config: gunConfig)
+function Gun.PlaySound(tool: Tool, config: GunDataTypes.GunConfig)
 	if not config.FireSound then
 		return
 	end
@@ -251,6 +242,8 @@ function Gun:OnActivated()
 	end
 
 	local function fireShot()
+		local bulletDataList: Array<GunDataTypes.BulletData> = {}
+
 		for i = 1, bulletsPerShot do
 			if not self.Instance.Parent then
 				break
@@ -275,6 +268,7 @@ function Gun:OnActivated()
 			else
 				endPosition = startPosition+direction
 			end
+			local originalEndPosition = endPosition
 
 			-- Draws reversed rays from the Head and RightUpperArm to prevent guns from firing through walls when the barrel is on the other side.
 			-- Also fires an extra reversed ray to bulletSpawn's position to check if the original ray missed an object
@@ -295,10 +289,28 @@ function Gun:OnActivated()
 				self.LastShotFiredTime = os.clock()
 			end
 
+			local bulletData: GunDataTypes.BulletData = {
+				BarrelPosition = startPosition,
+				EndPosition = endPosition,
+				ToolName = self.Instance.Name
+			}
+
+			if raycastResult and endPosition == originalEndPosition then
+				bulletData.HitPart = raycastResult.Instance
+			end
+
+			table.insert(bulletDataList, bulletData)
+
 			self.DrawShot(bulletSpawn, endPosition, self.Config)
 			if delayPerShot ~= 0 then
+				self:_fireBulletData(bulletDataList)
+				bulletDataList = {}
 				task.wait(delayPerShot)
 			end
+		end
+
+		if delayPerShot == 0 then
+			self:_fireBulletData(bulletDataList)
 		end
 	end
 	fireShot()
