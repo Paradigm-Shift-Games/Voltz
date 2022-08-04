@@ -16,9 +16,6 @@ function Sprint.new(character: Model)
 	self._owner = Players:GetPlayerFromCharacter(character)
 	self.Instance = character
 
-	self._trove:Connect(character.AncestryChanged, function()
-		self._owner = Players:GetPlayerFromCharacter(character.Parent)
-	end)
 	if not self:IsOwner() then
 		return self
 	end
