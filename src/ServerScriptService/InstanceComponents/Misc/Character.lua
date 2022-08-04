@@ -21,11 +21,11 @@ function Character.new(instance: Instance)
 	instance:SetAttribute("FaceCursorInAir", false)
 	instance:SetAttribute("LookInAir", false)
 
-	-- Add CameraLook tag to the character
+	-- Add tags to the character
 	CollectionService:AddTag(instance, "CursorLook")
 	CollectionService:AddTag(instance, "FallDamage")
-	CollectionService:AddTag(instance, "Sprint")
 	CollectionService:AddTag(instance, "OceanDamage")
+	CollectionService:AddTag(instance, "Sprint")
 
 	return self
 end

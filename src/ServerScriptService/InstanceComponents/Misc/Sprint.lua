@@ -11,13 +11,13 @@ function Sprint.new(character: Model)
 	local serverComm = Comm.ServerComm.new(character, "Sprint")
 	local self = setmetatable({}, Sprint)
 
-	self._character = character
 	self._comm = serverComm
 	self._trove = Trove.new()
 	self._trove:Add(self._comm)
-
 	self._owner = Players:GetPlayerFromCharacter(character.Parent)
-	character.AncestryChanged:Connect(function()
+	self.Instance = character
+
+	self._trove:Connect(character.AncestryChanged, function()
 		self._owner = Players:GetPlayerFromCharacter(character.Parent)
 	end)
 
@@ -32,18 +32,18 @@ function Sprint:Destroy()
 end
 
 function Sprint:IsOwner(player: Player?)
-	return player == self._owner
+	return (not not player) or player == self._owner
 end
 
 function Sprint:StartSprinting(player: Player?)
 	if not self:IsOwner(player) then return end
-	local humanoid = self._character:FindFirstChildWhichIsA("Humanoid")
-	humanoid.WalkSpeed = WalkSpeedConfig.Sprint
+	local humanoid = self.Instance:FindFirstChildWhichIsA("Humanoid")
+	if humanoid then humanoid.WalkSpeed = WalkSpeedConfig.Sprint end
 end
 
 function Sprint:StopSprinting(player: Player?)
 	if not self:IsOwner(player) then return end
-	local humanoid = self._character:FindFirstChildWhichIsA("Humanoid")
+	local humanoid = self.Instance:FindFirstChildWhichIsA("Humanoid")
 	humanoid.WalkSpeed = WalkSpeedConfig.Base
 end
 

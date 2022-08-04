@@ -11,14 +11,14 @@ function Sprint.new(character: Model)
 	local clientComm = Comm.ClientComm.new(character, false, "Sprint")
 	local self = setmetatable({}, Sprint)
 
-	self._character = character
 	self._comm = clientComm
 	self._trove = Trove.new()
 	self._trove:Add(self._comm)
 	self._serverObject = clientComm:BuildObject()
+	self._owner = Players:GetPlayerFromCharacter(character)
+	self.Instance = character
 
-	self._owner = Players:GetPlayerFromCharacter(character.Parent)
-	character.AncestryChanged:Connect(function()
+	self._trove:Connect(character.AncestryChanged, function()
 		self._owner = Players:GetPlayerFromCharacter(character.Parent)
 	end)
 	if not self:IsOwner() then
