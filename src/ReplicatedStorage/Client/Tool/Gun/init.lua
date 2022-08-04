@@ -172,7 +172,6 @@ end
 -- public:
 
 function Gun:GetRaycastBlacklist(extraInstances: Array<Instance>?): Array<Instance>
-	-- PLEASE ADD BLUEPRINTS HERE PLEASE
 	local blacklist = {self.Instance, localPlayer.Character, bulletContainer}
 	if extraInstances then
 		for _, instance in extraInstances do
