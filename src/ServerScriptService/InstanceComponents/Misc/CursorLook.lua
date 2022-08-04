@@ -75,7 +75,7 @@ function CursorLook:CreateCursor()
 	mouseCursor:SetNetworkOwner(player)
 
 	-- When the mouse target is destroyed, create a new mouse target
-	self._cursorRemovedConnection = mouseCursor.Destroying:Connect(function()
+	mouseCursor.Destroying:Connect(function()
 		self:CreateCursor()
 	end)
 
@@ -88,11 +88,6 @@ function CursorLook:Destroy()
 	-- Clean up mouse cursor part
 	if self._mouseCursor then
 		self._mouseCursor:Destroy()
-	end
-
-	-- Clean up cursor removed connection
-	if self._cursorRemovedConnection then
-		self._cursorRemovedConnection:Disconnect()
 	end
 
 	-- Clean trove
