@@ -1,6 +1,6 @@
 local FallDamageConfig = {
-    Threshold = 150;
-    Scale = 1.7;
+    MaxVelocityThreshold = 150;
+    DamageScale = 1.7;
 }
 
 return FallDamageConfig
