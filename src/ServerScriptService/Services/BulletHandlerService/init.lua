@@ -21,6 +21,26 @@ local BulletHandlerService = Knit.CreateService {
 }
 BulletHandlerService.DEBUG_MODE = true
 
+local damageMultiplierList = {
+    ["Head"] = 2,
+    ["UpperTorso"] = 1.1,
+    ["LowerTorso"] = 0.9,
+
+    ["RightUpperLeg"] = 0.8,
+    ["RightLowerLeg"] = 0.8,
+    ["RightFoot"] = 0.8,
+    ["LeftUpperLeg"] = 0.8,
+    ["LeftLowerLeg"] = 0.8,
+    ["LeftFoot"] = 0.8,
+
+    ["RightUpperArm"] = 0.7,
+    ["RightLowerArm"] = 0.7,
+    ["RightHand"] = 0.7,
+    ["LeftUpperArm"] = 0.7,
+    ["LeftLowerArm"] = 0.7,
+    ["LeftHand"] = 0.7
+}
+
 function BulletHandlerService:_log(str: string, ...)
     if not self.DEBUG_MODE then
         return
@@ -137,10 +157,28 @@ function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: 
         return true
     end
 
+    local function handleBulletHit(bulletData: GunDataTypes.BulletData)
+        local hitPart = bulletData.HitPart
+        local character = hitPart.Parent
+        if character == player.Character then
+            return
+        end
+
+        local humanoid = character and character:FindFirstChild("Humanoid")
+        local damageMultiplier = damageMultiplierList[hitPart.Name]
+        if humanoid and damageMultiplier then
+            local damageAmount = gunConfig.Damage*damageMultiplier
+            print("Deam damageAmount damage: " .. damageAmount)
+            humanoid:TakeDamage(damageAmount)
+        end
+    end
+
     for _, bulletData in bulletDataList do
         local passed = handleBulletData(bulletData)
         if passed then
-            print("passed!")
+            if bulletData.HitPart then
+                handleBulletHit(bulletData)
+            end
         end
     end
 
