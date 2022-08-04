@@ -1,6 +1,6 @@
 local AssaultRifleConfig = {
 	AutoFire = true,
-	FireRate = 10,
+	FireRate = 7,
 	Bloom = 1.3,
 	Range = 192,
 	BulletsPerShot = 1,
