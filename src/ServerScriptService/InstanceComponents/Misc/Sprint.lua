@@ -21,8 +21,8 @@ function Sprint.new(character: Model)
 		self._owner = Players:GetPlayerFromCharacter(character.Parent)
 	end)
 
-	self._startSprinting = serverComm:WrapMethod(self, "StartSprinting")
-	self._stopSprinting = serverComm:WrapMethod(self, "StopSprinting")
+	serverComm:WrapMethod(self, "StartSprinting")
+	serverComm:WrapMethod(self, "StopSprinting")
 
 	return self
 end
