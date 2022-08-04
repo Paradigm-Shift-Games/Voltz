@@ -28,7 +28,7 @@ function CursorLook.new(instance: Instance)
 	return self
 end
 
-function CursorLook:_createThrustConstraint(mouseCursor: BasePart)
+function CursorLook:_constructThrustConstraint(mouseCursor: BasePart)
 	-- Place an attachment into the part
 	local attachment0 = Instance.new("Attachment")
 	attachment0.Parent = mouseCursor
@@ -42,30 +42,33 @@ function CursorLook:_createThrustConstraint(mouseCursor: BasePart)
 	vectorForce.Parent = mouseCursor
 end
 
-function CursorLook:_createCursorPart(): BasePart
+function CursorLook:_constructCursorPart(): BasePart
 	-- Create a part for the player's mouse target
 	local mouseCursor = Instance.new("Part")
 	mouseCursor.Name = "Cursor"
-	mouseCursor.Transparency = 1
+
+	-- Assign physical properties
 	mouseCursor.Size = Vector3.new(1, 1, 1)
 	mouseCursor.CanCollide = false
 	mouseCursor.CanQuery = false
 	mouseCursor.CanTouch = false
 	mouseCursor.Locked = true
 
+	-- Assign visual properties
+	mouseCursor.Transparency = 1
 	mouseCursor.Material = Enum.Material.Neon
 	mouseCursor.Color = Color3.new(1, 0, 1)
 	mouseCursor.Shape = Enum.PartType.Cylinder
 
 	-- Create the jetpack thrust constraint
-	self:_createThrustConstraint(mouseCursor)
+	self:_constructThrustConstraint(mouseCursor)
 
 	return mouseCursor
 end
 
 function CursorLook:CreateCursor()
 	local player = Players:GetPlayerFromCharacter(self.Instance)
-	local mouseCursor = self:_createCursorPart()
+	local mouseCursor = self:_constructCursorPart()
 
 	-- Parent mouse target part, and give network ownership
 	mouseCursor.Parent = mouseFolder
