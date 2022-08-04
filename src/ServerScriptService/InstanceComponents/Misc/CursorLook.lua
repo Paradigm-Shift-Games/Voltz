@@ -28,9 +28,21 @@ function CursorLook.new(instance: Instance)
 	return self
 end
 
-function CursorLook:CreateCursor()
-	local player = Players:GetPlayerFromCharacter(self.Instance)
+function CursorLook:_createThrustConstraint(mouseCursor: BasePart)
+	-- Place an attachment into the part
+	local attachment0 = Instance.new("Attachment")
+	attachment0.Parent = mouseCursor
 
+	-- Create a vector force to counteract gravity
+	local vectorForce = Instance.new("VectorForce")
+	vectorForce.Attachment0 = attachment0
+	vectorForce.Force = Vector3.new(0, mouseCursor.AssemblyMass * workspace.Gravity, 0)
+	vectorForce.ApplyAtCenterOfMass = true
+	vectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
+	vectorForce.Parent = mouseCursor
+end
+
+function CursorLook:_createCursorPart(): BasePart
 	-- Create a part for the player's mouse target
 	local mouseCursor = Instance.new("Part")
 	mouseCursor.Name = "Cursor"
@@ -45,17 +57,15 @@ function CursorLook:CreateCursor()
 	mouseCursor.Color = Color3.new(1, 0, 1)
 	mouseCursor.Shape = Enum.PartType.Cylinder
 
-	-- Place an attachment into the part
-	local attachment0 = Instance.new("Attachment")
-	attachment0.Parent = mouseCursor
+	-- Create the jetpack thrust constraint
+	self:_createThrustConstraint(mouseCursor)
 
-	-- Create a vector force to counteract gravity
-	local vectorForce = Instance.new("VectorForce")
-	vectorForce.Attachment0 = attachment0
-	vectorForce.Force = Vector3.new(0, mouseCursor.AssemblyMass * workspace.Gravity, 0)
-	vectorForce.ApplyAtCenterOfMass = true
-	vectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
-	vectorForce.Parent = mouseCursor
+	return mouseCursor
+end
+
+function CursorLook:CreateCursor()
+	local player = Players:GetPlayerFromCharacter(self.Instance)
+	local mouseCursor = self:_createCursorPart()
 
 	-- Parent mouse target part, and give network ownership
 	mouseCursor.Parent = mouseFolder
