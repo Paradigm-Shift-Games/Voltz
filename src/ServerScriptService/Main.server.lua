@@ -5,5 +5,3 @@ local Knit = require(ReplicatedStorage.Packages.Knit)
 Knit.AddServices(ServerScriptService.Services)
 
 Knit.Start()
-
-require(ReplicatedStorage.Common.Util.Zone)

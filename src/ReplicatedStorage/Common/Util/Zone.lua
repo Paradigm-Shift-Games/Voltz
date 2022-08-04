@@ -1,18 +1,22 @@
 --!strict
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Signal = require(ReplicatedStorage.Packages.Signal)
+
 --Public Types
 
-export type Shape_t = number
+export type Shape = "Box" | "Ball"
 
-export type Zone_t = {
+export type Zone = {
     --Public Fields
-    shape : Shape_t;
+    shape : Shape;
     cFrame : CFrame;
     size : Vector3;
     overlapParams : OverlapParams;
 
-    --Private Fields
+    --"Private" Fields
     _within : { [Instance] : true };
+    _signal : typeof(Signal.new());
 }
 
 --Private Constants
@@ -24,30 +28,25 @@ local defaultOverlapParams = OverlapParams.new()
 local Zone = {}
 Zone.__index = Zone
 
---Public Properties
-
-Zone.Shapes = {
-    Box = 1;
-    Sphere = 2;
-}
-
 --Public Methods
 
 --Creates a new Zone table
 function Zone.new(arguments : {
-    shape : Shape_t;
+    shape : Shape;
     cFrame : CFrame;
     size : Vector3;
     overlapParams : OverlapParams?;
-}) : Zone_t
+}) : Zone
 
-    local self = {} :: Zone_t
+    local self = {} :: Zone
 
+    self.shape = arguments.shape
     self.cFrame = arguments.cFrame
     self.size = arguments.size
     self.overlapParams = arguments.overlapParams or defaultOverlapParams
 
     self._within = {}
+    self._signal = Signal.new()
 
     return setmetatable(self, Zone)
 end
@@ -56,10 +55,10 @@ end
 function Zone:Poll() : ({ Instance }, { Instance })
     --Get instances within the self
     local withinInstances : { Instance } =
-        if self.shape == Zone.Shapes.Box then
+        if self.shape == "Box" then
             workspace:GetPartBoundsInBox(self.cFrame, self.size, self.overlapParams)
 
-        elseif self.shape == Zone.Shapes.Sphere then
+        elseif self.shape == "Ball" then
             workspace:GetPartBoundsInRadius(self.cFrame.Position, math.max(self.size.X, self.size.Y, self.size.Z), self.overlapParams) --This is the same behavior as setting the size of a ball part
 
         else
@@ -84,7 +83,7 @@ function Zone:Poll() : ({ Instance }, { Instance })
         self._within[instance] = nil
     end
 
-    for instance in pairs(self._within) do
+    for instance, _ in pairs(self._within) do
         table.insert(exitingInstances, instance)
     end
 
@@ -94,27 +93,20 @@ function Zone:Poll() : ({ Instance }, { Instance })
     return enteringInstances, exitingInstances
 end
 
-local zone = Zone.new({
-    shape = Zone.Shapes.Box;
-    cFrame = CFrame.new(0, 0, 0);
-    size = Vector3.new(100, 100, 100);
-    -- overlapParams = OverlapParams.new();
-})
+--Fires the zone's signal with the entering and exiting instances
+function Zone:PollSignal()
+    local enteringInstances, exitingInstances = self:Poll()
+    self._signal:Fire(enteringInstances, exitingInstances)
+end
 
-game:GetService("RunService").Heartbeat:Connect(function(delatime)
-    local enteringInstances, exitingInstances = zone:Poll()
+--Gets the zone's within instances
+function Zone:GetWithin()
+    return self._within
+end
 
-    if #enteringInstances > 0 then
-        for _, instance in ipairs(enteringInstances) do
-            print("Entering: " .. instance.Name)
-        end
-    end
-
-    if #exitingInstances > 0 then
-        for _, instance in ipairs(exitingInstances) do
-            print("Exiting: " .. instance.Name)
-        end
-    end
-end)
+--Gets the signal that fires when the zone is polled
+function Zone:GetSignal()
+    return self._signal
+end
 
 return Zone
