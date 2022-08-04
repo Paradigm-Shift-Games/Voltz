@@ -44,7 +44,7 @@ end
 function Sprint:StopSprinting(player: Player?)
 	if not self:IsOwner(player) then return end
 	local humanoid = self.Instance:FindFirstChildWhichIsA("Humanoid")
-	humanoid.WalkSpeed = WalkSpeedConfig.Base
+	if humanoid then humanoid.WalkSpeed = WalkSpeedConfig.Base end
 end
 
 return Sprint
