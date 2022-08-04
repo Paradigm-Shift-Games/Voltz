@@ -8,17 +8,15 @@ local Sprint = {}
 Sprint.__index = Sprint
 
 function Sprint.new(character: Model)
-	local serverComm = Comm.ServerComm.new(character, "Sprint")
 	local self = setmetatable({}, Sprint)
 
-	self._comm = serverComm
 	self._trove = Trove.new()
-	self._trove:Add(self._comm)
+	self._comm = self._trove:Construct(Comm.ServerComm, character, "Sprint")
 	self._owner = Players:GetPlayerFromCharacter(character)
 	self.Instance = character
 
-	serverComm:WrapMethod(self, "StartSprinting")
-	serverComm:WrapMethod(self, "StopSprinting")
+	self._comm:WrapMethod(self, "StartSprinting")
+	self._comm:WrapMethod(self, "StopSprinting")
 
 	return self
 end
