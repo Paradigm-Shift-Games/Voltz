@@ -168,7 +168,6 @@ function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: 
         local damageMultiplier = damageMultiplierList[hitPart.Name]
         if humanoid and damageMultiplier then
             local damageAmount = gunConfig.Damage*damageMultiplier
-            print("Deam damageAmount damage: " .. damageAmount)
             humanoid:TakeDamage(damageAmount)
         end
     end

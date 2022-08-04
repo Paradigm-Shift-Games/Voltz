@@ -66,6 +66,10 @@ function Gun:_createGui()
 	end)
 end
 
+function Gun:_isCritPart(hitPart: BasePart)
+	return (hitPart.Name == "Head")
+end
+
 function Gun:StartReloadBarEffect(duration)
 	if self._activeReloadBarValue then
 		return
@@ -112,6 +116,39 @@ function Gun:ShowReloadBar()
 			self._activeReloadBarValue = nil
 		end
 	end)
+end
+
+function Gun:ShowHitmarker(isCrit: boolean?)
+	local hitmarker = Instance.new("ImageLabel")
+	hitmarker.Name = "Hitmarker"
+	hitmarker.ZIndex = (isCrit and 3) or 2
+	hitmarker.BackgroundTransparency = 1
+	hitmarker.Size = UDim2.fromScale(0, 0)
+	hitmarker.Position = UDim2.fromScale(0.5, 0.5)
+	hitmarker.AnchorPoint = Vector2.new(0.5, 0.5)
+	hitmarker.Image = "rbxassetid://6113601434"
+	hitmarker.ImageTransparency = 0.1
+	hitmarker.ImageColor3 = (isCrit and Color3.fromRGB(255, 0, 0)) or Color3.fromRGB(255, 255, 255)
+	hitmarker.Parent = self._baseFrame
+
+	Debris:AddItem(hitmarker, 0.4)
+	tweenOnce(hitmarker, TweenInfo.new(0.1), {Size = UDim2.fromOffset(50, 50)})
+	task.delay(0.3, function()
+		tweenOnce(hitmarker, TweenInfo.new(0.1), {Size = UDim2.fromOffset(0, 0)})
+	end)
+end
+
+function Gun:ShowHitmarkerFromHitPart(hitPart: BasePart?)
+	if not hitPart or not hitPart.Parent then
+		return
+	end
+
+	local character = hitPart.Parent
+	local humanoid = character.Parent and character:FindFirstChild("Humanoid")
+	if humanoid then
+		local isCrit = self:_isCritPart(hitPart)
+		self:ShowHitmarker(isCrit)
+	end
 end
 
 -- static:
@@ -366,6 +403,11 @@ function Gun:OnActivated()
 
 			if raycastResult and endPosition == originalEndPosition then
 				bulletData.HitPart = raycastResult.Instance
+				if delayPerShot ~= 0 then
+					self:ShowHitmarkerFromHitPart(bulletData.HitPart)
+				else
+
+				end
 			end
 
 			table.insert(bulletDataList, bulletData)
@@ -380,6 +422,28 @@ function Gun:OnActivated()
 
 		if delayPerShot == 0 then
 			self:_fireBulletData(bulletDataList)
+			local critCount = 0
+			local hitCount = 0
+			for _, bulletData: GunDataTypes.BulletData in bulletDataList do
+				local hitPart = bulletData.HitPart
+				if not hitPart then
+					continue
+				end
+
+				local character = hitPart.Parent
+				local humanoid = character and character:FindFirstChild("Humanoid")
+				if humanoid then
+					if self:_isCritPart(hitPart) then
+						critCount += 1
+					else
+						hitCount += 1
+					end
+				end
+			end
+
+			if critCount ~= 0 or hitCount ~= 0 then
+				self:ShowHitmarker(critCount >= hitCount)
+			end
 		end
 
 		self:StartReloadBarEffect(1/self.Config.FireRate)
