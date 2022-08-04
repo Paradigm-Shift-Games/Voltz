@@ -17,10 +17,6 @@ function Sprint.new(character: Model)
 	self._owner = Players:GetPlayerFromCharacter(character)
 	self.Instance = character
 
-	self._trove:Connect(character.AncestryChanged, function()
-		self._owner = Players:GetPlayerFromCharacter(character.Parent)
-	end)
-
 	serverComm:WrapMethod(self, "StartSprinting")
 	serverComm:WrapMethod(self, "StopSprinting")
 
