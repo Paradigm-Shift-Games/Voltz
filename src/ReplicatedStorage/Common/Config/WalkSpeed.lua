@@ -1,6 +1,6 @@
 local WalkSpeed = {
-    Base = 16;
-    Sprint = 24;
+	Base = 16;
+	Sprint = 24;
 }
 
 return WalkSpeed
