@@ -40,10 +40,6 @@ function Sprint.new(character: Model)
 	return self
 end
 
-function Sprint:Destroy()
-	self._trove:Clean()
-end
-
 function Sprint:IsOwner()
 	return Players.LocalPlayer == self._owner
 end
@@ -56,6 +52,10 @@ end
 function Sprint:StopSprinting()
 	if not self:IsOwner() then return end
 	return self._serverObject:StopSprinting()
+end
+
+function Sprint:Destroy()
+	self._trove:Clean()
 end
 
 return Sprint
