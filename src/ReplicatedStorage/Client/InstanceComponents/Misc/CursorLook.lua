@@ -41,12 +41,11 @@ local function clampedAngles(angles: Vector3, lowerBounds: Vector3, upperBounds:
 end
 
 function CursorLook.new(instance: Instance)
-	local clientComm = Comm.ClientComm.new(instance, false, "Cursor")
 	local self = setmetatable({}, CursorLook)
 
 	self.Instance = instance
 	self._trove = Trove.new()
-	self._trove:Add(clientComm)
+	self._comm = self._trove:Construct(Comm.ClientComm, instance, false, "Cursor")
 
 	-- Wait for Humanoid to be added
 	local humanoid = instance:FindFirstChildWhichIsA("Humanoid")
@@ -81,7 +80,7 @@ function CursorLook.new(instance: Instance)
 	eyeAttachment.Name = "EyeAttachment"
 
 	-- Get shared cursor property
-	local cursorProp = clientComm:GetProperty("Cursor")
+	local cursorProp = self._comm:GetProperty("Cursor")
 
 	-- Update joint angles
 	local player: Player? = Players:GetPlayerFromCharacter(instance)
