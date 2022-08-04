@@ -8,13 +8,11 @@ local Sprint = {}
 Sprint.__index = Sprint
 
 function Sprint.new(character: Model)
-	local clientComm = Comm.ClientComm.new(character, false, "Sprint")
 	local self = setmetatable({}, Sprint)
 
-	self._comm = clientComm
 	self._trove = Trove.new()
-	self._trove:Add(self._comm)
-	self._serverObject = clientComm:BuildObject()
+	self._comm = self._trove:Construct(Comm.ClientComm, character, false, "Sprint")
+	self._serverObject = self._comm:BuildObject()
 	self._owner = Players:GetPlayerFromCharacter(character)
 	self.Instance = character
 
