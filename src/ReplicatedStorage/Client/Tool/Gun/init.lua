@@ -14,6 +14,7 @@ local BulletHandlerService = Knit.GetService("BulletHandlerService")
 
 local Tool = require(script.Parent)
 local SpringHandler = require(script.SpringHandler)
+local Trove = require(ReplicatedStorage.Packages.Trove)
 local GunDataTypes = require(ReplicatedStorage.Common.Types.GunDataTypes)
 
 local Gun = setmetatable({}, Tool)
@@ -42,6 +43,75 @@ end
 
 function Gun:_fireBulletData(bulletDataList)
 	BulletHandlerService:FireBullet(bulletDataList)
+end
+
+function Gun:_createGui()
+	local screenGui = Instance.new("ScreenGui")
+	screenGui.Name = "GunGui"
+
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.fromOffset(100, 100)
+	frame.BackgroundTransparency = 1
+	frame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+	frame.Parent = screenGui
+	screenGui.Parent = localPlayer.PlayerGui
+
+	self._baseFrame = frame
+	self._trove:Add(screenGui)
+	
+	local renderId = "GunGui-"..os.clock()
+	self._trove:BindToRenderStep(renderId, Enum.RenderPriority.Input.Value+1, function()
+		frame.Position = UDim2.fromOffset(mouse.X, mouse.Y)
+	end)
+end
+
+function Gun:StartReloadBarEffect(duration)
+	if self._activeReloadBarValue then
+		return
+	end
+	local numberValue = Instance.new("NumberValue")
+	numberValue.Name = "ReloadBarValue"
+	numberValue.Value = 0
+	self._activeReloadBarValue = numberValue
+	tweenOnce(numberValue, TweenInfo.new(duration, Enum.EasingStyle.Linear), {Value = 1})
+	self:ShowReloadBar()
+end
+
+function Gun:ShowReloadBar()
+	local numberValue = self._activeReloadBarValue
+	if not numberValue then
+		return
+	end
+
+	local frame = Instance.new("Frame")
+	frame.Name = "ReloadBar"
+	frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	frame.AnchorPoint = Vector2.new(0.5, 0)
+	frame.Position = UDim2.new(0.5, 0, 0, 73)
+	frame.Size = UDim2.fromOffset(65, 3)
+
+	local UICorner = Instance.new("UICorner")
+	UICorner.CornerRadius = UDim.new(0, 16)
+
+	local UIStroke = Instance.new("UIStroke")
+	UIStroke.Color = frame.BackgroundColor3
+	UIStroke.Thickness = 1
+	UIStroke.Transparency = 0.2
+
+	UIStroke.Parent = frame
+	UICorner.Parent = frame
+	frame.Parent = self._baseFrame
+
+	numberValue.Changed:Connect(function()
+		local t = numberValue.Value
+		frame.Size = UDim2.fromOffset(100*(1-t), 3)
+		if t >= 1 then
+			frame:Destroy()
+			numberValue:Destroy()
+			self._activeReloadBarValue = nil
+		end
+	end)
 end
 
 -- static:
@@ -311,6 +381,8 @@ function Gun:OnActivated()
 		if delayPerShot == 0 then
 			self:_fireBulletData(bulletDataList)
 		end
+
+		self:StartReloadBarEffect(1/self.Config.FireRate)
 	end
 	fireShot()
 
@@ -349,11 +421,24 @@ function Gun:OnActivated()
 	end)
 end
 
+function Tool:OnEquipped()
+	if self._trove then
+		self._trove:Destroy()
+	end
+	self._trove = Trove.new()
+	self:_createGui()
+	self.Active = false
+	self:ShowReloadBar()
+end
+
 function Tool:OnDeactivated()
 	self.Active = false
 end
 
 function Tool:OnUnequipped()
+	if self._trove then
+		self._trove:Destroy()
+	end
 	self.Active = false
 end
 
