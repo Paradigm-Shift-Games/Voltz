@@ -6,7 +6,6 @@ local Comm = require(ReplicatedStorage.Packages.Comm)
 -- Create shared CursorObjects folder
 local mouseFolder = Instance.new("Folder")
 mouseFolder.Name = "CursorObjects"
-mouseFolder.Archivable = false
 mouseFolder.Parent = workspace
 
 local CursorLook = {}
