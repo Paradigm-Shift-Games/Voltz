@@ -66,25 +66,19 @@ function CursorLook.new(instance: Instance)
 	self._neckAngles = Vector3.zero
 
 	-- Create hip attachment
-	local hipAttachment = Instance.new("Attachment")
+	local hipAttachment = self._trove:Construct(Instance, "Attachment")
+	hipAttachment.Name = "HipAttachment"
+	hipAttachment.Position = CursorLookConfig.HipOffset
 
 	-- Create chest attachment
-	local chestAttachment = Instance.new("Attachment")
+	local chestAttachment = self._trove:Construct(Instance, "Attachment")
 	chestAttachment.Name = "ChestAttachment"
+	chestAttachment.Position = CursorLookConfig.ChestOffset
 
 	-- Create eye attachment
-	local eyeAttachment = Instance.new("Attachment")
-	eyeAttachment.Name = "EyeAttachment"
-
-	-- Apply attachment positions
-	hipAttachment.Position = CursorLookConfig.HipOffset
-	chestAttachment.Position = CursorLookConfig.ChestOffset
+	local eyeAttachment = self._trove:Construct(Instance, "Attachment")
 	eyeAttachment.Position = CursorLookConfig.EyeOffset
-
-	-- Add attachments to trove
-	self._trove:Add(hipAttachment)
-	self._trove:Add(chestAttachment)
-	self._trove:Add(eyeAttachment)
+	eyeAttachment.Name = "EyeAttachment"
 
 	-- Get shared cursor property
 	local cursorProp = clientComm:GetProperty("Cursor")
