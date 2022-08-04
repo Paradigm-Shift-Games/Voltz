@@ -32,7 +32,7 @@ function Sprint:Destroy()
 end
 
 function Sprint:IsOwner(player: Player?)
-	return (not not player) or player == self._owner
+	return player == nil or player == self._owner
 end
 
 function Sprint:StartSprinting(player: Player?)
