@@ -14,7 +14,7 @@ function Sprint.new(character: Model)
 	self._comm = serverComm
 	self._trove = Trove.new()
 	self._trove:Add(self._comm)
-	self._owner = Players:GetPlayerFromCharacter(character.Parent)
+	self._owner = Players:GetPlayerFromCharacter(character)
 	self.Instance = character
 
 	self._trove:Connect(character.AncestryChanged, function()
