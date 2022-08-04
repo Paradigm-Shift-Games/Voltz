@@ -1,5 +1,6 @@
 -- Abstract gun class
 
+local CollectionService = game:GetService("CollectionService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -179,9 +180,15 @@ end
 
 -- public:
 
-function Gun:GetRaycastBlacklist(): Array<Instance>
+function Gun:GetRaycastBlacklist(extraInstances: Array<Instance>?): Array<Instance>
 	-- PLEASE ADD BLUEPRINTS HERE PLEASE
-	return {self.Instance, localPlayer.Character, bulletContainer}
+	local blacklist = {self.Instance, localPlayer.Character, bulletContainer}
+	if extraInstances then
+		for _, instance in extraInstances do
+			table.insert(blacklist, instance)
+		end
+	end
+	return blacklist
 end
 
 function Gun:GetConfigValue(valueName: string): any?
@@ -220,16 +227,25 @@ function Gun:OnActivated()
 	local bulletSpawn = self.Instance:FindFirstChild("BulletSpawn", true)
 	assert(bulletSpawn, "BulletSpawn instance not found for: " .. self.Instance:GetFullName())
 
-	local raycastCheckDistance = 1
 	local blacklist = self:GetRaycastBlacklist()
 	local raycastParams = RaycastParams.new()
 	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 	raycastParams.FilterDescendantsInstances = blacklist
 
-	local function rayCheck(originalPosition: Vector3, startPosition: Vector3, endPosition: Vector3): Vector3?
-		local rayCheckDirection = (endPosition - startPosition).Unit * range
-		local raycastResult = workspace:Raycast(startPosition, rayCheckDirection, raycastParams)
-		if raycastResult and (raycastResult.Position - originalPosition).Magnitude > raycastCheckDistance then
+	local blacklistForSanityChecks = self:GetRaycastBlacklist(CollectionService:GetTagged("Character"))
+	local raycastParamsForSanityChecks = RaycastParams.new()
+	raycastParamsForSanityChecks.FilterType = Enum.RaycastFilterType.Blacklist
+	raycastParamsForSanityChecks.FilterDescendantsInstances = blacklistForSanityChecks
+
+	local function rayCheckForCharacter(bulletHitPosition: Vector3, characterPosition: Vector3, forwardCharacterCheckDistance: number?): Vector3?
+		local distance = (bulletHitPosition - characterPosition).Magnitude
+		forwardCharacterCheckDistance = math.min(distance, forwardCharacterCheckDistance)
+
+		local lookAtDirection = (characterPosition - bulletHitPosition).Unit*forwardCharacterCheckDistance
+		local endCheckPosition = characterPosition-lookAtDirection
+
+		local raycastResult = workspace:Raycast(endCheckPosition, lookAtDirection, raycastParamsForSanityChecks)
+		if raycastResult then
 			return raycastResult.Position
 		end
 	end
@@ -260,10 +276,15 @@ function Gun:OnActivated()
 				endPosition = startPosition+direction
 			end
 
-			-- Draw a secondary ray from the Head and RightUpperArm to prevent guns from firing through walls when the barrel is on the other side.
-			local headCheckPosition = rayCheck(endPosition, localPlayer.Character.Head.Position, endPosition)
-			local shoulderCheckPosition = rayCheck(endPosition, localPlayer.Character.RightUpperArm.Position, endPosition)
-			if headCheckPosition and shoulderCheckPosition then
+			-- Draws reversed rays from the Head and RightUpperArm to prevent guns from firing through walls when the barrel is on the other side.
+			-- Also fires an extra reversed ray to bulletSpawn's position to check if the original ray missed an object
+			local headCheckPosition = rayCheckForCharacter(endPosition, localPlayer.Character.Head.Position, 32)
+			local shoulderCheckPosition = rayCheckForCharacter(endPosition, localPlayer.Character.RightUpperArm.Position, 32)
+			local inversedBarrelCheckPosition = rayCheckForCharacter(endPosition, startPosition, self.Config.Range)
+
+			if inversedBarrelCheckPosition then
+				endPosition = inversedBarrelCheckPosition
+			elseif headCheckPosition and shoulderCheckPosition then
 				endPosition = shoulderCheckPosition
 			end
 
@@ -305,8 +326,6 @@ function Gun:OnActivated()
 		end
 
 		local shotAmount = 1
-
-		print("deltaShotCount", shotsFired - requiredShotCount)
 
 		if requiredShotCount > shotsFired then
 			shotAmount = 1 + (requiredShotCount - shotsFired)
