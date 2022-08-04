@@ -83,12 +83,6 @@ function CursorLook.new(instance: Instance)
 	-- Get shared cursor property
 	local cursorProp = clientComm:GetProperty("Cursor")
 
-	-- Keep track of the mouse cursor
-	local mouseCursor
-	cursorProp:Observe(function(value)
-		mouseCursor = value
-	end)
-
 	-- Update joint angles
 	local player: Player? = Players:GetPlayerFromCharacter(instance)
 	local isLocalPlayer = player == Players.LocalPlayer
@@ -119,7 +113,7 @@ function CursorLook.new(instance: Instance)
 		local rightVector = cframe.RightVector
 
 		-- Locate mouse target part
-		local lookPart: BasePart = mouseCursor
+		local lookPart: BasePart = cursorProp:Get()
 		local lookCFrame
 		if isLocalPlayer then
 			-- Use the mouse's CFrame
