@@ -74,11 +74,9 @@ function CursorLook:CreateCursor()
 	mouseCursor.Parent = mouseFolder
 	mouseCursor:SetNetworkOwner(player)
 
-	-- When the ancestry of the mouse target is changed, create a new mouse target
-	self._cursorRemovedConnection = mouseCursor.AncestryChanged:Connect(function()
-		if not mouseCursor:IsDescendantOf(mouseFolder) then
-			mouseCursor:Destroy()
-		end
+	-- When the mouse target is destroyed, create a new mouse target
+	self._cursorRemovedConnection = mouseCursor.Destroying:Connect(function()
+		self:CreateCursor()
 	end)
 
 	-- Update the mouse cursor
