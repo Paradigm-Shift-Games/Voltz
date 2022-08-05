@@ -1,14 +1,14 @@
 local CursorLookConfig = {
 	-- Speed for rotating the character itself
-	LookAngularSpeed = math.rad(600);
+	LookAngularSpeed = math.rad(500);
 
 	-- Speed & bounds for rotating the root
-	RootAngularSpeed = Vector3.new(180, 0) * math.rad(1);
+	RootAngularSpeed = Vector3.new(200, 0) * math.rad(1);
 	RootUpperBounds = Vector3.new(20, 30, 0) * math.rad(1);
 	RootLowerBounds = Vector3.new(-55, -30, 0) * math.rad(1);
 
 	-- Speed & bounds for rotating the waist
-	WaistAngularSpeed = Vector3.new(200, 360) * math.rad(1);
+	WaistAngularSpeed = Vector3.new(230, 360) * math.rad(1);
 	WaistUpperBounds = Vector3.new(30, 35, 0) * math.rad(1);
 	WaistLowerBounds = Vector3.new(-55, -35, 0) * math.rad(1);
 
