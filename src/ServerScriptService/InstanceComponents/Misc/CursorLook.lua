@@ -6,7 +6,6 @@ local Comm = require(ReplicatedStorage.Packages.Comm)
 -- Create shared CursorObjects folder
 local mouseFolder = Instance.new("Folder")
 mouseFolder.Name = "CursorObjects"
-mouseFolder.Archivable = false
 mouseFolder.Parent = workspace
 
 local CursorLook = {}
@@ -29,23 +28,7 @@ function CursorLook.new(instance: Instance)
 	return self
 end
 
-function CursorLook:CreateCursor()
-	local player = Players:GetPlayerFromCharacter(self.Instance)
-
-	-- Create a part for the player's mouse target
-	local mouseCursor = Instance.new("Part")
-	mouseCursor.Name = "Cursor"
-	mouseCursor.Transparency = 1
-	mouseCursor.Size = Vector3.new(1, 1, 1)
-	mouseCursor.CanCollide = false
-	mouseCursor.CanQuery = false
-	mouseCursor.CanTouch = false
-	mouseCursor.Locked = true
-
-	mouseCursor.Material = Enum.Material.Neon
-	mouseCursor.Color = Color3.new(1, 0, 1)
-	mouseCursor.Shape = Enum.PartType.Cylinder
-
+function CursorLook:_constructThrustConstraint(mouseCursor: BasePart)
 	-- Place an attachment into the part
 	local attachment0 = Instance.new("Attachment")
 	attachment0.Parent = mouseCursor
@@ -57,16 +40,43 @@ function CursorLook:CreateCursor()
 	vectorForce.ApplyAtCenterOfMass = true
 	vectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
 	vectorForce.Parent = mouseCursor
+end
+
+function CursorLook:_constructCursorPart(): BasePart
+	-- Create a part for the player's mouse target
+	local mouseCursor = Instance.new("Part")
+	mouseCursor.Name = "Cursor"
+
+	-- Assign physical properties
+	mouseCursor.Size = Vector3.new(1, 1, 1)
+	mouseCursor.CanCollide = false
+	mouseCursor.CanQuery = false
+	mouseCursor.CanTouch = false
+	mouseCursor.Locked = true
+
+	-- Assign visual properties
+	mouseCursor.Transparency = 1
+	mouseCursor.Material = Enum.Material.Neon
+	mouseCursor.Color = Color3.new(1, 0, 1)
+	mouseCursor.Shape = Enum.PartType.Cylinder
+
+	-- Create the jetpack thrust constraint
+	self:_constructThrustConstraint(mouseCursor)
+
+	return mouseCursor
+end
+
+function CursorLook:CreateCursor()
+	local player = Players:GetPlayerFromCharacter(self.Instance)
+	local mouseCursor = self:_constructCursorPart()
 
 	-- Parent mouse target part, and give network ownership
 	mouseCursor.Parent = mouseFolder
 	mouseCursor:SetNetworkOwner(player)
 
-	-- When the ancestry of the mouse target is changed, create a new mouse target
-	self._cursorRemovedConnection = mouseCursor.AncestryChanged:Connect(function()
-		if not mouseCursor:IsDescendantOf(mouseFolder) then
-			mouseCursor:Destroy()
-		end
+	-- When the mouse target is destroyed, create a new mouse target
+	mouseCursor.Destroying:Connect(function()
+		self:CreateCursor()
 	end)
 
 	-- Update the mouse cursor
@@ -78,11 +88,6 @@ function CursorLook:Destroy()
 	-- Clean up mouse cursor part
 	if self._mouseCursor then
 		self._mouseCursor:Destroy()
-	end
-
-	-- Clean up cursor removed connection
-	if self._cursorRemovedConnection then
-		self._cursorRemovedConnection:Disconnect()
 	end
 
 	-- Clean trove

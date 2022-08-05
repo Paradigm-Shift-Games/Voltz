@@ -41,12 +41,11 @@ local function clampedAngles(angles: Vector3, lowerBounds: Vector3, upperBounds:
 end
 
 function CursorLook.new(instance: Instance)
-	local clientComm = Comm.ClientComm.new(instance, false, "Cursor")
 	local self = setmetatable({}, CursorLook)
 
 	self.Instance = instance
 	self._trove = Trove.new()
-	self._trove:Add(clientComm)
+	self._comm = self._trove:Construct(Comm.ClientComm, instance, false, "Cursor")
 
 	-- Wait for Humanoid to be added
 	local humanoid = instance:FindFirstChildWhichIsA("Humanoid")
@@ -67,40 +66,27 @@ function CursorLook.new(instance: Instance)
 	self._rightShoulderAngles = Vector3.zero
 
 	-- Create hip attachment
-	local hipAttachment = Instance.new("Attachment")
+	local hipAttachment = self._trove:Construct(Instance, "Attachment")
+	hipAttachment.Name = "HipAttachment"
+	hipAttachment.Position = CursorLookConfig.HipOffset
 
 	-- Create chest attachment
-	local chestAttachment = Instance.new("Attachment")
+	local chestAttachment = self._trove:Construct(Instance, "Attachment")
 	chestAttachment.Name = "ChestAttachment"
+	chestAttachment.Position = CursorLookConfig.ChestOffset
 
 	-- Create eye attachment
-	local eyeAttachment = Instance.new("Attachment")
+	local eyeAttachment = self._trove:Construct(Instance, "Attachment")
+	eyeAttachment.Position = CursorLookConfig.EyeOffset
 	eyeAttachment.Name = "EyeAttachment"
 
 	-- Create tool attachment
-	local toolAttachment = Instance.new("Attachment")
+	local toolAttachment = self._trove:Construct(Instance, "Attachment")
+	toolAttachment.Position = CursorLookConfig.ToolOffset
 	toolAttachment.Name = "ToolAttachment"
 
-	-- Apply attachment positions
-	hipAttachment.Position = CursorLookConfig.HipOffset
-	chestAttachment.Position = CursorLookConfig.ChestOffset
-	eyeAttachment.Position = CursorLookConfig.EyeOffset
-	toolAttachment.Position = CursorLookConfig.ToolOffset
-
-	-- Add attachments to trove
-	self._trove:Add(hipAttachment)
-	self._trove:Add(chestAttachment)
-	self._trove:Add(eyeAttachment)
-	self._trove:Add(toolAttachment)
-
 	-- Get shared cursor property
-	local cursorProp = clientComm:GetProperty("Cursor")
-
-	-- Keep track of the mouse cursor
-	local mouseCursor
-	cursorProp:Observe(function(value)
-		mouseCursor = value
-	end)
+	local cursorProp = self._comm:GetProperty("Cursor")
 
 	-- Update joint angles
 	local player: Player? = Players:GetPlayerFromCharacter(instance)
@@ -140,7 +126,7 @@ function CursorLook.new(instance: Instance)
 		local lookVector = cframe.LookVector
 
 		-- Locate mouse target part
-		local lookPart: BasePart = mouseCursor
+		local lookPart: BasePart = cursorProp:Get()
 		local lookCFrame
 		if isLocalPlayer then
 			-- Use the mouse's CFrame
