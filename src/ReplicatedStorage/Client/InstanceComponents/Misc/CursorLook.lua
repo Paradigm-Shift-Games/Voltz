@@ -13,15 +13,28 @@ local function calculateJointAngle(lookVector, sourcePosition, targetPosition)
 	return math.asin((sourcePosition - targetPosition):Dot(lookVector)/(sourcePosition - targetPosition).Magnitude)
 end
 
-local easingStyle = Enum.EasingStyle.Quint
-local easingDirection = Enum.EasingDirection.In
-local function dampenAngle(sourceAngle: number, goalAngle: number, angularSpeed: number, deltaTime: number)
-	local angleDiff = goalAngle % math.rad(360) - sourceAngle % math.rad(360)
+local function calculateAngleDifference(angleA, angleB)
+	local angleDiff = angleA % math.rad(360) - angleB % math.rad(360)
 	if math.abs(angleDiff) > math.rad(180) then
 		local dividend = math.sign(angleDiff) * math.rad(180)
 		angleDiff = angleDiff%dividend - dividend
 	end
-	return sourceAngle + math.sign(angleDiff) * TweenService:GetValue(math.clamp(math.min(angularSpeed, math.abs(angleDiff/deltaTime) / angularSpeed), 0, 1), easingStyle, easingDirection) * angularSpeed * deltaTime
+	return angleDiff
+end
+
+local easingStyle = Enum.EasingStyle.Quint
+local easingDirection = Enum.EasingDirection.In
+local function dampenAngle(sourceAngle: number, goalAngle: number, angularSpeed: number, deltaTime: number)
+	local angleDiff = calculateAngleDifference(goalAngle, sourceAngle)
+	return sourceAngle + math.sign(angleDiff) * TweenService:GetValue(
+		math.clamp(
+			math.min(1, math.abs(angleDiff / deltaTime) / angularSpeed),
+			0,
+			1
+		),
+		easingStyle,
+		easingDirection
+	) * angularSpeed * deltaTime
 end
 
 local function dampenAngles(sourceAngles: Vector3, goalAngles: Vector3, angularSpeed: Vector3, deltaTime: number)
@@ -246,17 +259,29 @@ function CursorLook.new(instance: Instance)
 
 		if isLocalPlayer then
 			-- Y rotation
-			local x, angle, z = cframe:ToOrientation()
-			angle = dampenAngle(
-				angle,
-				if shouldFaceCursor then
-					math.atan2(lookPosition.X - cframe.X, lookPosition.Z - cframe.Z) + math.rad(180)
-				else angle,
+			local x, characterAngle, z = cframe:ToOrientation()
+			local cursorAngle = if shouldFaceCursor then math.atan2(lookPosition.X - cframe.X, lookPosition.Z - cframe.Z) + math.rad(180) else characterAngle
+
+			local faceCursorThreshold = instance:GetAttribute("FaceCursorThreshold")
+			local isOutsideFaceCursorThreshold = false
+			if shouldFaceCursor and faceCursorThreshold and faceCursorThreshold < 360 then
+				local angleDifference = math.deg(calculateAngleDifference(cursorAngle, characterAngle))
+				isOutsideFaceCursorThreshold = math.abs(angleDifference) >= faceCursorThreshold / 2
+
+				if isOutsideFaceCursorThreshold then
+					-- Calculate angle within range of threshold
+					cursorAngle = characterAngle + math.rad(math.sign(angleDifference) * (math.abs(angleDifference) - (faceCursorThreshold / 2)))
+				end
+			end
+
+			characterAngle = dampenAngle(
+				characterAngle,
+				if shouldFaceCursor and isOutsideFaceCursorThreshold then cursorAngle else characterAngle,
 				CursorLookConfig.LookAngularSpeed,
 				deltaTime
 			)
 
-			local newOrientation = CFrame.fromOrientation(x, angle, z)
+			local newOrientation = CFrame.fromOrientation(x, characterAngle, z)
 			humanoid.AutoRotate = shouldAutoRotate
 			rootPart:PivotTo(CFrame.fromMatrix(cframe.Position, newOrientation.XVector, newOrientation.YVector, newOrientation.ZVector))
 		end

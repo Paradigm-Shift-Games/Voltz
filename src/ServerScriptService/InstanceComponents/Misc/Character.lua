@@ -23,6 +23,9 @@ function Character.new(instance: Instance)
 	instance:SetAttribute("LookInAir", false)
 	instance:SetAttribute("AimToolInAir", true)
 
+	-- Degrees of freedom for FaceCursor to activate (0 fixes to cursor)
+	instance:SetAttribute("FaceCursorThreshold", 65)
+
 	-- Add CameraLook tag to the character
 	CollectionService:AddTag(instance, "CursorLook")
 	CollectionService:AddTag(instance, "FallDamage")
