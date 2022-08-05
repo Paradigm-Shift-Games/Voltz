@@ -239,7 +239,7 @@ function CursorLook.new(instance: Instance)
 		local rightShoulder: Motor6D? = rightUpperArm and rightUpperArm:FindFirstChild("RightShoulder")
 		if rightShoulder then
 			toolAttachment.Parent = rightUpperArm
-			local endPointAttachment = (tool and tool:FindFirstChild("BulletSpawn", true)) or toolAttachment
+			local endPointAttachment = toolAttachment
 			local toolPosition = endPointAttachment.WorldPosition
 			self._rightShoulderAngles = dampenAngles(
 				self._rightShoulderAngles,
