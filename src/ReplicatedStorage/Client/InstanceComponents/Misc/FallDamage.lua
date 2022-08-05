@@ -6,18 +6,18 @@ local FallDamage = {}
 FallDamage.__index = FallDamage
 
 function FallDamage.new(character: Model)
-	local humanoid = character:WaitForChild("Humanoid")
-
 	local self = setmetatable({}, FallDamage)
 
+	self._humanoid = character:WaitForChild("Humanoid")
 	self._trove = Trove.new()
-	self._trove:Connect(humanoid.StateChanged, function(old, new)
+	self._trove:Connect(self._humanoid.StateChanged, function(old, new)
 		if not (old == Enum.HumanoidStateType.Freefall and new == Enum.HumanoidStateType.Landed) then return end
-		
+
 		local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 		local endVelocity = humanoidRootPart.AssemblyLinearVelocity.Magnitude
 
-		humanoid:TakeDamage((endVelocity - FallDamageConfig.MaxVelocityThreshold) * FallDamageConfig.DamageScale)
+		if endVelocity - FallDamageConfig.MaxVelocityThreshold < 0 then return end
+		self._humanoid:TakeDamage((endVelocity - FallDamageConfig.MaxVelocityThreshold) * FallDamageConfig.DamageScale)
 	end)
 
 	return self
