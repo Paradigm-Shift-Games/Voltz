@@ -248,6 +248,7 @@ local function TempCodeToGiveGunsRemoveLaterOkayThxBye()
             giveGun("AssaultRifle")
             giveGun("Shotgun")
             giveGun("SMG")
+            giveGun("HighPowerPhotonLancer")
         end
 
         player.CharacterAdded:Connect(characterAdded)

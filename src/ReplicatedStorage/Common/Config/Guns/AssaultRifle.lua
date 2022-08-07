@@ -11,7 +11,7 @@ local AssaultRifleConfig = {
 		Thickness = 0.15
 	},
 	FireSound = {
-		SoundId = "rbxassetid://131070686",
+		SoundId = "rbxassetid://381603686",
 		Volume = 0.5
 	}
 }
