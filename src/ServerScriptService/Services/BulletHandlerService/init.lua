@@ -1,3 +1,5 @@
+--!strict
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local CollectionService = game:GetService("CollectionService")
@@ -41,7 +43,7 @@ local damageMultiplierList = {
     ["LeftHand"] = 0.7
 }
 
-function BulletHandlerService:_log(str: string, ...)
+function BulletHandlerService:_log(str: string, ...): nil
     if not self.DEBUG_MODE then
         return
     end
@@ -55,9 +57,16 @@ end
 
 local validationTests = {}
 do
+    validationTests["HealthCheck"] = function(player: Player, validationData: validationDataType): boolean
+        local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+        if not humanoid or humanoid.Health <= 0 then
+            return false
+        end
+    end
+
     local barrelMaxCheckDistance = 16
 
-    validationTests["BarrelDistanceCheck"] = function(player: Player, validationData: validationDataType)
+    validationTests["BarrelDistanceCheck"] = function(player: Player, validationData: validationDataType): boolean
         local bulletData = validationData.BulletData
         local barrelDistance = (bulletData.BarrelPosition - player.Character.RightHand.Position).Magnitude
         return barrelDistance < barrelMaxCheckDistance
@@ -65,7 +74,7 @@ do
 
     local marginOfErrorDistanceIncrement = 0.5
 
-    validationTests["EndPositionCheck"] = function(player: Player, validationData: validationDataType)
+    validationTests["EndPositionCheck"] = function(player: Player, validationData: validationDataType): boolean
         local bulletData = validationData.BulletData
         local gunConfig = validationData.GunConfig
         local barrelDistance = (bulletData.BarrelPosition - bulletData.EndPosition).Magnitude
@@ -74,12 +83,31 @@ do
 
     local marginOfErrorTimeOffset = 0.05
 
-    validationTests["FireRateCheck"] = function(player: Player, validationData: validationDataType)
+    local function getBulletCount(gunConfig: GunDataTypes.GunConfig, timeOffset: number): number
+        if gunConfig.DelayPerShot == 0 then
+            return math.round(gunConfig.FireRate*timeOffset)
+        else
+            local t = 0
+            local shots = 0
+            while (t < timeOffset) do
+                for i = 1, gunConfig.BulletsPerShot do
+                    shots += 1
+                    t += ((gunConfig.FireRate*timeOffset)/gunConfig.BulletsPerShot)
+                    if t > timeOffset then
+                        break
+                    end
+                end
+            end
+            return shots
+        end
+    end
+
+    validationTests["FireRateCheck"] = function(player: Player, validationData: validationDataType): boolean
         local binderInstance = validationData.BinderInstance
         
         local gunConfig = validationData.GunConfig
-        local delayPerShot = gunConfig.DelayPerShot or 0
-        local bulletsPerShot = gunConfig.BulletsPerShot or 1
+        local delayPerShot = gunConfig.DelayPerShot
+        local bulletsPerShot = gunConfig.BulletsPerShot
         local fireRate = gunConfig.FireRate
 
         if delayPerShot == 0 and fireRate < 3 then
@@ -88,12 +116,17 @@ do
             if bulletCount >= bulletsPerShot/fireRate then
                 return false
             end
+        else
+            local timeOffset = 0.2
+            local bulletCount = binderInstance.BulletHistory:GetBulletCountFromTimestampOffset(timeOffset)
+            local requiredBulletCount = getBulletCount(validationData.GunConfig, timeOffset)
+            return bulletCount <= requiredBulletCount
         end
 
         return true
     end
 
-    validationTests["RayCastCheck"] = function(player: Player, validationData: validationDataType)
+    validationTests["RayCastCheck"] = function(player: Player, validationData: validationDataType): boolean
         local blacklist = BulletHandlerService:GetRaycastBlacklist()
         local bulletData = validationData.BulletData
         local direction = bulletData.EndPosition-bulletData.BarrelPosition
@@ -109,7 +142,7 @@ do
     end
 end
 
-function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: Array<GunDataTypes.BulletData>)
+function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: Array<GunDataTypes.BulletData>): Array<boolean>
     local BinderService = Knit.GetService("BinderService")
 
     local bulletData = bulletDataList[1]
@@ -123,6 +156,8 @@ function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: 
     end
     local gunConfigName = tool:GetAttribute("ConfigName")
     local gunConfig = require(ReplicatedStorage.Common.Config.Guns[gunConfigName])
+    gunConfig.DelayPerShot = gunConfig.DelayPerShot or 0
+    gunConfig.BulletsPerShot = gunConfig.BulletsPerShot or 1
 
     local binder = BinderService:Get(gunConfigName)
     local binderInstance = binder:Get(tool)
@@ -131,7 +166,7 @@ function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: 
         binderInstance.BulletHistory = BulletHistory.new()
     end
 
-	local function handleBulletData(bulletData: GunDataTypes.BulletData)
+	local function handleBulletData(bulletData: GunDataTypes.BulletData): boolean
         local validationData: validationDataType = {
             Tool = tool,
             BulletData = bulletData,
@@ -157,7 +192,7 @@ function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: 
         return true
     end
 
-    local function handleBulletHit(bulletData: GunDataTypes.BulletData)
+    local function handleBulletHit(bulletData: GunDataTypes.BulletData): nil
         local hitPart = bulletData.HitPart
         local character = hitPart.Parent
         if character == player.Character then
@@ -172,16 +207,21 @@ function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: 
         end
     end
 
-    for _, bulletData in bulletDataList do
+    local passedTable = {}
+
+    for index, bulletData in bulletDataList do
         local passed = handleBulletData(bulletData)
         if passed then
+            passedTable[index] = true
             if bulletData.HitPart then
                 handleBulletHit(bulletData)
             end
+        else
+            passedTable[index] = false
         end
     end
 
-    return 0
+    return passedTable
 end
 
 local function TempCodeToGiveGunsRemoveLaterOkayThxBye()

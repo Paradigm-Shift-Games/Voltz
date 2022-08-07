@@ -72,7 +72,7 @@ end
 
 function Gun:StartReloadBarEffect(duration)
 	if self._activeReloadBarValue then
-		return
+		self._activeReloadBarValue:Destroy()
 	end
 	local numberValue = Instance.new("NumberValue")
 	numberValue.Name = "ReloadBarValue"
@@ -86,6 +86,9 @@ function Gun:ShowReloadBar()
 	local numberValue = self._activeReloadBarValue
 	if not numberValue then
 		return
+	end
+	if self._activeReloadFrame then
+		self._activeReloadFrame:Destroy()
 	end
 
 	local frame = Instance.new("Frame")
@@ -106,6 +109,7 @@ function Gun:ShowReloadBar()
 	UIStroke.Parent = frame
 	UICorner.Parent = frame
 	frame.Parent = self._baseFrame
+	self._activeReloadFrame = frame
 
 	numberValue.Changed:Connect(function()
 		local t = numberValue.Value
@@ -349,6 +353,8 @@ function Gun:OnActivated()
 
 	local function fireShot()
 		local bulletDataList: Array<GunDataTypes.BulletData> = {}
+		self:StartReloadBarEffect(1/self.Config.FireRate)
+		self.LastShotFiredTime = os.clock()
 
 		for i = 1, bulletsPerShot do
 			if not self.Instance.Parent then
@@ -358,7 +364,7 @@ function Gun:OnActivated()
 			local startPosition = bulletSpawn.WorldPosition
 			local hit = self:GetMousePosition(raycastParams)
 			
-			local r0, r1 = self.Random:NextNumber(), self.Random:NextNumber()^1.2
+			local r0, r1 = self.Random:NextNumber(), self.Random:NextNumber()
 
 			local direction = (
 				CFrame.lookAt(startPosition, hit) 
@@ -392,7 +398,6 @@ function Gun:OnActivated()
 				SpringHandler:Impulse(localPlayer.Character, decoration.ImpulseForce or 10)
 				self.PlaySound(self.Instance, self.Config)
 				self.EmitFlare(self.Instance)
-				self.LastShotFiredTime = os.clock()
 			end
 
 			local bulletData: GunDataTypes.BulletData = {
@@ -445,8 +450,6 @@ function Gun:OnActivated()
 				self:ShowHitmarker(critCount >= hitCount)
 			end
 		end
-
-		self:StartReloadBarEffect(1/self.Config.FireRate)
 	end
 	fireShot()
 

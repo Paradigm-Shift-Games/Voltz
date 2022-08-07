@@ -5,6 +5,13 @@ local Spring = require(ReplicatedStorage.Packages.Spring)
 
 local SpringHandler = {}
 SpringHandler.References = {}
+SpringHandler.RecoilConfig = {
+    LowerArmMovement = 0.165,
+    BackArmMovement = 0.1,
+    WiggleSpeed = 20,
+    WiggleAmount = 0.015,
+    ElbowRotationAmount = 0.618
+}
 
 type characterReference = {
     Spring: any?,
@@ -69,7 +76,9 @@ function SpringHandler:Impulse(character: Model, impulseForce: number)
         springObject.UpdaterConnected = true
         local renderId = "SpringUpdate-" .. springObject.LastImpulse
         RunService:BindToRenderStep(renderId, Enum.RenderPriority.Character.Value-1, function()
-            if not self.References[character] or os.clock() > springObject.LastImpulse+7 then
+            local t = os.clock()
+
+            if not self.References[character] or t > springObject.LastImpulse+7 then
                 springObject.UpdaterConnected = false
                 RunService:UnbindFromRenderStep(renderId)
                 return
@@ -79,8 +88,15 @@ function SpringHandler:Impulse(character: Model, impulseForce: number)
             local defaultC0_Shoulder = motors.RightShoulderDefaultC0
             local defaultC0_Elbow = motors.RightElbowDefaultC0
 
-            motors.RightShoulder.C0 = (defaultC0_Shoulder * CFrame.new(0, -position/6, position/10)) * CFrame.Angles(-position/5, 0, 0) * CFrame.Angles(0, math.sin(os.clock()*20)*position*0.01, 0)
-            motors.RightElbow.C0 = (defaultC0_Elbow * CFrame.new(0, position/6, 0)) * CFrame.Angles(position/2, 0, 0)
+            local lowerArmMovementDivision = 1/self.RecoilConfig.LowerArmMovement
+            local backArmDivision = 1/self.RecoilConfig.BackArmMovement
+            local wiggleSpeed = self.RecoilConfig.WiggleSpeed
+            local wiggleAmount = self.RecoilConfig.WiggleAmount
+            local elbowmMovementDivision = 1/self.RecoilConfig.ElbowRotationAmount
+
+            motors.RightShoulder.C0 = (defaultC0_Shoulder * CFrame.new(0, -position/lowerArmMovementDivision, position/backArmDivision)) 
+                * CFrame.Angles(-position/5, 0, 0) * CFrame.Angles(0, math.sin(t*wiggleSpeed)*position*wiggleAmount, 0)
+            motors.RightElbow.C0 = (defaultC0_Elbow * CFrame.new(0, position/lowerArmMovementDivision, 0)) * CFrame.Angles(position/elbowmMovementDivision, 0, 0)
         end)
     end
 end
