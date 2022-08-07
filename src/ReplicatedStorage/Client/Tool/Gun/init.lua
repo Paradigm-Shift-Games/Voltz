@@ -10,7 +10,6 @@ local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
 
 local Knit = require(ReplicatedStorage.Packages.Knit)
-local BulletHandlerService = Knit.GetService("BulletHandlerService")
 
 local Tool = require(script.Parent)
 local SpringHandler = require(script.SpringHandler)
@@ -42,6 +41,7 @@ local function tweenOnce(...): Tween
 end
 
 function Gun:_fireBulletData(bulletDataList)
+	local BulletHandlerService = Knit.GetService("BulletHandlerService")
 	BulletHandlerService:FireBullet(bulletDataList)
 end
 
@@ -174,15 +174,17 @@ Gun.Config = {
 	}
 }
 
-function Gun.DrawShot(startAttachment: Attachment, endPoint: Vector3, config: table)
-	config = config or Gun.Config
+function Gun.DrawShot(startAttachment: Attachment, endPoint: any, gunConfig: GunDataTypes.GunConfig)
+	gunConfig = gunConfig or Gun.Config
+
+	local endPointPosition = (typeof(endPoint) == "Vector3" and endPoint) or endPoint.Position
 
 	local startPoint = startAttachment.WorldPosition
-	local thickness = config.BulletDecoration.Thickness
-	local distance = math.min(config.Range, (startPoint - endPoint).Magnitude)
+	local thickness = gunConfig.BulletDecoration.Thickness
+	local distance = math.min(gunConfig.Range, (startPoint - endPointPosition).Magnitude)
 
 	local beam = Instance.new("Part", workspace)
-	beam.Color = config.BulletDecoration.Color
+	beam.Color = gunConfig.BulletDecoration.Color
 	beam.FormFactor = "Custom"
 	beam.Material = Enum.Material.Neon
 	beam.Anchored = true
@@ -196,7 +198,7 @@ function Gun.DrawShot(startAttachment: Attachment, endPoint: Vector3, config: ta
 	local mesh = Instance.new("BlockMesh")
 	mesh.Parent = beam
 
-	local travelSpeed = (distance/300) / (config.BulletDecoration.BulletSpeed or 1)
+	local travelSpeed = (distance/300) / (gunConfig.BulletDecoration.BulletSpeed or 1)
 	Debris:AddItem(beam, travelSpeed)
 
 	task.delay(1/30, function()
@@ -212,7 +214,10 @@ function Gun.DrawShot(startAttachment: Attachment, endPoint: Vector3, config: ta
 			return
 		end
 		startPoint = startAttachment.WorldPosition
-		beam.CFrame = CFrame.lookAt(startPoint, endPoint) * CFrame.new(0, 0, -distance / 2 - 0.1)
+		if typeof(endPoint) ~= "Vector3" then
+			endPointPosition = endPoint.Position
+		end
+		beam.CFrame = CFrame.lookAt(startPoint, endPointPosition) * CFrame.new(0, 0, -distance / 2 - 0.1)
 	end
 	RunService:BindToRenderStep(renderId, 0, update)
 	task.spawn(update, 0)

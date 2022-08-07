@@ -1,7 +1,6 @@
 --!strict
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerScriptService = game:GetService("ServerScriptService")
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 
@@ -19,7 +18,9 @@ type validationDataType = {
 
 local BulletHandlerService = Knit.CreateService {
     Name = "BulletHandlerService";
-    Client = {};
+    Client = {
+        ShotFired = Knit.CreateSignal();
+    };
 }
 BulletHandlerService.DEBUG_MODE = true
 
@@ -43,7 +44,7 @@ local damageMultiplierList = {
     ["LeftHand"] = 0.7
 }
 
-function BulletHandlerService:_log(str: string, ...): nil
+function BulletHandlerService:_log(str: string, ...)
     if not self.DEBUG_MODE then
         return
     end
@@ -155,7 +156,7 @@ function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: 
         return false
     end
     local gunConfigName = tool:GetAttribute("ConfigName")
-    local gunConfig = require(ReplicatedStorage.Common.Config.Guns[gunConfigName])
+    local gunConfig: GunDataTypes.GunConfig = require(ReplicatedStorage.Common.Config.Guns[gunConfigName])
     gunConfig.DelayPerShot = gunConfig.DelayPerShot or 0
     gunConfig.BulletsPerShot = gunConfig.BulletsPerShot or 1
 
@@ -192,11 +193,12 @@ function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: 
         return true
     end
 
-    local function handleBulletHit(bulletData: GunDataTypes.BulletData): nil
+    -- Returns true when a player is hit
+    local function handleBulletHit(bulletData: GunDataTypes.BulletData): boolean
         local hitPart = bulletData.HitPart
         local character = hitPart.Parent
         if character == player.Character then
-            return
+            return false
         end
 
         local humanoid = character and character:FindFirstChild("Humanoid")
@@ -204,18 +206,22 @@ function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: 
         if humanoid and damageMultiplier then
             local damageAmount = gunConfig.Damage*damageMultiplier
             humanoid:TakeDamage(damageAmount)
+            return true
         end
+        return false
     end
 
     local passedTable = {}
 
-    for index, bulletData in bulletDataList do
+    for index, bulletData: GunDataTypes.BulletData in bulletDataList do
         local passed = handleBulletData(bulletData)
         if passed then
+            local hitPlayer = false
             passedTable[index] = true
             if bulletData.HitPart then
-                handleBulletHit(bulletData)
+                hitPlayer = handleBulletHit(bulletData)
             end
+            self.ShotFired:FireExcept(player, player, (hitPlayer and bulletData.HitPart) or bulletData.EndPosition, gunConfigName, index)
         else
             passedTable[index] = false
         end
