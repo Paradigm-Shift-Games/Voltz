@@ -1,9 +1,14 @@
-local HighPowerPhotonLancer = {}
-HighPowerPhotonLancer.__index = HighPowerPhotonLancer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-function HighPowerPhotonLancer.new(instance)
-	local self = setmetatable({}, HighPowerPhotonLancer)
-	self.Instance = instance
+local Gun = require(ReplicatedStorage.Client.Tool.Gun)
+local AssaultRifleConfig = require(ReplicatedStorage.Common.Config.Guns.HighPowerPhotonLancer)
+
+local HighPowerPhotonLancer = setmetatable({}, Gun)
+HighPowerPhotonLancer.__index = HighPowerPhotonLancer
+HighPowerPhotonLancer.Config = AssaultRifleConfig
+
+function HighPowerPhotonLancer.new(instance: Tool)
+	local self = setmetatable(Gun.new(instance), HighPowerPhotonLancer)
 	return self
 end
 

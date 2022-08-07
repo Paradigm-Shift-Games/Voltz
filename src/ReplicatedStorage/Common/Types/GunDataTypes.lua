@@ -8,6 +8,7 @@ export type GunConfig = {
 	BulletsPerShot: number,
 	DelayPerShot: number,
 	Damage: number,
+	IridumCost: number,
 	ScopeFOV: number,
 	BulletDecoration: {
 		Color: Color3,

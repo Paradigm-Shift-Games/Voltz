@@ -1,5 +1,3 @@
---!strict
-
 -- Abstract gun class
 
 local CollectionService = game:GetService("CollectionService")
@@ -238,24 +236,16 @@ function Gun.PlaySound(tool: Tool, config: GunDataTypes.GunConfig)
 	local sound = Instance.new("Sound")
 	sound.Name = "Fire"
 
-	--[[ 
-		This loop currently skips over tables
-		It would be neat if in the future FireSound would have support for SoundEffects
-		And that it would be set up like so:
-		FireSound = {
-			SoundId = "...",
-			Volume = 0.5,
-			PitchShiftSoundEffect = {
-				Octave = 1.2,
-				Priority = 0
-			}
-		}
-	]]
 	for property, value in config.FireSound do
 		if type(value) == "table" then
-			continue
+			local soundEffect = Instance.new(property)
+			for k, v in value do
+				soundEffect[k] = v
+			end
+			soundEffect.Parent = sound
+		else
+			sound[property] = value
 		end
-		sound[property] = value
 	end
 
 	sound.Parent = handle
