@@ -239,7 +239,7 @@ function Gun.PlaySound(tool: Tool, config: GunDataTypes.GunConfig)
 	for property, value in config.FireSound do
 		if type(value) == "table" then
 			local soundEffect = Instance.new(property)
-			for k, v in value do
+			for k, v in pairs(value) do
 				soundEffect[k] = v
 			end
 			soundEffect.Parent = sound
@@ -280,7 +280,7 @@ end
 function Gun:GetRaycastBlacklist(extraInstances: Array<Instance>?): Array<Instance>
 	local blacklist = {self.Instance, localPlayer.Character, bulletContainer}
 	if extraInstances then
-		for _, instance in extraInstances do
+		for _, instance in ipairs(extraInstances) do
 			table.insert(blacklist, instance)
 		end
 	end
@@ -485,7 +485,7 @@ end
 
 function Tool:OnEquipped()
 	if self._trove then
-		self._trove:Destroy()
+		self._trove:Clean()
 	end
 	self._trove = Trove.new()
 	self:_createGui()
@@ -499,7 +499,7 @@ end
 
 function Tool:OnUnequipped()
 	if self._trove then
-		self._trove:Destroy()
+		self._trove:Clean()
 	end
 	self.Active = false
 end
