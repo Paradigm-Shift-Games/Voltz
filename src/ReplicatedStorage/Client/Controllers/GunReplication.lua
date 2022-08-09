@@ -29,7 +29,6 @@ function GunReplication:KnitStart()
         end
 
         Gun.DrawShot(bulletSpawn, endPoint, gunConfig)
-        print("bulletindex:", bulletIndex)
 
         if bulletIndex == 1 then
             Gun.PlaySound(tool, gunConfig)

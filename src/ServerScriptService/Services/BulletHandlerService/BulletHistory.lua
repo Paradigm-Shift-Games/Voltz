@@ -10,6 +10,8 @@ function BulletHistory.new()
 	local self = setmetatable({}, BulletHistory)
 	self.History = {}
 	self.MaxBulletAge = 1.05
+	self.DeleteOldRecordsIndex = 20
+	self.RecordAddedIndex = 0
 	return self
 end
 
@@ -19,6 +21,7 @@ function BulletHistory:AddBulletPoint(bulletAmount: number)
 		BulletAmount = bulletAmount
 	}
 	table.insert(self.History, bulletData)
+	self.RecordAddedIndex += 1
 	self:Cleanup()
 end
 
@@ -27,17 +30,20 @@ function BulletHistory:GetBulletCountFromTimestampOffset(timeOffset: number): nu
 	local timestamp = os.clock() - timeOffset
 
 	for i = #self.History, 1, -1 do
-		local bulletData = self.History[i]
+		local bulletData: BulletData = self.History[i]
 		if bulletData.Timestamp < timestamp then
 			break
 		end
-		bulletCount += 1
+		bulletCount += bulletData.BulletAmount
 	end
 
 	return bulletCount
 end
 
 function BulletHistory:Cleanup()
+	if self.RecordAddedIndex % self.DeleteOldRecordsIndex ~= 0 then
+		return
+	end
 	local minAge = os.clock() - self.MaxBulletAge
 	local newHistoryArray = {}
 	for _, bulletData in self.History do
