@@ -8,7 +8,8 @@ local HighPowerPhotonLancerConfig = {
 	ScopeFOV = 40,
 	BulletDecoration = {
 		Color = Color3.fromRGB(255, 255, 255),
-		Thickness = 0.35
+		Thickness = 0.35,
+		ImpulseForce = 40
 	},
 	FireSound = {
 		SoundId = "rbxassetid://181593315",

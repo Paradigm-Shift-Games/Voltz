@@ -93,15 +93,20 @@ function SpringHandler:Impulse(character: Model, impulseForce: number)
 			local defaultC0_Shoulder = motors.RightShoulderDefaultC0
 			local defaultC0_Elbow = motors.RightElbowDefaultC0
 
-			local lowerArmMovementDivision = 1/self.RecoilConfig.LowerArmMovement
-			local backArmDivision = 1/self.RecoilConfig.BackArmMovement
+			local lowerArmMovementDivision = 1 / self.RecoilConfig.LowerArmMovement
+			local backArmDivision = 1 / self.RecoilConfig.BackArmMovement
 			local wiggleSpeed = self.RecoilConfig.WiggleSpeed
 			local wiggleAmount = self.RecoilConfig.WiggleAmount
-			local elbowmMovementDivision = 1/self.RecoilConfig.ElbowRotationAmount
+			local elbowmMovementDivision = 1 / self.RecoilConfig.ElbowRotationAmount
+			local downwardRotationDivision = 1 / (self.RecoilConfig.ElbowRotationAmount * 0.7)
 
-			motors.RightShoulder.C0 = (defaultC0_Shoulder * CFrame.new(0, -position/lowerArmMovementDivision, position/backArmDivision)) 
-				* CFrame.Angles(-position/5, 0, 0) * CFrame.Angles(0, math.sin(t*wiggleSpeed)*position*wiggleAmount, 0)
-			motors.RightElbow.C0 = (defaultC0_Elbow * CFrame.new(0, position/lowerArmMovementDivision, 0)) * CFrame.Angles(position/elbowmMovementDivision, 0, 0)
+			local shoulderPositionOffset = CFrame.new(0, -position / lowerArmMovementDivision, position / backArmDivision)
+			local shoulderRotationOffset = CFrame.Angles(-position / downwardRotationDivision, math.sin(t * wiggleSpeed) * position * wiggleAmount, 0)
+			motors.RightShoulder.C0 = (defaultC0_Shoulder * shoulderPositionOffset) * shoulderRotationOffset
+
+			local elbowPositionOffset = CFrame.new(0, position / lowerArmMovementDivision, 0)
+			local elbowRotationOffset = CFrame.Angles(position / elbowmMovementDivision, 0, 0)
+			motors.RightElbow.C0 = (defaultC0_Elbow * elbowPositionOffset) * elbowRotationOffset
 		end)
 	end
 end

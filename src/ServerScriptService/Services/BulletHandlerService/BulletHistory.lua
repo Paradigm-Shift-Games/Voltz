@@ -46,7 +46,6 @@ function BulletHistory:Cleanup()
 		end
 	end
 	self.History = newHistoryArray
-	print("Size:", #self.History)
 end
 
 return BulletHistory
