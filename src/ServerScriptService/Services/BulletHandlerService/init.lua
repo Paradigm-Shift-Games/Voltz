@@ -1,5 +1,3 @@
---!strict
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -75,7 +73,7 @@ function BulletHandlerService.Client:FireBullet(player: Player, bulletDataList: 
 	end
 
 	local raycastParams = RaycastParams.new()
-	raycastParams.FilterDescendantsInstances = self:GetRaycastBlacklist()
+	raycastParams.FilterDescendantsInstances = BulletHandlerService:GetRaycastBlacklist()
 	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 
 	local function handleBulletData(bulletData: GunDataTypes.BulletData): boolean
