@@ -38,6 +38,16 @@ ValidationTests["EndPositionCheck"] = function(player: Player, validationData: V
     return barrelDistance < (gunConfig.Range + marginOfErrorDistanceIncrement)
 end
 
+ValidationTests["EndPositionHitCheck"] = function(player: Player, validationData: ValidationDataType): boolean
+    local bulletData = validationData.BulletData
+    local sizeMagnitude = bulletData.HitPart and bulletData.HitPart.Size.Magnitude
+    if not sizeMagnitude or sizeMagnitude > 8 then
+        return true
+    end
+    local hitPartDistance = (bulletData.HitPart.Position - bulletData.EndPosition).Magnitude
+    return hitPartDistance < sizeMagnitude + marginOfErrorDistanceIncrement
+end
+
 local marginOfErrorTimeOffset = 0.05
 
 local function getBulletCount(gunConfig: GunDataTypes.GunConfig, timeOffset: number): number
