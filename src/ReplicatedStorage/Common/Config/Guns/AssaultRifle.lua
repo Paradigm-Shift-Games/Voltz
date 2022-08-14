@@ -1,6 +1,6 @@
 local AssaultRifleConfig = {
 	AutoFire = true,
-	FireRate = 10,
+	FireRate = 7,
 	Bloom = 1.3,
 	Range = 192,
 	BulletsPerShot = 1,
@@ -11,7 +11,7 @@ local AssaultRifleConfig = {
 		Thickness = 0.15
 	},
 	FireSound = {
-		SoundId = "rbxassetid://131070686",
+		SoundId = "rbxassetid://381603686",
 		Volume = 0.5
 	}
 }

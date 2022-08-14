@@ -21,10 +21,11 @@ function Character.new(instance: Instance)
 	instance:SetAttribute("FaceCursorInAir", false)
 	instance:SetAttribute("LookInAir", false)
 
-	-- Add CameraLook tag to the character
+	-- Add tags to the character
 	CollectionService:AddTag(instance, "CursorLook")
 	CollectionService:AddTag(instance, "FallDamage")
 	CollectionService:AddTag(instance, "OceanDamage")
+	CollectionService:AddTag(instance, "Sprint")
 
 	-- TODO: Use actual jetpack model
 	-- Add Jetpack tag to the character's root part
