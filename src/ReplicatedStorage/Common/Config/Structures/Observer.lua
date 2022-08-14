@@ -1,5 +1,5 @@
 local ObserverConfig = {
-	MinimumRange = 20;
+	Range = 20;
 }
 
 return ObserverConfig
