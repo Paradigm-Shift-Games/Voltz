@@ -36,7 +36,10 @@ function StarterIsland.Build(terrainGrid, islandConfig, starterIslandGrid)
 				terrainGrid:Set(position.X + x, 0, position.Y + z, "Surface Fill")
 			end
 		end
+
+		terrainGrid:Set(position.X, 1, position.Y, "TeamStartPosition")
 	end)
+
 	-- return an array of starter island 3D grids
 end
 
