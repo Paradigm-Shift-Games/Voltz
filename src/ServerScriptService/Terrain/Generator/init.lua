@@ -21,7 +21,7 @@ function Generator.Generate(terrainConfig)
 
 	-- Generate Grids
 	local islandGrid = IslandGenerator.Generate(islandConfig)
-	local starterIslandGrid = IslandGenerator.Generate(islandConfig)
+	local starterIslandGrid = StarterIslandGenerator.Generate(islandConfig)
 	local supportGrid = SupportGenerator.Generate(supportConfig, islandGrid, starterIslandGrid)
 	local beaconGrid = BeaconGenerator.Generate(beaconConfig)
 	local spireGrid = SpireGenerator.Generate(spireConfig, islandGrid)
@@ -35,17 +35,16 @@ function Generator.Generate(terrainConfig)
 	CrystalGenerator.Build(terrainGrid, crystalGrid)
 	SpireGenerator.Build(terrainGrid, spireGrid)
 
+	-- Build Starter Islands
+	StarterIslandGenerator.Build(terrainGrid, islandConfig, starterIslandGrid)
+
 	-- Build Supports
 	SupportGenerator.Build(terrainGrid, supportConfig, supportGrid)
 	BeaconGenerator.Build(terrainGrid, supportConfig, beaconGrid)
 
-	-- Build Starter Islands
-	local starterIslandGrids = StarterIslandGenerator.Build()
-
     -- Pack Result
     local resultGrids = {
         Terrain = terrainGrid;
-        StarterIslands = starterIslandGrids;
     }
 
 	return resultGrids

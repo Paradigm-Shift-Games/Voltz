@@ -17,6 +17,9 @@ local debugColors = {
 
 	-- Resource
 	["Resource Crystal"] = Color3.new(0, 1, 0.968627);
+
+	-- Abstract
+	["TeamStartPosition"] = Color3.new(0.403921, 0.105882, 0.411764);
 }
 
 local function getColor(cellType)
