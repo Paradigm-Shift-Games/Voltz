@@ -1,3 +1,4 @@
+---@diagnostic disable-next-line: undefined-global
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -11,8 +12,6 @@ Observer.__index = Observer
 function Observer.new(instance)
 	local self = setmetatable({}, Observer)
 	self.Instance = instance
-
-    print(self.Instance.Name, " created!")
 
     RunService.Heartbeat:Connect(function()
         for _,v in pairs(Players:GetPlayers()) do
@@ -30,8 +29,6 @@ function Observer.new(instance)
 end
 
 function Observer:Destroy()
-
-    print(self.Instance.Name, " destroyed!")
 
 end
 
