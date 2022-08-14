@@ -1,7 +1,11 @@
 local TerrainConfig = {
     Island = {
         MainlandSize = 45,
+
         StarterIslandDistance = 15,
+        StarterIslandSize = 5,
+        StarterIslandAmount = 6,
+        StarterIslandOffset = (45/2),
  
         Grass = {
             Scale = 16,

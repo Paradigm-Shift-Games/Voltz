@@ -21,6 +21,10 @@ function Support.Generate(supportConfig, islandGrid, starterIslandGrid)
 		end
 	end)
 
+	starterIslandGrid:IterateCells(function(position)
+		supportGrid:Set(position.X, position.Y, true)
+	end)
+
 	return supportGrid
 end
 
