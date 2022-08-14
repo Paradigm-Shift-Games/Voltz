@@ -40,7 +40,7 @@ function Generator.Generate(terrainConfig)
 	BeaconGenerator.Build(terrainGrid, supportConfig, beaconGrid)
 
 	-- Build Starter Islands
-	local starterIslandGrids = StarterIslandGenerator.Build()
+	local starterIslandGrids = StarterIslandGenerator.Build(islandConfig, starterIslandGrid)
 
     -- Pack Result
     local resultGrids = {

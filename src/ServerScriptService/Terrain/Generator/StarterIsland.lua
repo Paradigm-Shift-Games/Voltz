@@ -7,7 +7,7 @@ function StarterIsland.Generate(islandConfig, islandGrid)
 	return Grid2D.new() -- a grid of starter island positions -> true
 end
 
-function StarterIsland.Build(starterIslandConfig, starterIslandGrid)
+function StarterIsland.Build(islandConfig, starterIslandGrid)
 	-- create the starter islands. They're just circles of 'Surface Fill' around each starter island point
 	-- Create **EACH** starter island in a new grid. return an **ARRAY** of starter island grids.
 	-- This is neccesary because scripting the starter islands is something that actively has to be done, they need to spawn
