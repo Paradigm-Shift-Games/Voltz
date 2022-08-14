@@ -6,7 +6,6 @@ Voltz, open-sourced.
 
 ## Installing tools
 
-1. Install Rust via [rustup](https://rustup.rs/)
-2. Install foreman via `cargo install foreman`
-3. Run `foreman install` within the project root to download and install necessary tools
-4. Run `wally install` to download dependencies via wally
+1. Install [Aftman](https://github.com/LPGhatguy/aftman).
+2. In the project root, run `aftman install` within the project root to download and install all necessary tools.
+3. Run `wally install` to download project dependencies.
