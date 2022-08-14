@@ -44,7 +44,7 @@ function Generator.Generate(terrainConfig)
 
     -- Pack Result
     local resultGrids = {
-        Terrain = terrainGrid
+        Terrain = terrainGrid;
     }
 
 	return resultGrids
