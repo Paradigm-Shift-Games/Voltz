@@ -1,24 +1,22 @@
-local Grid2D = require(script.Parent.Parent.Grid2D)
-
 local Crystal = {}
 
 function Crystal.Generate(crystalConfig, islandGrid)
-	local crystalGrid = Grid2D.new()
+	local crystalGrid = {}
 	local random = Random.new()
 
-	islandGrid:IterateCells(function(position)
+	for position, _ in pairs(islandGrid) do
 		if random:NextNumber() < crystalConfig.CrystalSpawnRate then
-			crystalGrid:Set(position.X, position.Y, true)
+			crystalGrid[Vector3.new(position.X, 0, position.Z)] = true
 		end
-	end)
+	end
 
 	return crystalGrid
 end
 
 function Crystal.Build(terrainGrid, crystalGrid)
-	crystalGrid:IterateCells(function(position)
-		terrainGrid:Set(position.X, 1, position.Y, "Resource Crystal")
-	end)
+	for position, _ in pairs(crystalGrid) do
+		terrainGrid:Set(position.X, 1, position.Z, "Resource Crystal")
+	end
 end
 
 return Crystal
