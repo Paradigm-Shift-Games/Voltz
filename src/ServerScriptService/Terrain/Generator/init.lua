@@ -1,6 +1,3 @@
--- Classes
-local Grid3D = require(script.Parent.Grid3D)
-
 -- Generators
 local IslandGenerator = require(script.Island)
 local SpireGenerator = require(script.Spire)
@@ -28,7 +25,7 @@ function Generator.Generate(terrainConfig)
 	local crystalGrid = CrystalGenerator.Generate(crystalConfig, islandGrid)
 
 	-- Create 3D Grid
-	local terrainGrid = Grid3D.new()
+	local terrainGrid = {}
 
 	-- Build Islands
 	IslandGenerator.Build(terrainGrid, islandConfig, islandGrid)

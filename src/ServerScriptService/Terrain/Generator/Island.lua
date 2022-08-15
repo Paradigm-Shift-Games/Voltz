@@ -1,13 +1,9 @@
-local Grid2D = require(script.Parent.Parent.Grid2D)
 local Noise2D = require(script.Parent.Parent.Noise2D)
 
 local Island = {}
 
--- TODO: Gaps
--- TODO: Variable height
-
 function Island.Generate(islandConfig)
-	local islandGrid = Grid2D.new()
+	local islandGrid = {}
 	local islandNoise = Noise2D.new()
 	local depthNoise = Noise2D.new()
 
@@ -27,7 +23,7 @@ function Island.Generate(islandConfig)
 			local depth = math.floor(depthNoise:UnitNoise(x, z, islandConfig.Depth.Scale) * islandConfig.Depth.Magnitude)
 
 			-- Grid
-			islandGrid:Set(x, z, depth)
+			islandGrid[Vector3.new(x, 0, z)] = depth
 		end
 	end
 
@@ -37,18 +33,17 @@ end
 function Island.Build(terrainGrid, islandConfig, islandGrid)
 	local grassNoise = Noise2D.new()
 
-	islandGrid:IterateCells(function(position, depth)
-		local isGrass = grassNoise:EdgeRange(position.X, position.Y, islandConfig.Grass.Scale, islandConfig.Grass.Weight)
+	for position, depth in pairs(islandGrid) do
+		local isGrass = grassNoise:EdgeRange(position.X, position.Z, islandConfig.Grass.Scale, islandConfig.Grass.Weight)
 
 		for y = -depth, 0 do
 			if y == 0 and isGrass then
-				terrainGrid:Set(position.X, y, position.Y, "Surface Grass")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Surface Grass"
 			else
-				terrainGrid:Set(position.X, y, position.Y, "Surface Fill")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Surface Fill"
 			end
 		end
-		
-	end)
+	end
 end
 
 return Island

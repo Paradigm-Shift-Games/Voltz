@@ -1,43 +1,41 @@
-local Grid2D = require(script.Parent.Parent.Grid2D)
-
 local Support = {}
 
 function Support._getMinDistance(supportGrid, canadatePosition)
 	local minDistance = math.huge
 
-	supportGrid:IterateCells(function(position)
+	for position, _ in pairs(supportGrid) do
 		minDistance = math.min(minDistance, (canadatePosition - position).Magnitude)
-	end)
+	end
 
 	return minDistance
 end
 
 function Support.Generate(supportConfig, islandGrid, starterIslandGrid)
-	local supportGrid = Grid2D.new()
+	local supportGrid = {}
 
-	islandGrid:IterateCells(function(position)
+	for position, _ in pairs(islandGrid) do
 		if Support._getMinDistance(supportGrid, position) > supportConfig.SupportSpacing then
-			supportGrid:Set(position.X, position.Y, true)
+			supportGrid[position] = true
 		end
-	end)
+	end
 
-	starterIslandGrid:IterateCells(function(position)
-		supportGrid:Set(position.X, position.Y, true)
-	end)
+	for position, _ in pairs(starterIslandGrid) do
+		supportGrid[position] = true
+	end
 
 	return supportGrid
 end
 
 function Support.Build(terrainGrid, supportConfig, supportGrid)
-	supportGrid:IterateCells(function(position)
+	for position, _ in pairs(supportGrid) do
 		for y = -supportConfig.SupportHeight, 0 do
 			if y == 0 then
-				terrainGrid:Set(position.X, y, position.Y, "Support WellTop")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Support WellTop"
 			else
-				terrainGrid:Set(position.X, y, position.Y, "Support Well")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Support Well"
 			end
 		end
-	end)
+	end
 
 	-- generate each support.
 

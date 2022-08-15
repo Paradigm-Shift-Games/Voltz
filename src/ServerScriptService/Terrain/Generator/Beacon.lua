@@ -1,9 +1,7 @@
-local Grid2D = require(script.Parent.Parent.Grid2D)
-
 local Beacon = {}
 
 function Beacon.Generate(beaconConfig)
-	local beaconGrid = Grid2D.new()
+	local beaconGrid = {}
 
 	if beaconConfig.BeaconCount == 0 then
 		return beaconGrid
@@ -11,13 +9,13 @@ function Beacon.Generate(beaconConfig)
 
 	local beaconCount = beaconConfig.BeaconCount - 1
 
-	beaconGrid:Set(0, 0, true)
+	beaconGrid[Vector3.new(0, 0, 0)] = true
 	local beaconAngleDifference = 360 / beaconCount
 
 	for i = 1, beaconCount do
 		local x = math.cos(math.rad(beaconAngleDifference * i))
 		local y = math.sin(math.rad(beaconAngleDifference * i))
-		beaconGrid:Set(math.round(x * beaconConfig.Offset), math.round(y * beaconConfig.Offset), true)
+		beaconGrid[Vector3.new(math.round(x * beaconConfig.Offset), 0, math.round(y * beaconConfig.Offset))] = true
 	end
 
 	return beaconGrid
@@ -25,15 +23,15 @@ end
 
 
 function Beacon.Build(terrainGrid, supportConfig, beaconGrid)
-	beaconGrid:IterateCells(function(position)
+	for position, _ in pairs(beaconGrid) do
 		for y = -supportConfig.SupportHeight, 0 do
 			if y == 0 then
-				terrainGrid:Set(position.X, y, position.Y, "Support Beacon")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Support Beacon"
 			else
-				terrainGrid:Set(position.X, y, position.Y, "Surface Fill")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Surface Fill"
 			end
 		end
-	end)
+	end
 end
 
 return Beacon
