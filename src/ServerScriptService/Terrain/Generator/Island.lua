@@ -2,9 +2,6 @@ local Noise2D = require(script.Parent.Parent.Noise2D)
 
 local Island = {}
 
--- TODO: Gaps
--- TODO: Variable height
-
 function Island.Generate(islandConfig)
 	local islandGrid = {}
 	local islandNoise = Noise2D.new()
