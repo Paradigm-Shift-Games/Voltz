@@ -30,9 +30,9 @@ function Support.Build(terrainGrid, supportConfig, supportGrid)
 	for position, _ in pairs(supportGrid) do
 		for y = -supportConfig.SupportHeight, 0 do
 			if y == 0 then
-				terrainGrid:Set(position.X, y, position.Z, "Support WellTop")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Support WellTop"
 			else
-				terrainGrid:Set(position.X, y, position.Z, "Support Well")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Support Well"
 			end
 		end
 	end

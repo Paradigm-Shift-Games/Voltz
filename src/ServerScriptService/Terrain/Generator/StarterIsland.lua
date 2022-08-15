@@ -23,11 +23,11 @@ function StarterIsland.Build(terrainGrid, islandConfig, starterIslandGrid)
 					continue
 				end
 
-				terrainGrid:Set(position.X + x, 0, position.Z + z, "Surface Fill")
+				terrainGrid[position + Vector3.new(x, 0, z)] = "Surface Fill"
 			end
 		end
 
-		terrainGrid:Set(position.X, 1, position.Z, "TeamStartPosition")
+		terrainGrid[position + Vector3.new(0, 1, 0)] = "TeamStartPosition"
 	end
 end
 

@@ -37,7 +37,7 @@ function DebugRender.DrawGrid(terrainGrid, scale)
 	local folder = Instance.new("Folder")
 	folder.Name = "Map"
 
-	terrainGrid:IterateCells(function(position, data)
+	for position, data in pairs(terrainGrid) do
 		local part = Instance.new("Part")
 
 		-- Base properties
@@ -51,7 +51,7 @@ function DebugRender.DrawGrid(terrainGrid, scale)
 		part.Color = getColor(data)
 
 		part.Parent = folder
-	end)
+	end
 
 	folder.Parent = workspace
 end

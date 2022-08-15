@@ -15,7 +15,7 @@ end
 
 function Crystal.Build(terrainGrid, crystalGrid)
 	for position, _ in pairs(crystalGrid) do
-		terrainGrid:Set(position.X, 1, position.Z, "Resource Crystal")
+		terrainGrid[position + Vector3.new(0, 1, 0)] = "Resource Crystal"
 	end
 end
 

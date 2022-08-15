@@ -38,9 +38,9 @@ function Island.Build(terrainGrid, islandConfig, islandGrid)
 
 		for y = -depth, 0 do
 			if y == 0 and isGrass then
-				terrainGrid:Set(position.X, y, position.Z, "Surface Grass")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Surface Grass"
 			else
-				terrainGrid:Set(position.X, y, position.Z, "Surface Fill")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Surface Fill"
 			end
 		end
 	end

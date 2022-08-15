@@ -31,9 +31,9 @@ function Spire.Build(terrainGrid, spireGrid)
 	for position, height in pairs(spireGrid) do
 		for y = 0, height do
 			if y == height then
-				terrainGrid:Set(position.X, y, position.Z, "Spire Top")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Spire Top"
 			else
-				terrainGrid:Set(position.X, y, position.Z, "Spire Fill")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Spire Fill"
 			end
 		end
 	end

@@ -26,9 +26,9 @@ function Beacon.Build(terrainGrid, supportConfig, beaconGrid)
 	for position, _ in pairs(beaconGrid) do
 		for y = -supportConfig.SupportHeight, 0 do
 			if y == 0 then
-				terrainGrid:Set(position.X, y, position.Z, "Support Beacon")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Support Beacon"
 			else
-				terrainGrid:Set(position.X, y, position.Z, "Surface Fill")
+				terrainGrid[position + Vector3.new(0, y, 0)] = "Surface Fill"
 			end
 		end
 	end
