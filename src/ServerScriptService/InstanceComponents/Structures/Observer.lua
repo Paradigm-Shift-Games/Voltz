@@ -11,7 +11,7 @@ function Observer.new(instance)
 	local self = setmetatable({}, Observer)
 	self.Instance = instance
 
-    self._heartbeatConnection  = RunService.Heartbeat:Connect(function()
+    self._heartbeatConnection = RunService.Heartbeat:Connect(function()
         for _, player in ipairs(Players:GetPlayers()) do
             if not player.Character then continue end
             local distanceBetweenParts = (player.Character.HumanoidRootPart.Position - self.Instance.PrimaryPart.Position).Magnitude
@@ -23,7 +23,7 @@ function Observer.new(instance)
 end
 
 function Observer:Destroy()
-    self._heartbeatConnection :Disconnect()
+    self._heartbeatConnection:Disconnect()
 end
 
 return Observer
