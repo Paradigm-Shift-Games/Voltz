@@ -12,8 +12,12 @@ function OceanDamage.new(character: Model)
 	self._humanoid = character:WaitForChild("Humanoid")
 	self._trove = Trove.new()
 	self._trove:Connect(RunService.Heartbeat, function(delta)
-		if self._humanoid.RootPart.Position.Y > OceanDamageConfig.Height then return end
-		self._humanoid:TakeDamage(delta * OceanDamageConfig.Damage)
+		local humanoid = self._humanoid
+		local rootPart = humanoid.RootPart
+		if not rootPart then return end
+
+		if rootPart.Position.Y > OceanDamageConfig.Height then return end
+		humanoid:TakeDamage(delta * OceanDamageConfig.Damage)
 	end)
 
 	return self
