@@ -239,7 +239,7 @@ function Gun.PlaySound(tool: Tool, config: GunDataTypes.GunConfig)
 	for property, value in config.FireSound do
 		if type(value) == "table" then
 			local soundEffect = Instance.new(property)
-			for k, v in pairs(value) do
+			for k, v in value do
 				soundEffect[k] = v
 			end
 			soundEffect.Parent = sound
