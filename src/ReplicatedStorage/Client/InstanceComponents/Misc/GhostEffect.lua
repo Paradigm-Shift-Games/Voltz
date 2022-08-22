@@ -25,13 +25,13 @@ function GhostEffect:_getTransparency(part: BasePart)
 end
 
 function GhostEffect:_revert(part: BasePart)
-	for property, value in pairs(self._partData[part]) do
+	for property, value in self._partData[part] do
 		part[property] = value
 	end
 end
 
 function GhostEffect:_revertAll()
-	for part, _ in pairs(self._partData) do
+	for part, _ in self._partData do
 		self:_revert(part)
 	end
 end
@@ -43,7 +43,7 @@ function GhostEffect:_apply(part: BasePart)
 end
 
 function GhostEffect:_applyAll()
-	for part, _ in pairs(self._partData) do
+	for part, _ in self._partData do
 		self:_apply(part)
 	end
 end
@@ -90,7 +90,7 @@ function GhostEffect.new(instance: Instance)
 	self:_setVisible(self.Instance:GetAttribute("Visible"))
 	self:_setPlaceable(self.Instance:GetAttribute("Placeable"))
 
-	for _, descendant in ipairs(self.Instance:GetDescendants()) do
+	for _, descendant in self.Instance:GetDescendants() do
 		if not descendant:IsA("BasePart") then
 			continue
 		end

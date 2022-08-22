@@ -4,7 +4,7 @@ Queue.__index = Queue
 local function copyTab(tab)
 	local newTab = {}
 
-	for i, v in pairs(tab) do
+	for i, v in tab do
 		newTab[i] = v
 	end
 

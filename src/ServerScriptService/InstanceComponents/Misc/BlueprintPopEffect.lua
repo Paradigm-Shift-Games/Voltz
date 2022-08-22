@@ -8,7 +8,7 @@ local BlueprintPopEffect = {}
 BlueprintPopEffect.__index = BlueprintPopEffect
 
 function BlueprintPopEffect:_build()
-	for _, part in ipairs(self.Instance:GetDescendants()) do
+	for _, part in self.Instance:GetDescendants() do
 		if part:IsA("BasePart") then
 			table.insert(self._parts, part)
 		end
@@ -18,7 +18,7 @@ end
 function BlueprintPopEffect:_pop()
 	local tweenInfo = TweenInfo.new(tweenTime, Enum.EasingStyle.Linear)
 
-	for _, part in ipairs(self._parts) do
+	for _, part in self._parts do
 		TweenService:Create(part, tweenInfo, {Size = part.Size * tweenScale}):Play()
 	end
 
