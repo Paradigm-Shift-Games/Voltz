@@ -23,7 +23,7 @@ end
 
 
 function Beacon.Build(terrainGrid, supportConfig, beaconGrid)
-	for position, _ in pairs(beaconGrid) do
+	for position, _ in beaconGrid do
 		for y = -supportConfig.SupportHeight, 0 do
 			if y == 0 then
 				terrainGrid[position + Vector3.new(0, y, 0)] = "Support Beacon"

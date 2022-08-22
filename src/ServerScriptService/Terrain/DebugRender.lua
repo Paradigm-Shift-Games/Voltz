@@ -37,7 +37,7 @@ function DebugRender.DrawGrid(terrainGrid, scale)
 	local folder = Instance.new("Folder")
 	folder.Name = "Map"
 
-	for position, data in pairs(terrainGrid) do
+	for position, data in terrainGrid do
 		local part = Instance.new("Part")
 
 		-- Base properties

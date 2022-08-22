@@ -33,7 +33,7 @@ end
 function Island.Build(terrainGrid, islandConfig, islandGrid)
 	local grassNoise = Noise2D.new()
 
-	for position, depth in pairs(islandGrid) do
+	for position, depth in islandGrid do
 		local isGrass = grassNoise:EdgeRange(position.X, position.Z, islandConfig.Grass.Scale, islandConfig.Grass.Weight)
 
 		for y = -depth, 0 do

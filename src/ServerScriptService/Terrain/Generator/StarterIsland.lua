@@ -16,7 +16,7 @@ function StarterIsland.Generate(islandConfig)
 end
 
 function StarterIsland.Build(terrainGrid, islandConfig, starterIslandGrid)
-	for position, _ in pairs(starterIslandGrid) do
+	for position, _ in starterIslandGrid do
 		for x = -islandConfig.StarterIslandSize, islandConfig.StarterIslandSize do
 			for z = -islandConfig.StarterIslandSize, islandConfig.StarterIslandSize do
 				if math.sqrt(x^2 + z^2) > islandConfig.StarterIslandSize then
