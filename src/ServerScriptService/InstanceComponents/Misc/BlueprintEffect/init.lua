@@ -11,7 +11,7 @@ end
 local function getKeys(map)
 	local keys = {}
 
-	for key, _ in pairs(map) do
+	for key, _ in map do
 		table.insert(keys, key)
 	end
 
@@ -21,7 +21,7 @@ end
 local function getDistances(part, parts)
 	local distances = {}
 
-	for _, otherPart in ipairs(parts) do
+	for _, otherPart in parts do
 		distances[otherPart] = (part.Position - otherPart.Position).Magnitude
 	end
 
@@ -29,13 +29,13 @@ local function getDistances(part, parts)
 end
 
 function BlueprintEffect:_revert(part)
-	for property, value in pairs(self._partData[part]) do
+	for property, value in self._partData[part] do
 		part[property] = value
 	end
 end
 
 function BlueprintEffect:_revertAll()
-	for part, _ in pairs(self._partData) do
+	for part, _ in self._partData do
 		self:_revert(part)
 	end
 end
@@ -77,7 +77,7 @@ function BlueprintEffect:_add(part: BasePart)
 end
 
 function BlueprintEffect:_addParts()
-	for _, descendant in ipairs(self.Instance:GetDescendants()) do
+	for _, descendant in self.Instance:GetDescendants() do
 		if not descendant:IsA("BasePart") then
 			continue
 		end
@@ -89,16 +89,16 @@ end
 function BlueprintEffect:_buildWeights(totalCapacity)
 	local partVolumes = {}
 
-	for part, _ in pairs(self._partData) do
+	for part, _ in self._partData do
 		partVolumes[part] = part.Size.X * part.Size.Y * part.Size.Z
 	end
 
 	local totalVolume = 0
-	for _, volume in pairs(partVolumes) do
+	for _, volume in partVolumes do
 		totalVolume += volume
 	end
 
-	for part, volume in pairs(partVolumes) do
+	for part, volume in partVolumes do
 		self._partFills[part] = 0
 		self._partCapacities[part] = (volume / totalVolume) * totalCapacity
 	end
@@ -118,7 +118,7 @@ function BlueprintEffect.new(instance)
 	self:_addParts()
 	self:_buildWeights(self.Instance:GetAttribute("ResourceStorage"))
 
-	for part, _ in pairs(self._partData) do
+	for part, _ in self._partData do
 		self:_updatePart(part)
 	end
 
@@ -144,7 +144,7 @@ end
 function BlueprintEffect:_push(partsList, amount)
 	local amountRemaining = amount
 
-	for _, pushingPart in ipairs(partsList) do
+	for _, pushingPart in partsList do
 		local partCapacityUnused = (self._partCapacities[pushingPart] - self._partFills[pushingPart])
 		local amountPushed = math.min(amountRemaining, partCapacityUnused)
 
