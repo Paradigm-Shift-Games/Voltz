@@ -15,7 +15,7 @@ function Character.new(character: Model)
 		end
 	end
 
-    for _, descendant: Instance in ipairs(character:GetDescendants()) do
+    for _, descendant: Instance in character:GetDescendants() do
         task.spawn(onDescendantAdded, descendant)
     end
 
