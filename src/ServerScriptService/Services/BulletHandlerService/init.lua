@@ -169,7 +169,7 @@ local function TempCodeToGiveGunsRemoveLaterOkayThxBye()
 
 	Players.PlayerAdded:Connect(playerAdded)
 
-	for _, player in ipairs(Players:GetPlayers()) do
+	for _, player in Players:GetPlayers() do
 		task.spawn(playerAdded, player)
 	end
 end
