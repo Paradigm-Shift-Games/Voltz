@@ -24,17 +24,17 @@ end
 
 function BinderController:KnitInit()
 	-- Load structure binders
-	for _, instanceComponentModule in ipairs(ReplicatedStorage.Client.InstanceComponents.Structures:GetChildren()) do
+	for _, instanceComponentModule in ReplicatedStorage.Client.InstanceComponents.Structures:GetChildren() do
 		self._binderProvider:Add(instanceComponentModule.Name, require(instanceComponentModule))
 	end
 
 	-- Load tool binders
-	for _, instanceComponentModule in ipairs(ReplicatedStorage.Client.InstanceComponents.Tools:GetChildren()) do
+	for _, instanceComponentModule in ReplicatedStorage.Client.InstanceComponents.Tools:GetChildren() do
 		self._binderProvider:Add(instanceComponentModule.Name, require(instanceComponentModule))
 	end
 
 	-- Load misc binders
-	for _, instanceComponentModule in ipairs(ReplicatedStorage.Client.InstanceComponents.Misc:GetChildren()) do
+	for _, instanceComponentModule in ReplicatedStorage.Client.InstanceComponents.Misc:GetChildren() do
 		self._binderProvider:Add(instanceComponentModule.Name, require(instanceComponentModule))
 	end
 end
