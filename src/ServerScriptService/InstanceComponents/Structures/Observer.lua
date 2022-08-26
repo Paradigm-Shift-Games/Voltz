@@ -26,7 +26,7 @@ function Observer.new(instance)
 	self._trove = Trove.new()
 
 	self._trove:Connect(RunService.Heartbeat, function()
-		self.Instance.PrimaryPart.Color = if self:_isPlayerNearby() then  Color3.fromRGB(0, 255, 0) else Color3.fromRGB(255, 0, 0)
+		self.Instance.PrimaryPart.Color = if self:_isPlayerNearby() then Color3.fromRGB(0, 255, 0) else Color3.fromRGB(255, 0, 0)
 	end)
 
 	return self
