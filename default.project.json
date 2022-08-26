@@ -17,6 +17,9 @@
 			},
 			"Packages": {
 				"$path": "Packages"
+			},
+			"Structures": {
+				"$path": "assets/Structures"
 			}
 		},
 
