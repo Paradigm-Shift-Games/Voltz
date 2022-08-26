@@ -11,10 +11,13 @@ Observer.__index = Observer
 
 function Observer:_isPlayerNearby()
 	for _, player in Players:GetPlayers() do
-		if not player.Character then continue end
+		if not player.Character then
+			continue
+		end
 
-		local distanceBetweenParts = (player.Character.HumanoidRootPart.Position - self.Instance.PrimaryPart.Position).Magnitude
-		if distanceBetweenParts < ObserverConfig.Range then return true end
+		if player:DistanceFromCharacter(self.Instance.PrimaryPart.Position) < ObserverConfig.Range then
+			return true
+		end
 	end
 
 	return false
