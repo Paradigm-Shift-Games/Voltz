@@ -16,6 +16,15 @@ local CursorLookConfig = {
 	NeckAngularSpeed = Vector3.new(300, 560) * math.rad(1);
 	NeckUpperBounds = Vector3.new(25, 45, 0) * math.rad(1);
 	NeckLowerBounds = Vector3.new(-35, -45, 0) * math.rad(1);
+
+	-- Offset for the position of the player's eyes
+	EyeOffset = Vector3.new(0, 0.2, -0.553);
+
+	-- Offset for the position of the player's chest
+	ChestOffset = Vector3.new(0, 0.445, -0.687);
+
+	-- Offset for the position of the player's hips
+	HipOffset = Vector3.new(0, 0.27, -0.292);
 }
 
 return CursorLookConfig

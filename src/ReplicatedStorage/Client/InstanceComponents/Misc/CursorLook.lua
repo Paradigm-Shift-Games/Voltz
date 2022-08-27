@@ -3,6 +3,7 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Trove = require(ReplicatedStorage.Packages.Trove)
+local Comm = require(ReplicatedStorage.Packages.Comm)
 local CursorLookConfig = require(ReplicatedStorage.Common.Config.CursorLook)
 
 local CursorLook = {}
@@ -44,6 +45,7 @@ function CursorLook.new(instance: Instance)
 
 	self.Instance = instance
 	self._trove = Trove.new()
+	self._comm = self._trove:Construct(Comm.ClientComm, instance, false, "Cursor")
 
 	-- Wait for Humanoid to be added
 	local humanoid = instance:FindFirstChildWhichIsA("Humanoid")
@@ -52,19 +54,35 @@ function CursorLook.new(instance: Instance)
 		instance.ChildAdded:Wait()
 	end
 
-	-- Retrieve player root part
-	local rootPart = humanoid.RootPart
-
 	-- Grab base C0 for root part (TODO: Clean this up)
 	local lowerTorso: BasePart = instance:WaitForChild("LowerTorso")
 	local root: Motor6D = lowerTorso and lowerTorso:WaitForChild("Root")
 	local rootC0 = root.C0
 
 	-- Reset joint angles
-	self._rootAngles = Vector3.new()
-	self._waistAngles = Vector3.new()
-	self._neckAngles = Vector3.new()
+	self._rootAngles = Vector3.zero
+	self._waistAngles = Vector3.zero
+	self._neckAngles = Vector3.zero
 
+	-- Create hip attachment
+	local hipAttachment = self._trove:Construct(Instance, "Attachment")
+	hipAttachment.Name = "HipAttachment"
+	hipAttachment.Position = CursorLookConfig.HipOffset
+
+	-- Create chest attachment
+	local chestAttachment = self._trove:Construct(Instance, "Attachment")
+	chestAttachment.Name = "ChestAttachment"
+	chestAttachment.Position = CursorLookConfig.ChestOffset
+
+	-- Create eye attachment
+	local eyeAttachment = self._trove:Construct(Instance, "Attachment")
+	eyeAttachment.Position = CursorLookConfig.EyeOffset
+	eyeAttachment.Name = "EyeAttachment"
+
+	-- Get shared cursor property
+	local cursorProp = self._comm:GetProperty("Cursor")
+
+	-- Update joint angles
 	local player: Player? = Players:GetPlayerFromCharacter(instance)
 	local isLocalPlayer = player == Players.LocalPlayer
 	local mouse: Mouse? = if isLocalPlayer then player:GetMouse() else nil
@@ -81,6 +99,12 @@ function CursorLook.new(instance: Instance)
 		-- Whether or not the character should auto rotate
 		local shouldAutoRotate = if isOnGround then instance:GetAttribute("AutoRotateOnGround") else instance:GetAttribute("AutoRotateInAir")
 
+		-- Retrieve player root part
+		local rootPart = humanoid.RootPart
+		if not rootPart then
+			return
+		end
+
 		-- Get root CFrame & vectors
 		local cframe = rootPart:GetPivot()
 
@@ -88,7 +112,7 @@ function CursorLook.new(instance: Instance)
 		local rightVector = cframe.RightVector
 
 		-- Locate mouse target part
-		local lookPart: BasePart = instance:FindFirstChild("MouseTarget")
+		local lookPart: BasePart = cursorProp:Get()
 		local lookCFrame
 		if isLocalPlayer then
 			-- Use the mouse's CFrame
@@ -119,6 +143,8 @@ function CursorLook.new(instance: Instance)
 		local lowerTorso: BasePart? = instance:FindFirstChild("LowerTorso")
 		local root: Motor6D? = lowerTorso and lowerTorso:FindFirstChild("Root")
 		if root then
+			hipAttachment.Parent = lowerTorso
+			local hipPosition = hipAttachment.WorldPosition
 			self._rootAngles = dampenAngles(
 				self._rootAngles,
 				if shouldPerformLook then
@@ -141,12 +167,14 @@ function CursorLook.new(instance: Instance)
 		local upperTorso: BasePart? = instance:FindFirstChild("UpperTorso")
 		local waist: Motor6D? = upperTorso and upperTorso:FindFirstChild("Waist")
 		if waist then
+			chestAttachment.Parent = upperTorso
+			local chestPosition = chestAttachment.WorldPosition
 			self._waistAngles = dampenAngles(
 				self._waistAngles,
 				if shouldPerformLook then
 					Vector3.new(
-						calculateJointAngle(-upVector, upperTorso.Position, lookPosition),
-						calculateJointAngle(rightVector, upperTorso.Position, lookPosition),
+						calculateJointAngle(-upVector, chestPosition, lookPosition),
+						calculateJointAngle(rightVector, chestPosition, lookPosition),
 						0
 					)
 				else Vector3.zero,
@@ -161,12 +189,14 @@ function CursorLook.new(instance: Instance)
 		local head: BasePart? = instance:FindFirstChild("Head")
 		local neck: Motor6D? = head and head:FindFirstChild("Neck")
 		if neck then
+			eyeAttachment.Parent = head
+			local eyePosition = eyeAttachment.WorldPosition
 			self._neckAngles = dampenAngles(
 				self._neckAngles,
 				if shouldPerformLook then
 					Vector3.new(
-						calculateJointAngle(-upVector, head.Position, lookPosition),
-						calculateJointAngle(rightVector, head.Position, lookPosition),
+						calculateJointAngle(-upVector, eyePosition, lookPosition),
+						calculateJointAngle(rightVector, eyePosition, lookPosition),
 						0
 					)
 				else Vector3.zero,
