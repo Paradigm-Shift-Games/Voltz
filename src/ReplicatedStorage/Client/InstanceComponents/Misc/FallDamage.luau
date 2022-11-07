@@ -5,30 +5,22 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 local FallDamage = {}
 FallDamage.__index = FallDamage
 
-function FallDamage:_trackCharacterFall(character: Model, humanoid: Humanoid)
-	local initialHeight = nil
-	local fallHeight = nil
+function FallDamage:_getDamage(velocity)
+	local processedSpeed = velocity.Magnitude - FallDamageConfig.MaxSpeedThreshold
 
-	self._trove:Connect(humanoid.FreeFalling, function(active)
-		if active then
-			initialHeight = character.HumanoidRootPart.Position.Y
-		elseif initialHeight then
-			fallHeight = initialHeight - character.HumanoidRootPart.Position.Y
-			if fallHeight < FallDamageConfig.Threshold then return end
-
-			local damage = (fallHeight - FallDamageConfig.Threshold) * FallDamageConfig.Scale
-			humanoid:TakeDamage(damage)
-		end
-	end)
+	return math.clamp(processedSpeed * FallDamageConfig.DamageScale, 0, math.huge)
 end
 
 function FallDamage.new(character: Model)
-	local humanoid = character:WaitForChild("Humanoid")
-
 	local self = setmetatable({}, FallDamage)
 
+	self._humanoid = character:WaitForChild("Humanoid")
 	self._trove = Trove.new()
-	self:_trackCharacterFall(character, humanoid)
+	self._trove:Connect(self._humanoid.StateChanged, function(old, new)
+		if not (old == Enum.HumanoidStateType.Freefall and new == Enum.HumanoidStateType.Landed) then return end
+
+		self._humanoid:TakeDamage(self:_getDamage(self._humanoid.RootPart.AssemblyLinearVelocity))
+	end)
 
 	return self
 end
