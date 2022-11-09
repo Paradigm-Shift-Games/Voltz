@@ -16,7 +16,7 @@ function GraphUtil.GetComponent(graph, node)
         -- Get next node
         local current = queue:PopStart()
 
-        for other, _ in graph:GetNodeConnections(current) do
+        for other, _ in graph:GetEdges(current) do
             -- Handle unvisited nodes
             if not visited[node] then
                 queue:PushEnd(other)
@@ -46,7 +46,7 @@ function GraphUtil.IsConnected(graph, node, target)
             return true
         end
 
-        for other, _ in graph:GetNodeConnections(current) do
+        for other, _ in graph:GetEdges(current) do
             -- Handle unvisited nodes
             if not visited[node] then
                 queue:PushEnd(other)
