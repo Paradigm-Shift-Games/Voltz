@@ -3,7 +3,7 @@ local Queue = require(ReplicatedStorage.Common.Queue)
 
 local GraphUtil = {}
 
-function GraphUtil.GetConnections(graph, node)
+function GraphUtil.GetComponent(graph, node)
     -- Create queue and visited table
     local queue = Queue.new()
     local visited = {}

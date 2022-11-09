@@ -41,7 +41,7 @@ function Graph:GetConnections()
     return self._connections
 end
 
-function Graph:GetNodeConnections(node)
+function Graph:GetEdges(node)
     return self._connections[node]
 end
 
