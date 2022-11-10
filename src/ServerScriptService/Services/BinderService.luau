@@ -1,8 +1,9 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Knit = require(ReplicatedStorage.Packages.Knit)
-local BinderProvider = require(ReplicatedStorage.Common.BinderProvider)
+local Packages = ReplicatedStorage:WaitForChild("Packages")
+local Knit = require(Packages.Knit)
+local BinderProvider = require(Packages.BinderProvider)
 
 --[=[
 	@class BinderService
