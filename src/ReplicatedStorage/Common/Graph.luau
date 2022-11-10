@@ -54,7 +54,11 @@ function Graph:GetEdge(node1, node2)
 end
 
 function Graph:IsNeighbor(node1, node2)
-    return not not self:GetEdges(node1)[node2]
+    if not self._connections[node1] then
+        return false
+    end
+
+    return self._connections[node1][node2] ~= nil
 end
 
 return Graph
